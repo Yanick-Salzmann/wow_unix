@@ -1,0 +1,82 @@
+# CMake build directory
+cmake-build-*/
+
+# IDE specific files
+.idea/
+*.swp
+*.swo
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# CEF generated files and binaries
+cef/
+**/chrome_*.pak
+**/resources.pak
+**/icudtl.dat
+**/v8_context_snapshot.bin
+**/libcef.so
+**/libEGL.so
+**/libGLESv2.so
+**/libvk_swiftshader.so
+**/libvulkan.so*
+**/chrome-sandbox
+locales/
+cache/
+
+# Protocol Buffers generated files
+*.pb.cc
+*.pb.h
+
+# Node/Angular
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+.angular/
+dist/
+coverage/
+
+# OS specific
+.DS_Store
+.directory
+.Trash-*
+*~
+
+# Build artifacts
+*.ninja
+.ninja_*
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Dependencies
+_deps/

@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package wow.web.proto;
+
+message Wrapper {
+  JsEvent event = 1;
+}
+
+message JsEvent {
+  oneof event {
+    InitializeRequest initialize_request = 1;
+    BrowseFolderRequest browse_folder_request = 10;
+    BrowseFolderResponse browse_folder_response = 20;
+  }
+}
+
+message InitializeRequest {
+
+}
+
+message BrowseFolderRequest {
+  string title = 1;
+  string default_path = 2;
+  repeated string filters = 3;
+  bool allow_create = 4;
+}
+
+message BrowseFolderResponse {
+  bool canceled = 1;
+  string path = 2;
+}

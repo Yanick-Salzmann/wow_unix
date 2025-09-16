@@ -1,0 +1,26 @@
+<div class="splash-container">
+  <div class="splash-content">
+    <h1>Welcome to WOW Unix</h1>
+
+    <p>Please enter the path to your World of Warcraft client installation:</p>
+
+    <div class="input-group">
+      <input type="text"
+             [(ngModel)]="wowClientPath"
+             placeholder="e.g., /home/user/World of Warcraft"
+             class="path-input">
+
+      <input type="file"
+             webkitdirectory
+             directory
+             (change)="handleFileSelection($event)"
+             class="file-input">
+    </div>
+
+    <button (click)="loadData()"
+            [disabled]="!wowClientPath"
+            class="load-button">
+      Load Data
+    </button>
+  </div>
+</div>
