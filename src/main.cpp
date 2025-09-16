@@ -8,8 +8,8 @@ int main(const int argc, char *argv[]) {
 
     wow::utils::initialize_di();
 
-    const auto window = wow::utils::create<wow::gl::window>();
-    const auto core = wow::utils::create<wow::web::web_core>();
+    const auto window = wow::utils::app_module->window();
+    const auto core = wow::utils::app_module->web_core();
 
     core->initialize(argc, argv);
 

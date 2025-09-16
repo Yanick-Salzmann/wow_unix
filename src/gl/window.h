@@ -116,4 +116,7 @@ namespace wow::gl {
     }
 }
 
+
+#undef Status
+
 #endif //WOW_UNIX_WINDOW_H

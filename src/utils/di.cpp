@@ -2,19 +2,16 @@
 
 #include "gl/window.h"
 #include "web/web_core.h"
+#include "web/event/event_manager.h"
 
 namespace wow::utils {
-    namespace internal {
-        std::shared_ptr<injector_holder> _injector{};
-    }
+    std::shared_ptr<application_module> app_module{};
 
     void initialize_di() {
-        auto window = gl::make_window();
-        auto core = web::make_web_core(window);
-
-        internal::_injector = std::make_shared<internal::injector_holder>(boost::di::make_injector(
-            boost::di::bind<gl::window>().to(window),
-            boost::di::bind<web::web_core>().to(core)
-        ));
+        app_module = boost::di::make_injector(
+            boost::di::bind<gl::window>().in(boost::di::singleton),
+            boost::di::bind<web::web_core>().in(boost::di::singleton),
+            boost::di::bind<web::event::event_manager>().in(boost::di::singleton)
+        ).create<std::shared_ptr<application_module> >();
     }
 }

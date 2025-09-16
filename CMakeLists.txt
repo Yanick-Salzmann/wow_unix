@@ -130,7 +130,9 @@ add_executable(wow_unix src/main.cpp
         src/utils/dialog_utils.h
         src/utils/dialog_utils.cpp
         src/utils/di.h
-        src/utils/di.cpp)
+        src/utils/di.cpp
+        src/web/event/event_manager.h
+        src/web/event/event_manager.cpp)
 
 add_dependencies(wow_unix fetch_mime_types proto_typescript)
 
