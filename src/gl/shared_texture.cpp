@@ -93,7 +93,7 @@ namespace wow::gl {
         }
 
         if (planes.size() > 4) {
-            spdlog::error("Too many planes in shared texture: {}", planes.size());
+            SPDLOG_ERROR("Too many planes in shared texture: {}", planes.size());
             throw std::runtime_error("Too many planes in shared texture");
         }
 

@@ -32,7 +32,7 @@ namespace wow::gl {
     const program &program::compile_vertex_shader_from_file(const char *file_path) const {
         std::ifstream file(file_path, std::ios::in | std::ios::binary);
         if (!file) {
-            spdlog::error("Failed to open vertex shader file: {}", file_path);
+            SPDLOG_ERROR("Failed to open vertex shader file: {}", file_path);
             return *this;
         }
 
@@ -44,7 +44,7 @@ namespace wow::gl {
     const program &program::compile_fragment_shader_from_file(const char *file_path) const {
         std::ifstream file(file_path, std::ios::in | std::ios::binary);
         if (!file) {
-            spdlog::error("Failed to open fragment shader file: {}", file_path);
+            SPDLOG_ERROR("Failed to open fragment shader file: {}", file_path);
             return *this;
         }
 
@@ -65,7 +65,7 @@ namespace wow::gl {
             glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
             std::vector<char> log(length + 1);
             glGetShaderInfoLog(shader, length, &length, log.data());
-            spdlog::error("{} shader compilation failed: {}", shader_type, log.data());
+            SPDLOG_ERROR("{} shader compilation failed: {}", shader_type, log.data());
         }
     }
 

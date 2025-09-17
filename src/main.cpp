@@ -4,6 +4,7 @@
 #include "web/web_core.h"
 
 int main(const int argc, char *argv[]) {
+    spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%P:%t] [%^%l%$] [%s:%#] %v");
     spdlog::set_level(spdlog::level::debug);
 
     wow::utils::initialize_di();

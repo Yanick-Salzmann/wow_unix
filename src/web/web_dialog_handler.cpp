@@ -17,11 +17,11 @@ namespace wow::web {
                                           const std::vector<CefString> &accept_extensions,
                                           const std::vector<CefString> &accept_descriptions,
                                           const CefRefPtr<CefFileDialogCallback> callback) {
-        spdlog::debug("OnFileDialog called with mode: {}", static_cast<int>(mode));
+        SPDLOG_DEBUG("OnFileDialog called with mode: {}", static_cast<int>(mode));
 
         std::thread dialog_thread([=]() {
             if (!gtk_init_check(nullptr, nullptr)) {
-                spdlog::error("Failed to initialize GTK");
+                SPDLOG_ERROR("Failed to initialize GTK");
                 callback->Cancel();
                 return;
             }
@@ -43,7 +43,7 @@ namespace wow::web {
                 action = GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER;
                 confirm_button = "_Select";
             } else {
-                spdlog::error("Unknown file dialog mode");
+                SPDLOG_ERROR("Unknown file dialog mode");
                 callback->Cancel();
                 return;
             }

@@ -20,19 +20,19 @@ namespace wow::gl {
 
         switch (severity) {
             case GL_DEBUG_SEVERITY_HIGH:
-                spdlog::error("GL CALLBACK: {} type = 0x{} id = 0x{} message = {}", source_name, type, id, message);
+                SPDLOG_ERROR("GL CALLBACK: {} type = 0x{} id = 0x{} message = {}", source_name, type, id, message);
                 break;
             case GL_DEBUG_SEVERITY_MEDIUM:
-                spdlog::warn("GL CALLBACK: {} type = 0x{} id = 0x{} message = {}", source_name, type, id, message);
+                SPDLOG_WARN("GL CALLBACK: {} type = 0x{} id = 0x{} message = {}", source_name, type, id, message);
                 break;
             case GL_DEBUG_SEVERITY_LOW:
-                spdlog::info("GL CALLBACK: {} type = 0x{} id = 0x{} message = {}", source_name, type, id, message);
+                SPDLOG_INFO("GL CALLBACK: {} type = 0x{} id = 0x{} message = {}", source_name, type, id, message);
                 break;
             case GL_DEBUG_SEVERITY_NOTIFICATION:
-                spdlog::debug("GL CALLBACK: {} type = 0x{} id = 0x{} message = {}", source_name, type, id, message);
+                SPDLOG_DEBUG("GL CALLBACK: {} type = 0x{} id = 0x{} message = {}", source_name, type, id, message);
                 break;
             default:
-                spdlog::info("GL CALLBACK: {} type = 0x{} id = 0x{} message = {}", source_name, type, id, message);
+                SPDLOG_INFO("GL CALLBACK: {} type = 0x{} id = 0x{} message = {}", source_name, type, id, message);
                 break;
         }
     }
@@ -40,7 +40,7 @@ namespace wow::gl {
     void window::report_glfw_error(const std::string &msg) {
         const char *error{};
         glfwGetError(&error);
-        spdlog::error("Error in GLFW call: {}, error: {}", msg, error);
+        SPDLOG_ERROR("Error in GLFW call: {}, error: {}", msg, error);
     }
 
     void window::on_resize(int width, int height) const {
@@ -115,7 +115,7 @@ namespace wow::gl {
         });
 
         if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
-            spdlog::error("Cannot initialize GLAD");
+            SPDLOG_ERROR("Cannot initialize GLAD");
             throw std::runtime_error("Cannot initialize GLAD");
         }
 
@@ -127,11 +127,11 @@ namespace wow::gl {
 
         int width, height;
         glfwGetFramebufferSize(_window, &width, &height);
-        spdlog::info("Window size: {}x{}", width, height);
+        SPDLOG_INFO("Window size: {}x{}", width, height);
 
-        spdlog::info("OpenGL version: {}", reinterpret_cast<const char *>(glGetString(GL_VERSION)));
-        spdlog::info("OpenGL vendor: {}", reinterpret_cast<const char *>(glGetString(GL_VENDOR)));
-        spdlog::info("GLSL version: {}", reinterpret_cast<const char *>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+        SPDLOG_INFO("OpenGL version: {}", reinterpret_cast<const char *>(glGetString(GL_VERSION)));
+        SPDLOG_INFO("OpenGL vendor: {}", reinterpret_cast<const char *>(glGetString(GL_VENDOR)));
+        SPDLOG_INFO("GLSL version: {}", reinterpret_cast<const char *>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
         glViewport(0, 0, width, height);
     }

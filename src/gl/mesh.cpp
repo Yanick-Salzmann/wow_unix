@@ -82,7 +82,7 @@ namespace wow::gl {
     mesh &mesh::texture(const std::string &name, const bindable_texture_ptr &texture) {
         auto loc = program()->uniform_location(name.c_str());
         if (loc < 0) {
-            spdlog::error("Texture {} not found in program", name);
+            SPDLOG_ERROR("Texture {} not found in program", name);
             throw std::runtime_error("Texture not found in program");
         }
 

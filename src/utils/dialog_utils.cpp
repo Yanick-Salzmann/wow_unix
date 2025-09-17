@@ -6,32 +6,28 @@
 
 namespace wow::utils {
     bool browse_folder_dialog(const std::string &title, std::string &path) {
-        if (!gtk_init_check(nullptr, nullptr)) {
-            spdlog::error("Failed to initialize GTK");
-            return false;
-        }
+        constexpr auto action = GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER;
 
-        if (getenv("WAYLAND_DISPLAY")) {
-            gdk_set_allowed_backends("wayland");
-        }
-
-        const auto chooser = GTK_FILE_CHOOSER(gtk_file_chooser_native_new(
+        const auto chooser = gtk_file_chooser_dialog_new(
             title.c_str(),
             nullptr,
-            GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
-            "_Select",
-            "_Cancel"
-        ));
+            action,
+            "_Cancel",
+            GTK_RESPONSE_CANCEL,
+            "_Open",
+            GTK_RESPONSE_ACCEPT,
+            NULL
+        );
 
-        if (const gint result = gtk_native_dialog_run(GTK_NATIVE_DIALOG(chooser));
-            result == GTK_RESPONSE_ACCEPT) {
-            if (char *filename = gtk_file_chooser_get_filename(chooser)) {
+        if (const gint dialog_result = gtk_dialog_run(GTK_DIALOG(chooser));
+            dialog_result == GTK_RESPONSE_ACCEPT) {
+            if (char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(chooser))) {
                 path = filename;
                 g_free(filename);
             }
         }
 
-        g_object_unref(chooser);
+        gtk_widget_destroy(GTK_WIDGET(chooser));
         return !path.empty();
     }
 }

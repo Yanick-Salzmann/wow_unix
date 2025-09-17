@@ -10,7 +10,10 @@ namespace wow::web::event {
 
     public:
         event_manager& listen(const proto::JsEvent::EventCase &event, std::function<proto::JsEvent(const proto::JsEvent&)> callback);
+        std::unique_ptr<proto::JsEvent> dispatch(const proto::JsEvent &event);
     };
+
+    typedef std::shared_ptr<event_manager> event_manager_ptr;
 }
 
 #endif //WOW_UNIX_EVENT_MANAGER_H

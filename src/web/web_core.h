@@ -6,6 +6,7 @@
 #include <future>
 #include <thread>
 
+#include "event/event_manager.h"
 #include "gl/mesh.h"
 #include "gl/texture.h"
 #include "gl/window.h"
@@ -18,6 +19,8 @@ namespace wow::web {
 
         CefRefPtr<web_application> _application{};
         CefRefPtr<web_client> _client{};
+
+        event::event_manager_ptr _event_manager{};
 
         std::packaged_task<bool()> _task{};
         std::thread _message_loop{};
@@ -41,14 +44,16 @@ namespace wow::web {
         std::mutex _image_lock{};
 
         void on_paint(int32_t width, int32_t height, const void *data);
+
         void update_texture();
 
         int calculate_modifiers() const;
 
     public:
-        explicit web_core(gl::window_ptr  window);
+        explicit web_core(gl::window_ptr window, event::event_manager_ptr event_manager);
 
         void initialize(int argc, char *argv[]);
+
         void shutdown();
 
         [[nodiscard]] gl::texture_ptr texture() const {
@@ -56,13 +61,13 @@ namespace wow::web {
         }
 
         void render();
+
+        const event::event_manager_ptr &event_manager() const {
+            return _event_manager;
+        }
     };
 
     using web_core_ptr = std::shared_ptr<web_core>;
-
-    inline web_core_ptr make_web_core(gl::window_ptr window) {
-        return std::make_shared<web_core>(std::move(window));
-    }
 }
 
 #endif //WOW_UNIX_WEB_CORE_H

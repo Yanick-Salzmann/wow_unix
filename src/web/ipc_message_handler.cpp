@@ -9,41 +9,35 @@ namespace wow::web {
                                       const CefString &request, bool persistent, CefRefPtr<Callback> callback) {
         proto::JsEvent event{};
         if (const auto status = google::protobuf::util::JsonStringToMessage(request.ToString(), &event); !status.ok()) {
-            spdlog::error("Failed to parse json: {}", status.message());
+            SPDLOG_ERROR("Failed to parse json: {}", status.message());
             throw std::runtime_error("Failed to parse json");
         }
 
         switch (event.event_case()) {
-            case proto::JsEvent::kBrowseFolderRequest: {
-                auto t = std::thread{
-                    [callback]() {
-                        proto::JsEvent response{};
-                        proto::BrowseFolderResponse* data = response.mutable_browse_folder_response();
-                        data->set_canceled(true);
-
-                        std::string path;
-                        if (utils::browse_folder_dialog("Select Folder", path)) {
-                            data->set_path(path);
-                            data->set_canceled(false);
-                        }
-
-                        callback->Success(response.SerializeAsString());
-                    }
-                };
-                t.detach();
-                break;
-            }
-
-            case proto::JsEvent::kInitializeRequest:
-                spdlog::info("Received initialize request");
+            case proto::JsEvent::kInitializeRequest: {
+                SPDLOG_INFO("Received initialize request");
                 _callback = callback;
                 _callback->Success("{'status': 'ok'}");
                 _callback->Success("{'status': 'ok2'}");
                 break;
+            }
 
-            default:
-                spdlog::warn("Unhandled event: {}", event.DebugString());
+            default: {
+                std::thread{
+                    [event, this, callback] {
+                        if (const auto response = _event_manager->dispatch(event)) {
+                            std::string serialized{};
+                            if (const auto status = google::protobuf::util::MessageToJsonString(*response, &serialized); !status.ok()) {
+                                SPDLOG_ERROR("Failed to serialize response: {}", status.message());
+                                callback->Failure(0x7F001001, "Failed to serialize response");
+                            } else {
+                                callback->Success(serialized);
+                            }
+                        }
+                    }
+                }.detach();
                 break;
+            }
         }
 
         return true;

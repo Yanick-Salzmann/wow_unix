@@ -27,7 +27,7 @@ namespace wow::web {
         CefRefPtr<CefMessageRouterBrowserSide> _router{};
 
     public:
-        web_client(gl::window_ptr window, std::weak_ptr<web_core> core);
+        web_client(gl::window_ptr window, const std::shared_ptr<web_core>& core);
 
         CefRefPtr<CefRenderHandler> GetRenderHandler() override {
             return this;

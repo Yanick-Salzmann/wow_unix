@@ -6,6 +6,7 @@
 #include "app_scheme_handler.h"
 #include "spdlog/spdlog.h"
 #include "windows_virtual_keys.h"
+#include "event/shell_events.h"
 
 namespace wow::web {
     int map_glfw_key_to_virtual_key(const int key) {
@@ -259,7 +260,11 @@ namespace wow::web {
         _is_dirty = true;
     }
 
-    web_core::web_core(gl::window_ptr window) : _window(std::move(window)) {
+    web_core::web_core(
+        gl::window_ptr window,
+        event::event_manager_ptr event_manager
+    ) : _event_manager(std::move(event_manager)),
+        _window(std::move(window)) {
         if (!_window) {
             throw std::runtime_error("Window is null");
         }
@@ -271,7 +276,7 @@ namespace wow::web {
 
     void web_core::initialize(int argc, char *argv[]) {
         _task = std::packaged_task<bool()>([argc, argv, this]() {
-            spdlog::info("Initializing CEF");
+            SPDLOG_INFO("Initializing CEF");
             CefMainArgs args{};
             args.argc = argc;
             args.argv = argv;
@@ -289,10 +294,11 @@ namespace wow::web {
             _client = new web_client(_window, shared_from_this());
 
             if (!CefInitialize(args, settings, _application, nullptr)) {
-                spdlog::error("Could not initialize CEF");
+                SPDLOG_ERROR("Could not initialize CEF");
                 return false;
             }
 
+            event::initialize_shell_events(_event_manager);
 
             CefRegisterSchemeHandlerFactory("app", "", new app_scheme_handler_factory());
 
@@ -478,7 +484,7 @@ namespace wow::web {
         CefPostTask(TID_UI, new ShutdownTask());
         _message_loop.join();
         CefShutdown();
-        spdlog::info("Shutdown complete");
+        SPDLOG_INFO("Shutdown complete");
     }
 
     void web_core::render() {

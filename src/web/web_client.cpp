@@ -7,10 +7,10 @@
 #include "spdlog/spdlog.h"
 
 namespace wow::web {
-    web_client::web_client(gl::window_ptr window, std::weak_ptr<web_core> core) : _window(std::move(window)),
-        _core(std::move(core)) {
+    web_client::web_client(gl::window_ptr window, const std::shared_ptr<web_core> &core) : _window(std::move(window)),
+        _core(core) {
         _router = CefMessageRouterBrowserSide::Create(CefMessageRouterConfig());
-        _router->AddHandler(new ipc_message_handler(), true);
+        _router->AddHandler(new ipc_message_handler(core->event_manager()), true);
     }
 
     void web_client::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect) {
@@ -55,13 +55,13 @@ namespace wow::web {
 
     void web_client::OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
                                         const RectList &dirtyRects, const CefAcceleratedPaintInfo &info) {
-        spdlog::info("OnAcceleratedPaint");
+        SPDLOG_INFO("OnAcceleratedPaint");
     }
 
     bool web_client::OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_severity_t level, const CefString &message,
                                       const CefString &source, int line) {
-        spdlog::log(static_cast<spdlog::level::level_enum>(level), "Web: {}:{}: {}", source.ToString(), line,
-                    message.ToString());
+        SPDLOG_LOGGER_CALL(spdlog::default_logger(), static_cast<spdlog::level::level_enum>(level),
+                          "Web: {}:{}: {}", source.ToString(), line, message.ToString());
         return true;
     }
 

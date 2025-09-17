@@ -33,10 +33,10 @@ namespace wow::web {
 
         const auto url = request->GetURL().ToString();
         const auto method = request->GetMethod().ToString();
-        spdlog::info("{} {}", method, url);
+        SPDLOG_INFO("{} {}", method, url);
 
         const auto path = absolute(std::filesystem::path{"ui"} / url.substr(prefix_len)).string();
-        spdlog::info("{} -> {}", url, path);
+        SPDLOG_INFO("{} -> {}", url, path);
 
         _file = std::ifstream(path, std::ios::in | std::ios::binary);
         if (_file) {
