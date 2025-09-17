@@ -10,11 +10,10 @@
              placeholder="e.g., /home/user/World of Warcraft"
              class="path-input">
 
-      <input type="file"
-             webkitdirectory
-             directory
-             (change)="handleFileSelection($event)"
-             class="file-input">
+      <button (click)="browseFolder()"
+              class="browse-button">
+        Browse...
+      </button>
     </div>
 
     <button (click)="loadData()"

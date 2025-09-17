@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { EventService } from '../service/event.service';
 
 @Component({
   selector: 'app-splash',
@@ -9,23 +10,46 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [FormsModule, CommonModule]
 })
-export class SplashComponent {
+export class SplashComponent implements OnInit {
   wowClientPath = '';
+  private readonly STORAGE_KEY = 'wow-client-path';
 
-  handleFileSelection(event: Event) {
-    event.preventDefault();
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const selectedFile = input.files[0];
+  constructor(
+    private eventService: EventService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
-      const folderName = selectedFile.webkitRelativePath.split('/')[0];
-      this.wowClientPath = folderName;
+  ngOnInit() {
+    const savedPath = localStorage.getItem(this.STORAGE_KEY);
+    if (savedPath) {
+      this.wowClientPath = savedPath;
+      console.log('Loaded saved path:', savedPath);
+    }
+  }
 
-      console.log('Selected folder:', folderName);
+  async browseFolder() {
+    try {
+      const selectedPath = await this.eventService.browseFolder(
+        'Select World of Warcraft Installation Folder',
+        this.wowClientPath || '/home',
+        [],
+        false
+      );
+
+      if (selectedPath) {
+        this.wowClientPath = selectedPath;
+        this.cdr.detectChanges();
+        console.log('Selected folder:', selectedPath);
+      }
+    } catch (error) {
+      console.error('Error browsing folder:', error);
     }
   }
 
   loadData() {
-    console.log('Loading data from path:', this.wowClientPath);
+    if (this.wowClientPath) {
+      localStorage.setItem(this.STORAGE_KEY, this.wowClientPath);
+      console.log('Loading data from path:', this.wowClientPath);
+    }
   }
 }

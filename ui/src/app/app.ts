@@ -13,8 +13,5 @@ import {JsEvent} from "./proto/js_event";
 export class App {
     constructor(eventService: EventService) {
         eventService.initialize();
-        eventService.browseFolder("Select Wow Client Folder", "", [], false).then(path => {
-            console.log("Selected path: " + path);
-        })
     }
 }

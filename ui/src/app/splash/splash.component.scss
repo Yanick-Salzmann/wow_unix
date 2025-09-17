@@ -28,8 +28,9 @@ p {
 .input-group {
   margin-bottom: 1.5rem;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 0.5rem;
+  align-items: center;
 }
 
 .path-input {
@@ -38,11 +39,22 @@ p {
   border: 1px solid #444;
   background-color: #333;
   color: #fff;
-  width: 100%;
+  flex: 1;
 }
 
-.file-input {
-  padding: 0.5rem;
+.browse-button {
+  background-color: #666;
+  color: white;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: #777;
+  }
 }
 
 .load-button {

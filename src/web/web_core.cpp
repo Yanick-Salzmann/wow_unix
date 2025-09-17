@@ -286,6 +286,7 @@ namespace wow::web {
             CefString(&settings.locales_dir_path) = std::filesystem::absolute("./locales");
             CefString(&settings.resources_dir_path) = std::filesystem::absolute("./");
             CefString(&settings.root_cache_path) = std::filesystem::absolute("./cache");
+            CefString(&settings.cache_path) = weakly_canonical(std::filesystem::absolute("./cache/local")).make_preferred().string();
             settings.no_sandbox = true;
             settings.windowless_rendering_enabled = true;
             settings.remote_debugging_port = 9222;
@@ -309,6 +310,7 @@ namespace wow::web {
             browser_settings.windowless_frame_rate = 60;
             browser_settings.background_color = CefColorSetARGB(255, 255, 255, 255);
             browser_settings.javascript_access_clipboard = STATE_ENABLED;
+            browser_settings.local_storage = STATE_ENABLED;
 
             CefBrowserHost::CreateBrowser(window_info, _client, "app://localhost/index.html", browser_settings, nullptr,
                                           nullptr);
