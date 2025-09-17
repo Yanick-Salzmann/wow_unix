@@ -1,0 +1,22 @@
+<div class="loading-container">
+  <div class="loading-content">
+    <div class="logo-section">
+      <h1 class="app-title">World of Warcraft</h1>
+      <p class="app-subtitle">Loading your adventure...</p>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-bar-container">
+        <div class="progress-bar" [style.width.%]="loadingProgress"></div>
+      </div>
+      <div class="progress-text">{{ loadingProgress }}%</div>
+    </div>
+
+    <div class="status-section">
+      <p class="loading-status">{{ loadingText }}{{ dots }}</p>
+    </div>
+  </div>
+
+  <div class="background-overlay"></div>
+</div>
+

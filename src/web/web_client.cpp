@@ -60,8 +60,14 @@ namespace wow::web {
 
     bool web_client::OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_severity_t level, const CefString &message,
                                       const CefString &source, int line) {
+        std::string sourceStr = source.ToString();
+        if (sourceStr.starts_with("app://localhost/")) {
+            sourceStr.replace(0, 16, "./ui/");
+            sourceStr = std::filesystem::absolute(sourceStr).string();
+        }
+
         SPDLOG_LOGGER_CALL(spdlog::default_logger(), static_cast<spdlog::level::level_enum>(level),
-                          "Web: {}:{}: {}", source.ToString(), line, message.ToString());
+                           "Web: {}:{}: {}", sourceStr, line, message.ToString());
         return true;
     }
 

@@ -1,6 +1,7 @@
 import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { EventService } from '../service/event.service';
 
 @Component({
@@ -16,7 +17,8 @@ export class SplashComponent implements OnInit {
 
   constructor(
     private eventService: EventService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -50,6 +52,8 @@ export class SplashComponent implements OnInit {
     if (this.wowClientPath) {
       localStorage.setItem(this.STORAGE_KEY, this.wowClientPath);
       console.log('Loading data from path:', this.wowClientPath);
+      // Navigate to the loading screen
+      this.router.navigate(['/loading']);
     }
   }
 }
