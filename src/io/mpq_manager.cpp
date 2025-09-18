@@ -166,6 +166,7 @@ namespace wow::io {
             if (!SFileOpenArchive(mpq.c_str(), 0, MPQ_OPEN_READ_ONLY, &handle)) {
                 SPDLOG_WARN("Skipping MPQ file: {} due to loading error", mpq);
             } else {
+                _archives.insert(_archives.begin(), handle);
                 SPDLOG_DEBUG("Loaded MPQ file: {}", mpq);
             }
 

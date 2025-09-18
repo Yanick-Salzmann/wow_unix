@@ -5,6 +5,7 @@
 #include <memory>
 #include <regex>
 
+#include "StormPort.h"
 #include "web/event/event_manager.h"
 
 namespace wow::io {
@@ -12,6 +13,8 @@ namespace wow::io {
         static std::vector<std::string> load_files(const std::filesystem::path &directory);
 
         static std::string find_locale(const std::filesystem::path &directory);
+
+        std::vector<HANDLE> _archives{};
 
         uint32_t _total_mpq_count = 0;
         uint32_t _loaded_mpq_count = 0;
