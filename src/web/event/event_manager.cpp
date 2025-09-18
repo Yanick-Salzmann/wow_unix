@@ -1,6 +1,10 @@
 #include "event_manager.h"
 
 namespace wow::web::event {
+    event_manager::event_manager() {
+        EMPTY_RESPONSE.mutable_empty_response();
+    }
+
     event_manager &event_manager::listen(const proto::JsEvent::EventCase &event,
                                          std::function<proto::JsEvent(const proto::JsEvent &)> callback) {
         std::lock_guard lock(_callback_lock);
@@ -23,5 +27,13 @@ namespace wow::web::event {
         }
 
         return callbacks.empty() ? nullptr : std::make_unique<proto::JsEvent>(result);
+    }
+
+    void event_manager::submit(const proto::JsEvent &event) const {
+        if (!_event_callback) {
+            return;
+        }
+
+        _event_callback(event);
     }
 }

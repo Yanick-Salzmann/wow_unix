@@ -45,6 +45,24 @@ export interface JsEvent {
          */
         browseFolderResponse: BrowseFolderResponse;
     } | {
+        oneofKind: "emptyResponse";
+        /**
+         * @generated from protobuf field: wow.web.proto.EmptyResponse empty_response = 30
+         */
+        emptyResponse: EmptyResponse;
+    } | {
+        oneofKind: "loadDataEvent";
+        /**
+         * @generated from protobuf field: wow.web.proto.LoadDataEvent load_data_event = 40
+         */
+        loadDataEvent: LoadDataEvent;
+    } | {
+        oneofKind: "loadUpdateEvent";
+        /**
+         * @generated from protobuf field: wow.web.proto.LoadUpdateEvent load_update_event = 50
+         */
+        loadUpdateEvent: LoadUpdateEvent;
+    } | {
         oneofKind: undefined;
     };
 }
@@ -86,6 +104,37 @@ export interface BrowseFolderResponse {
      * @generated from protobuf field: string path = 2
      */
     path: string;
+}
+/**
+ * @generated from protobuf message wow.web.proto.EmptyResponse
+ */
+export interface EmptyResponse {
+}
+/**
+ * @generated from protobuf message wow.web.proto.LoadDataEvent
+ */
+export interface LoadDataEvent {
+    /**
+     * @generated from protobuf field: string folder = 1
+     */
+    folder: string;
+}
+/**
+ * @generated from protobuf message wow.web.proto.LoadUpdateEvent
+ */
+export interface LoadUpdateEvent {
+    /**
+     * @generated from protobuf field: int32 percentage = 1
+     */
+    percentage: number;
+    /**
+     * @generated from protobuf field: bool completed = 5
+     */
+    completed: boolean;
+    /**
+     * @generated from protobuf field: string message = 10
+     */
+    message: string;
 }
 // @generated message type with reflection information, may provide speed optimized methods
 class Wrapper$Type extends MessageType<Wrapper> {
@@ -139,7 +188,10 @@ class JsEvent$Type extends MessageType<JsEvent> {
         super("wow.web.proto.JsEvent", [
             { no: 1, name: "initialize_request", kind: "message", oneof: "event", T: () => InitializeRequest },
             { no: 10, name: "browse_folder_request", kind: "message", oneof: "event", T: () => BrowseFolderRequest },
-            { no: 20, name: "browse_folder_response", kind: "message", oneof: "event", T: () => BrowseFolderResponse }
+            { no: 20, name: "browse_folder_response", kind: "message", oneof: "event", T: () => BrowseFolderResponse },
+            { no: 30, name: "empty_response", kind: "message", oneof: "event", T: () => EmptyResponse },
+            { no: 40, name: "load_data_event", kind: "message", oneof: "event", T: () => LoadDataEvent },
+            { no: 50, name: "load_update_event", kind: "message", oneof: "event", T: () => LoadUpdateEvent }
         ]);
     }
     create(value?: PartialMessage<JsEvent>): JsEvent {
@@ -172,6 +224,24 @@ class JsEvent$Type extends MessageType<JsEvent> {
                         browseFolderResponse: BrowseFolderResponse.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).browseFolderResponse)
                     };
                     break;
+                case /* wow.web.proto.EmptyResponse empty_response */ 30:
+                    message.event = {
+                        oneofKind: "emptyResponse",
+                        emptyResponse: EmptyResponse.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).emptyResponse)
+                    };
+                    break;
+                case /* wow.web.proto.LoadDataEvent load_data_event */ 40:
+                    message.event = {
+                        oneofKind: "loadDataEvent",
+                        loadDataEvent: LoadDataEvent.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).loadDataEvent)
+                    };
+                    break;
+                case /* wow.web.proto.LoadUpdateEvent load_update_event */ 50:
+                    message.event = {
+                        oneofKind: "loadUpdateEvent",
+                        loadUpdateEvent: LoadUpdateEvent.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).loadUpdateEvent)
+                    };
+                    break;
                 default:
                     let u = options.readUnknownField;
                     if (u === "throw")
@@ -193,6 +263,15 @@ class JsEvent$Type extends MessageType<JsEvent> {
         /* wow.web.proto.BrowseFolderResponse browse_folder_response = 20; */
         if (message.event.oneofKind === "browseFolderResponse")
             BrowseFolderResponse.internalBinaryWrite(message.event.browseFolderResponse, writer.tag(20, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.EmptyResponse empty_response = 30; */
+        if (message.event.oneofKind === "emptyResponse")
+            EmptyResponse.internalBinaryWrite(message.event.emptyResponse, writer.tag(30, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.LoadDataEvent load_data_event = 40; */
+        if (message.event.oneofKind === "loadDataEvent")
+            LoadDataEvent.internalBinaryWrite(message.event.loadDataEvent, writer.tag(40, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.LoadUpdateEvent load_update_event = 50; */
+        if (message.event.oneofKind === "loadUpdateEvent")
+            LoadUpdateEvent.internalBinaryWrite(message.event.loadUpdateEvent, writer.tag(50, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -367,3 +446,151 @@ class BrowseFolderResponse$Type extends MessageType<BrowseFolderResponse> {
  * @generated MessageType for protobuf message wow.web.proto.BrowseFolderResponse
  */
 export const BrowseFolderResponse = new BrowseFolderResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class EmptyResponse$Type extends MessageType<EmptyResponse> {
+    constructor() {
+        super("wow.web.proto.EmptyResponse", []);
+    }
+    create(value?: PartialMessage<EmptyResponse>): EmptyResponse {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        if (value !== undefined)
+            reflectionMergePartial<EmptyResponse>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: EmptyResponse): EmptyResponse {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: EmptyResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message wow.web.proto.EmptyResponse
+ */
+export const EmptyResponse = new EmptyResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class LoadDataEvent$Type extends MessageType<LoadDataEvent> {
+    constructor() {
+        super("wow.web.proto.LoadDataEvent", [
+            { no: 1, name: "folder", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<LoadDataEvent>): LoadDataEvent {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.folder = "";
+        if (value !== undefined)
+            reflectionMergePartial<LoadDataEvent>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: LoadDataEvent): LoadDataEvent {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string folder */ 1:
+                    message.folder = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: LoadDataEvent, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string folder = 1; */
+        if (message.folder !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.folder);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message wow.web.proto.LoadDataEvent
+ */
+export const LoadDataEvent = new LoadDataEvent$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class LoadUpdateEvent$Type extends MessageType<LoadUpdateEvent> {
+    constructor() {
+        super("wow.web.proto.LoadUpdateEvent", [
+            { no: 1, name: "percentage", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 5, name: "completed", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 10, name: "message", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<LoadUpdateEvent>): LoadUpdateEvent {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.percentage = 0;
+        message.completed = false;
+        message.message = "";
+        if (value !== undefined)
+            reflectionMergePartial<LoadUpdateEvent>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: LoadUpdateEvent): LoadUpdateEvent {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* int32 percentage */ 1:
+                    message.percentage = reader.int32();
+                    break;
+                case /* bool completed */ 5:
+                    message.completed = reader.bool();
+                    break;
+                case /* string message */ 10:
+                    message.message = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: LoadUpdateEvent, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* int32 percentage = 1; */
+        if (message.percentage !== 0)
+            writer.tag(1, WireType.Varint).int32(message.percentage);
+        /* bool completed = 5; */
+        if (message.completed !== false)
+            writer.tag(5, WireType.Varint).bool(message.completed);
+        /* string message = 10; */
+        if (message.message !== "")
+            writer.tag(10, WireType.LengthDelimited).string(message.message);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message wow.web.proto.LoadUpdateEvent
+ */
+export const LoadUpdateEvent = new LoadUpdateEvent$Type();

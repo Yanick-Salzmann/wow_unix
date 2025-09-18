@@ -51,9 +51,7 @@ export class SplashComponent implements OnInit {
   loadData() {
     if (this.wowClientPath) {
       localStorage.setItem(this.STORAGE_KEY, this.wowClientPath);
-      console.log('Loading data from path:', this.wowClientPath);
-      // Navigate to the loading screen
-      this.router.navigate(['/loading']);
+      this.router.navigate(['/loading'], { queryParams: { path: this.wowClientPath } });
     }
   }
 }

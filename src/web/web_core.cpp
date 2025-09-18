@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <utility>
+#include <gtk/gtk.h>
 
 #include "app_scheme_handler.h"
 #include "spdlog/spdlog.h"
@@ -280,6 +281,8 @@ namespace wow::web {
             CefMainArgs args{};
             args.argc = argc;
             args.argv = argv;
+
+            gtk_disable_setlocale();
 
             CefSettings settings{};
             CefString(&settings.browser_subprocess_path) = std::filesystem::absolute("./wow_unix_browser");

@@ -13,10 +13,12 @@
     </div>
 
     <div class="status-section">
-      <p class="loading-status">{{ loadingText }}{{ dots }}</p>
+      <p class="loading-status" aria-live="polite">
+        <span class="spinner" aria-hidden="true"></span>
+        <span class="status-text">{{ loadingText }}</span>
+      </p>
     </div>
   </div>
 
   <div class="background-overlay"></div>
 </div>
-

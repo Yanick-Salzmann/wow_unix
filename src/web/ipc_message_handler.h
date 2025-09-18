@@ -14,6 +14,8 @@ namespace wow::web {
 
         event::event_manager_ptr _event_manager{};
 
+        void submit_js_event(const proto::JsEvent &event) const;
+
     public:
         explicit ipc_message_handler(event::event_manager_ptr event_manager) : _event_manager(
             std::move(event_manager)) {

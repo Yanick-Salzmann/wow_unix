@@ -1,75 +1,63 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { EventService } from '../service/event.service';
+import {Component, OnInit, OnDestroy, ChangeDetectorRef} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {Router, ActivatedRoute} from '@angular/router';
+import {EventService} from '../service/event.service';
+import {JsEvent, LoadUpdateEvent} from "../proto/js_event";
 
 @Component({
-  selector: 'app-loading',
-  templateUrl: './loading.component.html',
-  styleUrls: ['./loading.component.scss'],
-  standalone: true,
-  imports: [CommonModule]
+    selector: 'app-loading',
+    templateUrl: './loading.component.html',
+    styleUrls: ['./loading.component.scss'],
+    standalone: true,
+    imports: [CommonModule]
 })
 export class LoadingComponent implements OnInit, OnDestroy {
-  loadingProgress = 0;
-  loadingText = 'Initializing...';
-  dots = '';
-  private dotsInterval: any;
-  private progressInterval: any;
+    loadingProgress = 0;
+    loadingText = 'Initializing...';
+    private progressInterval: any;
+    wowClientPath = '';
 
-  constructor(
-    private eventService: EventService,
-    private router: Router
-  ) {}
+    constructor(
+        private eventService: EventService,
+        private router: Router,
+        private cdr: ChangeDetectorRef,
+        private route: ActivatedRoute
+    ) {
 
-  ngOnInit() {
-    this.startLoadingAnimation();
-    this.simulateLoading();
-  }
-
-  ngOnDestroy() {
-    if (this.dotsInterval) {
-      clearInterval(this.dotsInterval);
     }
-    if (this.progressInterval) {
-      clearInterval(this.progressInterval);
+
+    async ngOnInit() {
+        const path = this.route.snapshot.queryParamMap.get('path');
+        if (path) {
+            this.wowClientPath = path;
+        } else {
+            throw new Error('WoW client path not provided');
+        }
+
+        console.log('Loading data from path:', this.wowClientPath);
+        this.eventService.listenForEvent("loadUpdateEvent", (event) => {
+            if(event.event.oneofKind !== "loadUpdateEvent") {
+                return;
+            }
+
+            this.loadingProgress = event.event.loadUpdateEvent.percentage;
+            this.loadingText = event.event.loadUpdateEvent.message;
+            this.cdr.detectChanges();
+        })
+
+        await this.eventService.sendMessage({
+            event: {
+                oneofKind: "loadDataEvent",
+                loadDataEvent: {
+                    folder: this.wowClientPath
+                }
+            }
+        })
     }
-  }
 
-  private startLoadingAnimation() {
-    this.dotsInterval = setInterval(() => {
-      if (this.dots.length >= 3) {
-        this.dots = '';
-      } else {
-        this.dots += '.';
-      }
-    }, 500);
-  }
-
-  private simulateLoading() {
-    const loadingSteps = [
-      { progress: 20, text: 'Loading WoW client data' },
-      { progress: 40, text: 'Parsing game files' },
-      { progress: 60, text: 'Initializing database' },
-      { progress: 80, text: 'Setting up environment' },
-      { progress: 100, text: 'Ready to launch' }
-    ];
-
-    let currentStep = 0;
-
-    this.progressInterval = setInterval(() => {
-      if (currentStep < loadingSteps.length) {
-        this.loadingProgress = loadingSteps[currentStep].progress;
-        this.loadingText = loadingSteps[currentStep].text;
-        currentStep++;
-      } else {
-        clearInterval(this.progressInterval);
-        setTimeout(() => {
-          // Navigate to the main application or game view
-          // For now, we'll just stay on loading screen
-          console.log('Loading complete!');
-        }, 1000);
-      }
-    }, 1500);
-  }
+    ngOnDestroy() {
+        if (this.progressInterval) {
+            clearInterval(this.progressInterval);
+        }
+    }
 }

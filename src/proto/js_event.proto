@@ -11,6 +11,9 @@ message JsEvent {
     InitializeRequest initialize_request = 1;
     BrowseFolderRequest browse_folder_request = 10;
     BrowseFolderResponse browse_folder_response = 20;
+    EmptyResponse empty_response = 30;
+    LoadDataEvent load_data_event = 40;
+    LoadUpdateEvent load_update_event = 50;
   }
 }
 
@@ -28,4 +31,18 @@ message BrowseFolderRequest {
 message BrowseFolderResponse {
   bool canceled = 1;
   string path = 2;
+}
+
+message EmptyResponse {
+
+}
+
+message LoadDataEvent {
+  string folder = 1;
+}
+
+message LoadUpdateEvent {
+  int32 percentage = 1;
+  bool completed = 5;
+  string message = 10;
 }

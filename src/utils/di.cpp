@@ -1,6 +1,7 @@
 #include "di.h"
 
 #include "gl/window.h"
+#include "io/mpq_manager.h"
 #include "web/web_core.h"
 #include "web/event/event_manager.h"
 
@@ -11,7 +12,8 @@ namespace wow::utils {
         app_module = boost::di::make_injector(
             boost::di::bind<gl::window>().in(boost::di::singleton),
             boost::di::bind<web::web_core>().in(boost::di::singleton),
-            boost::di::bind<web::event::event_manager>().in(boost::di::singleton)
+            boost::di::bind<web::event::event_manager>().in(boost::di::singleton),
+            boost::di::bind<io::mpq_manager>().in(boost::di::singleton)
         ).create<std::shared_ptr<application_module> >();
     }
 }

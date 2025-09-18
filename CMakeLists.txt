@@ -38,6 +38,12 @@ FetchContent_Declare(
 )
 
 FetchContent_Declare(
+        StormLib
+        GIT_REPOSITORY https://github.com/ladislav-zezula/StormLib.git
+        GIT_TAG master
+)
+
+FetchContent_Declare(
         stb
         GIT_REPOSITORY https://github.com/nothings/stb.git
         GIT_TAG master
@@ -49,13 +55,7 @@ FetchContent_Declare(
         GIT_TAG v1.2.0
 )
 
-FetchContent_MakeAvailable(spdlog glfw glad glm stb boost_di)
-
-set_target_properties(glad PROPERTIES
-        GLAD_PROFILE "core"
-        GLAD_API "gl=3.3"
-        GLAD_GENERATOR "c"
-)
+FetchContent_MakeAvailable(spdlog glfw glad glm stb boost_di StormLib)
 
 set(PROTO_FILES
         ${CMAKE_SOURCE_DIR}/src/proto/js_event.proto
@@ -134,7 +134,9 @@ add_executable(wow_unix src/main.cpp
         src/web/event/event_manager.h
         src/web/event/event_manager.cpp
         src/web/event/shell_events.h
-        src/web/event/shell_events.cpp)
+        src/web/event/shell_events.cpp
+        src/io/mpq_manager.h
+        src/io/mpq_manager.cpp)
 
 add_dependencies(wow_unix fetch_mime_types proto_typescript)
 
@@ -187,5 +189,6 @@ target_link_libraries(wow_unix PRIVATE
         absl::node_hash_map
         absl::node_hash_set
         absl::inlined_vector
+        StormLib::storm
 )
 target_link_libraries(wow_unix_browser PRIVATE spdlog::spdlog ${CMAKE_SOURCE_DIR}/libcef_dll_wrapper.a ${CMAKE_BINARY_DIR}/libcef.so)
