@@ -11,6 +11,8 @@ find_package(utf8_range REQUIRED)
 
 find_package(absl REQUIRED)
 
+find_package(Boost CONFIG REQUIRED)
+
 include(FetchContent)
 
 FetchContent_Declare(
@@ -136,7 +138,13 @@ add_executable(wow_unix src/main.cpp
         src/web/event/shell_events.h
         src/web/event/shell_events.cpp
         src/io/mpq_manager.h
-        src/io/mpq_manager.cpp)
+        src/io/mpq_manager.cpp
+        src/io/dbc/dbc_file.h
+        src/io/dbc/dbc_structs.h
+        src/io/dbc/dbc_manager.h
+        src/io/dbc/dbc_manager.cpp
+        src/io/mpq_file.h
+        src/io/mpq_file.cpp)
 
 add_dependencies(wow_unix fetch_mime_types proto_typescript)
 
@@ -152,6 +160,7 @@ target_include_directories(wow_unix PRIVATE
         ${Protobuf_INCLUDE_DIRS}
         ${CMAKE_CURRENT_BINARY_DIR}  # For generated protobuf headers
         ${boost_di_SOURCE_DIR}/include
+        ${Boost_INCLUDE_DIRS}
 )
 
 target_include_directories(wow_unix_browser PRIVATE src cef)

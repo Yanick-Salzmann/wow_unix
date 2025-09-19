@@ -7,6 +7,9 @@
 #include "spdlog/spdlog.h"
 #include "utils/string_utils.h"
 
+#include "dbc/dbc_file.h"
+#include "dbc/dbc_manager.h"
+
 namespace fs = std::filesystem;
 
 namespace wow::io {
@@ -116,7 +119,8 @@ namespace wow::io {
         }
     }
 
-    mpq_manager::mpq_manager(web::event::event_manager_ptr event_manager) {
+    mpq_manager::mpq_manager(web::event::event_manager_ptr event_manager,
+                             const dbc::dbc_manager_ptr &dbc_manager) : _dbc_manager(dbc_manager) {
         event_manager->listen(web::proto::JsEvent::kLoadDataEvent,
                               [this, event_manager](const web::proto::JsEvent &event) {
                                   load_from_folder(event.load_data_event().folder(),
@@ -166,13 +170,25 @@ namespace wow::io {
             if (!SFileOpenArchive(mpq.c_str(), 0, MPQ_OPEN_READ_ONLY, &handle)) {
                 SPDLOG_WARN("Skipping MPQ file: {} due to loading error", mpq);
             } else {
-                _archives.insert(_archives.begin(), handle);
+                _archives.emplace(_archives.begin(), handle, mpq);
                 SPDLOG_DEBUG("Loaded MPQ file: {}", mpq);
             }
 
             ++processed;
         }
 
-        callback(95, "Processing DBC files...");
+        callback(95, "Loading DBC files...");
+        _dbc_manager->initialize(shared_from_this());
+    }
+
+    mpq_file_ptr mpq_manager::open(const std::string &path) {
+        for (const auto &[handle, name]: _archives) {
+            HANDLE file_handle{};
+            if (SFileOpenFileEx(handle, path.c_str(), 0, &file_handle)) {
+                return std::make_shared<mpq_file>(file_handle);
+            }
+        }
+
+        return nullptr;
     }
 }
