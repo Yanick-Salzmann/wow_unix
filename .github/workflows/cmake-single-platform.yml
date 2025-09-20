@@ -22,6 +22,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Install node/npm
+      run: curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash && nvm install node
+
     - name: Build abseil
       run: git clone https://github.com/abseil/abseil-cpp.git && cd abseil-cpp && mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release .. && make -j 4 && sudo make install
 
