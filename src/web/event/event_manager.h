@@ -1,8 +1,8 @@
 #ifndef WOW_UNIX_EVENT_MANAGER_H
 #define WOW_UNIX_EVENT_MANAGER_H
 
+#include <list>
 #include "js_event.pb.h"
-#include "include/cef_callback.h"
 
 namespace wow::web::event {
     typedef std::function<void(const proto::JsEvent &)> event_callback;
