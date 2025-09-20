@@ -54,7 +54,7 @@ jobs:
       run: git clone https://github.com/abseil/abseil-cpp.git && cd abseil-cpp && mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release .. && make -j 4 && sudo make install
 
     - name: Build protobuf
-      run: git clone https://github.com/protocolbuffers/protobuf.git && mkdir -p protobuf/build && cd protobuf/build && cmake -DCMAKE_BUILD_TYPE=Release .. && make -j 4 && sudo make install
+      run: git clone https://github.com/protocolbuffers/protobuf.git && mkdir -p protobuf/build && cd protobuf/build && cmake -DCMAKE_BUILD_TYPE=Release -Dprotobuf_BUILD_TESTS=OFF -Dprotobuf_BUILD_LIBUPB=OFF .. && make -j 4 && sudo make install
 
     - name: Install dev libraries
       run: sudo apt-get install -y libgl1-mesa-dev libegl1-mesa-dev libgtk-3-dev libboost1.83-dev
