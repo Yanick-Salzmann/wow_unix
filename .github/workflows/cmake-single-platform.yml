@@ -4,9 +4,8 @@ name: CMake on a single platform
 
 on:
   push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    tags:
+      - '*'
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -97,8 +96,18 @@ jobs:
         cp cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64/Resources/icudtl.dat artifacts/
         cp cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64/Resources/resources.pak artifacts/
 
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v4
+    - name: Create Release Archive
+      run: |
+        cd artifacts
+        tar -czf ../wow-unix-${{ github.ref_name }}-linux64.tar.gz *
+        cd ..
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
       with:
-        name: wow-unix-build
-        path: artifacts/
+        tag_name: ${{ github.ref_name }}
+        name: Release ${{ github.ref_name }}
+        draft: false
+        prerelease: false
+        files: wow-unix-${{ github.ref_name }}-linux64.tar.gz
+        generate_release_notes: true
