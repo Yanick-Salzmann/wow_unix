@@ -67,7 +67,7 @@ protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
 set(TS_PROTO_OUT_DIR "${CMAKE_SOURCE_DIR}/ui/src/app/proto")
 add_custom_command(
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/ui
-        OUTPUT ${TS_PROTO_OUT_DIR}/js_event.pb.ts
+        OUTPUT ${TS_PROTO_OUT_DIR}/js_event.ts
         COMMAND mkdir -p ${TS_PROTO_OUT_DIR}
         COMMAND npx protoc
             --ts_out=${CMAKE_SOURCE_DIR}/ui/src/app/proto
@@ -79,7 +79,7 @@ add_custom_command(
 )
 
 add_custom_target(proto_typescript ALL
-        DEPENDS ${TS_PROTO_OUT_DIR}/js_event.pb.ts
+        DEPENDS ${TS_PROTO_OUT_DIR}/js_event.ts
 )
 
 add_custom_command(
