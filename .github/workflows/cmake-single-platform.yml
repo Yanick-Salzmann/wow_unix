@@ -22,6 +22,13 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Download CEF
+      run: wget https://cef-builds.spotifycdn.com/cef_binary_139.0.40%2Bg465474a%2Bchromium-139.0.7258.139_linux64.tar.bz2 && tar -xf cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64.tar.bz2
+
+    - name: Build CEF
+      working-directory: cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64
+      run: mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=Release .. && make -j 4 && sudo make install
+
     - name: Install node/npm
       run: curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash && export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm install node
 
