@@ -2,6 +2,7 @@
 #include "web_core.h"
 
 #include <utility>
+#include <filesystem>
 
 #include "ipc_message_handler.h"
 #include "spdlog/spdlog.h"
