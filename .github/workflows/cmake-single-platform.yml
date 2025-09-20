@@ -30,7 +30,16 @@ jobs:
 
     - name: Build CEF
       working-directory: cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64
-      run: mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=Release .. && make -j 4 && sudo make install
+      run: mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=Release .. && make -j 4
+
+    - name: Link CEF
+      run: ln -sn $(realpath cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64/build/libcef_dll_wrapper/lib_cef_dll_wrapper.a) libcef_dll_wrapper.a
+
+    - name: Link CEF includes
+      run: mkdir -p cef && ln -sn $(realpath cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64/include) cef/include
+
+    - name: Debug
+      run: ls -la
 
     - name: Install node/npm
       run: curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash && export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm install node
