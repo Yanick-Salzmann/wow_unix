@@ -39,7 +39,7 @@ jobs:
       run: mkdir -p cef && ln -sn $(realpath cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64/include) cef/include
 
     - name: Debug
-      run: ls -la && ls -la cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64/ && stat $(realpath libcef_dll_wrapper.a)
+      run: ls -la && ls -la cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64/build && stat $(realpath libcef_dll_wrapper.a)
 
     - name: Install node/npm
       run: curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash && export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm install node
