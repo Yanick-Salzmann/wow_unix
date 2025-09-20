@@ -7,7 +7,6 @@ find_package(OpenGL REQUIRED COMPONENTS OpenGL EGL)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
 find_package(Protobuf REQUIRED)
-find_package(utf8_range REQUIRED)
 
 find_package(absl REQUIRED)
 
