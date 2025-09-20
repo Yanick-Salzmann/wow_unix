@@ -23,7 +23,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Install dev libraries
-      run: sudo apt-get update && sudo apt-get install -y libgl1-mesa-dev libegl1-mesa-dev libgtk-3-dev libprotobuf-dev protobuf-compiler libabsl-dev libboost1.88-all-dev
+      run: sudo apt-get update && sudo apt-get install -y libgl1-mesa-dev libegl1-mesa-dev libgtk-3-dev libprotobuf-dev protobuf-compiler libabsl-dev libboost1.88-dev
       
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
