@@ -1,11 +1,6 @@
 #include "app_scheme_handler.h"
-
 #include <filesystem>
-
 #include "spdlog/spdlog.h"
-
-#include <magic.h>
-
 #include "utils/string_utils.h"
 
 namespace wow::web {
@@ -20,7 +15,7 @@ namespace wow::web {
         }
     }
 
-    bool app_scheme_handler_factory::resource_handler::Open(CefRefPtr<CefRequest> request, bool &handle_request,
+    bool app_scheme_handler_factory::resource_handler::Open(const CefRefPtr<CefRequest> request, bool &handle_request,
                                                             CefRefPtr<CefCallback> callback) {
         static const std::string prefix = "app://localhost/";
         static const auto prefix_len = prefix.length();
@@ -51,7 +46,7 @@ namespace wow::web {
         return true;
     }
 
-    void app_scheme_handler_factory::resource_handler::GetResponseHeaders(CefRefPtr<CefResponse> response,
+    void app_scheme_handler_factory::resource_handler::GetResponseHeaders(const CefRefPtr<CefResponse> response,
                                                                           int64_t &response_length,
                                                                           CefString &redirectUrl) {
         if (!_file.is_open()) {
