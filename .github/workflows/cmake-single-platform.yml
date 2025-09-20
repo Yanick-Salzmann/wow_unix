@@ -70,7 +70,7 @@ jobs:
 
     - name: Build UI
       working-directory: ui
-      run: npm install && npm run build -- --prod
+      run: npm install && npm run build
 
     - name: Collect artifacts
       run: |
