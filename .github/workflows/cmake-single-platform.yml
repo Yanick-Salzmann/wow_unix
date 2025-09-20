@@ -25,6 +25,9 @@ jobs:
     - name: Install X dependencies
       run: sudo apt-get update && sudo apt-get install libx11-dev libglib2.0-dev libgtk-3-dev
 
+    - name: Build utf8_range
+      run: git clone https://github.com/protocolbuffers/protobuf.git && mkdir -p protobuf/third_party/utf8_range/build && cd protobuf/third_party/utf8_range/build && cmake -DCMAKE_BUILD_TYPE=Release .. && make -j 4 && sudo make install
+
     - name: Download CEF
       run: wget -nv https://cef-builds.spotifycdn.com/cef_binary_139.0.40%2Bg465474a%2Bchromium-139.0.7258.139_linux64.tar.bz2 && tar -xf cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64.tar.bz2
 

@@ -165,7 +165,6 @@ target_include_directories(wow_unix PRIVATE
 target_include_directories(wow_unix_browser PRIVATE src cef)
 
 target_link_libraries(wow_unix PRIVATE
-        magic
         glm
         glad
         spdlog::spdlog
