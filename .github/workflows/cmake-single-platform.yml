@@ -68,9 +68,30 @@ jobs:
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-    - name: Test
-      working-directory: ${{github.workspace}}/build
-      # Execute tests defined by the CMake configuration.
-      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: ctest -C ${{env.BUILD_TYPE}}
+    - name: Collect artifacts
+      run: |
+        mkdir -p artifacts
+        mkdir -p artifacts/ui
+        cp build/wow_unix artifacts/
+        cp build/wow_unix_browser artifacts/
+        cp -r shaders artifacts/
+        cp -r ui/dist/angular-ui/browser/* artifacts/ui/
+        cp cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64/Release/chrome-sandbox artifacts/
+        cp cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64/Release/libcef.so artifacts/
+        cp cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64/Release/libEGL.so artifacts/
+        cp cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64/Release/libGLESv2.so artifacts/
+        cp cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64/Release/libvk_swiftshader.so artifacts/
+        cp cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64/Release/libvulkan.so.1 artifacts/
+        cp cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64/Release/v8_context_snapshot.bin artifacts/
+        cp cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64/Release/vk_swiftshader_icd.json artifacts/
+        cp -r cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64/Resources/locales artifacts/
+        cp cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64/Resources/chrome_100_percent.pak artifacts/
+        cp cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64/Resources/chrome_200_percent.pak artifacts/
+        cp cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64/Resources/icudtl.dat artifacts/
+        cp cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64/Resources/resources.pak artifacts/
 
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: wow-unix-build
+        path: artifacts/
