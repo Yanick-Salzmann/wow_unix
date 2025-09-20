@@ -63,7 +63,7 @@ namespace wow::web {
         std::string sourceStr = source.ToString();
         if (sourceStr.starts_with("app://localhost/")) {
             sourceStr.replace(0, 16, "./ui/");
-            sourceStr = std::filesystem::absolute(sourceStr).string();
+            sourceStr = absolute(std::filesystem::path{sourceStr}).string();
         }
 
         SPDLOG_LOGGER_CALL(spdlog::default_logger(), static_cast<spdlog::level::level_enum>(level),
