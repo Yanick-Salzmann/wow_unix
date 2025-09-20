@@ -23,7 +23,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Install X dependencies
-      run: sudo apt-get update && sudo apt-get install libx11-dev libglib2.0-dev
+      run: sudo apt-get update && sudo apt-get install libx11-dev libglib2.0-dev libgtk-3-dev
 
     - name: Download CEF
       run: wget -nv https://cef-builds.spotifycdn.com/cef_binary_139.0.40%2Bg465474a%2Bchromium-139.0.7258.139_linux64.tar.bz2 && tar -xf cef_binary_139.0.40+g465474a+chromium-139.0.7258.139_linux64.tar.bz2
