@@ -156,10 +156,8 @@ namespace wow::io::blp {
     }
 
     void blp_file::process_palette_fast_path(std::vector<uint8_t> &rgba_data,
+                                             const uint32_t w, const uint32_t h,
                                              const std::vector<uint8_t> &layer_data) const {
-        const auto w = _header.width;
-        const auto h = _header.height;
-
         std::vector<uint32_t> row_buffer(w);
 
         const auto num_entries = w * h;
@@ -180,9 +178,8 @@ namespace wow::io::blp {
     }
 
     void blp_file::process_palette_full_path(std::vector<uint8_t> &rgba_data,
+                                             const uint32_t w, const uint32_t h,
                                              const std::vector<uint8_t> &layer_data) const {
-        const auto w = _header.width;
-        const auto h = _header.height;
         const auto num_entries = w * h;
 
         std::vector<uint32_t> color_buffer(num_entries);
@@ -235,12 +232,11 @@ namespace wow::io::blp {
         memcpy(rgba_data.data(), color_buffer.data(), num_entries * 4);
     }
 
-    void blp_file::unwrap_compressed_blp_layer(std::vector<uint8_t> &rgba_data,
-                                               const std::vector<uint8_t> &layer_data) const {
+    void blp_file::unwrap_compressed_blp_layer(
+        const uint32_t w, const uint32_t h,
+        std::vector<uint8_t> &rgba_data,
+        const std::vector<uint8_t> &layer_data) const {
         const auto converter = block_converter_function();
-
-        const auto w = _header.width;
-        const auto h = _header.height;
 
         const auto num_blocks = ((w + 3) / 4) * ((h + 3) / 4);
         std::vector<uint32_t> block_data(num_blocks * 16);
@@ -271,15 +267,17 @@ namespace wow::io::blp {
     }
 
     void blp_file::unwrap_blp_layer_with_palette(std::vector<uint8_t> &rgba_data,
+                                                 uint32_t w, uint32_t h,
                                                  const std::vector<uint8_t> &layer_data) const {
         if (_header.alpha_depth == 0) {
-            process_palette_fast_path(rgba_data, layer_data);
+            process_palette_fast_path(rgba_data, w, h, layer_data);
         } else {
-            process_palette_full_path(rgba_data, layer_data);
+            process_palette_full_path(rgba_data, w, h, layer_data);
         }
     }
 
-    void blp_file::unwrap_blp_layer(std::vector<uint8_t> &rgba_data, const uint32_t layer) const {
+    void blp_file::unwrap_blp_layer(std::vector<uint8_t> &rgba_data, const uint32_t w, const uint32_t h,
+                                    const uint32_t layer) const {
         const auto layer_data = _mipmaps[layer];
         switch (_format) {
             case blp_format::rgb: {
@@ -292,14 +290,14 @@ namespace wow::io::blp {
             }
 
             case blp_format::rgb_palette: {
-                unwrap_blp_layer_with_palette(rgba_data, layer_data);
+                unwrap_blp_layer_with_palette(rgba_data, w, h, layer_data);
                 break;
             }
 
             case blp_format::bc1:
             case blp_format::bc2:
             case blp_format::bc3: {
-                unwrap_compressed_blp_layer(rgba_data, layer_data);
+                unwrap_compressed_blp_layer(w, h, rgba_data, layer_data);
                 break;
             }
 
@@ -355,7 +353,41 @@ namespace wow::io::blp {
 
         std::vector<uint8_t> rgba_data;
         rgba_data.resize(_header.width * _header.height * 4);
-        unwrap_blp_layer(rgba_data, 0);
+        unwrap_blp_layer(rgba_data, _header.width, _header.height, 0);
+        return rgba_data;
+    }
+
+    std::vector<uint8_t> blp_file::convert_to_rgba(uint32_t dimension, uint32_t &w, uint32_t &h) const {
+        if (_format == blp_format::unknown) {
+            throw std::runtime_error("Unsupported BLP format for conversion");
+        }
+
+        auto layer = 0;
+        if (dimension < _header.width) {
+            bool found = false;
+            for (int i = 1; i < _mipmaps.size(); ++i) {
+                if (const auto current_size = _header.width >> i;
+                    current_size < dimension) {
+                    found = true;
+                    layer = i;
+                }
+
+                if (!found) {
+                    layer = _mipmaps.size() - 1;
+                }
+
+                dimension = _header.width >> layer;
+            }
+        } else {
+            dimension = _header.width;
+        }
+
+        w = dimension;
+        h = dimension;
+
+        std::vector<uint8_t> rgba_data;
+        rgba_data.resize(dimension * dimension * 4);
+        unwrap_blp_layer(rgba_data, dimension, dimension, layer);
         return rgba_data;
     }
 

@@ -9,6 +9,7 @@
 #include "windows_virtual_keys.h"
 #include "event/shell_events.h"
 #include "schemes/blp_scheme_handler.h"
+#include "schemes/minimap_scheme_handler.h"
 
 namespace wow::web {
     int map_glfw_key_to_virtual_key(const int key) {
@@ -308,6 +309,7 @@ namespace wow::web {
 
             CefRegisterSchemeHandlerFactory("app", "", new schemes::app_scheme_handler_factory());
             CefRegisterSchemeHandlerFactory("blp", "", new schemes::blp_scheme_handler_factory());
+            CefRegisterSchemeHandlerFactory("minimap", "", new schemes::minimap_scheme_handler_factory());
 
             CefWindowInfo window_info{};
             window_info.SetAsWindowless(_window->handle());

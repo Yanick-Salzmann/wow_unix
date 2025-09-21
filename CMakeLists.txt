@@ -151,7 +151,13 @@ add_executable(wow_unix src/main.cpp
         src/utils/io.h
         src/utils/io.cpp
         src/web/schemes/blp_scheme_handler.h
-        src/web/schemes/blp_scheme_handler.cpp)
+        src/web/schemes/blp_scheme_handler.cpp
+        src/web/schemes/minimap_scheme_handler.h
+        src/web/schemes/minimap_scheme_handler.cpp
+        src/io/minimap/minimap_loader_pool.h
+        src/io/minimap/minimap_loader_pool.cpp
+        src/io/minimap/minimap_provider.h
+        src/io/minimap/minimap_provider.cpp)
 
 add_dependencies(wow_unix fetch_mime_types proto_typescript)
 

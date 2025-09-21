@@ -69,6 +69,7 @@ export class MapSelectionComponent implements OnInit {
 
     selectMap(map: ListMapsResponseMap) {
         console.log('Selected map:', map);
+        this.router.navigate(['/minimap', map.mapId]);
     }
 
     hasFilteredMaps(): boolean {

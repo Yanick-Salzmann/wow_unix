@@ -40,10 +40,10 @@ namespace wow::io::blp {
             union data {
                 uint32_t color;
                 uint8_t buffer[4];
-            } data;
+            } data{};
         };
 
-        blp_header _header;
+        blp_header _header{};
         std::vector<uint32_t> _palette;
         std::vector<std::vector<uint8_t> > _mipmaps;
         blp_format _format = blp_format::unknown;
@@ -52,7 +52,7 @@ namespace wow::io::blp {
 
         typedef std::function<void(utils::binary_reader &, std::vector<uint32_t> &, size_t)> block_converter_function_t;
 
-        block_converter_function_t block_converter_function() const {
+        [[nodiscard]] block_converter_function_t block_converter_function() const {
             switch (_format) {
                 case blp_format::bc1:
                     return &blp_file::process_block_bc1;
@@ -78,35 +78,41 @@ namespace wow::io::blp {
         static void process_block_bc3(utils::binary_reader &reader, std::vector<uint32_t> &block_data,
                                       size_t block_offset);
 
-        void process_palette_fast_path(std::vector<uint8_t> &rgba_data, const std::vector<uint8_t> &layer_data) const;
+        void process_palette_fast_path(std::vector<uint8_t> &rgba_data, uint32_t w, uint32_t h,
+                                       const std::vector<uint8_t> &layer_data) const;
 
-        void process_palette_full_path(std::vector<uint8_t> &rgba_data, const std::vector<uint8_t> &layer_data) const;
+        void process_palette_full_path(std::vector<uint8_t> &rgba_data, uint32_t w, uint32_t h,
+                                       const std::vector<uint8_t> &layer_data) const;
 
-        void unwrap_compressed_blp_layer(std::vector<uint8_t> &rgba_data, const std::vector<uint8_t> &layer_data) const;
+        void unwrap_compressed_blp_layer(uint32_t w, uint32_t h, std::vector<uint8_t> &rgba_data,
+                                         const std::vector<uint8_t> &layer_data) const;
 
         void unwrap_blp_layer_with_palette(std::vector<uint8_t> &rgba_data,
+                                           uint32_t w, uint32_t h,
                                            const std::vector<uint8_t> &layer_data) const;
 
-        void unwrap_blp_layer(std::vector<uint8_t> &rgba_data, uint32_t layer) const;
+        void unwrap_blp_layer(std::vector<uint8_t> &rgba_data, uint32_t w, uint32_t h, uint32_t layer) const;
 
     public:
         explicit blp_file(const mpq_file_ptr &file);
 
-        uint32_t width() const {
+        [[nodiscard]] uint32_t width() const {
             return _header.width;
         }
 
-        uint32_t height() const {
+        [[nodiscard]] uint32_t height() const {
             return _header.height;
         }
 
-        blp_format format() const {
+        [[nodiscard]] blp_format format() const {
             return _format;
         }
 
-        std::vector<uint8_t> convert_to_rgba() const;
+        [[nodiscard]] std::vector<uint8_t> convert_to_rgba() const;
 
-        std::vector<uint8_t> convert_to_png() const;
+        [[nodiscard]] std::vector<uint8_t> convert_to_rgba(uint32_t dimension, uint32_t& w, uint32_t& h) const;
+
+        [[nodiscard]] std::vector<uint8_t> convert_to_png() const;
     };
 
     typedef std::shared_ptr<blp_file> blp_file_ptr;
