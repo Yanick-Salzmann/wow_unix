@@ -63,6 +63,18 @@ export interface JsEvent {
          */
         loadUpdateEvent: LoadUpdateEvent;
     } | {
+        oneofKind: "listMapsRequest";
+        /**
+         * @generated from protobuf field: wow.web.proto.ListMapsRequest list_maps_request = 60
+         */
+        listMapsRequest: ListMapsRequest;
+    } | {
+        oneofKind: "listMapsResponse";
+        /**
+         * @generated from protobuf field: wow.web.proto.ListMapsResponse list_maps_response = 70
+         */
+        listMapsResponse: ListMapsResponse;
+    } | {
         oneofKind: undefined;
     };
 }
@@ -136,6 +148,37 @@ export interface LoadUpdateEvent {
      */
     message: string;
 }
+/**
+ * @generated from protobuf message wow.web.proto.ListMapsRequest
+ */
+export interface ListMapsRequest {
+}
+/**
+ * @generated from protobuf message wow.web.proto.ListMapsResponseMap
+ */
+export interface ListMapsResponseMap {
+    /**
+     * @generated from protobuf field: int32 map_id = 1
+     */
+    mapId: number;
+    /**
+     * @generated from protobuf field: string name = 2
+     */
+    name: string;
+    /**
+     * @generated from protobuf field: string loading_screen = 3
+     */
+    loadingScreen: string;
+}
+/**
+ * @generated from protobuf message wow.web.proto.ListMapsResponse
+ */
+export interface ListMapsResponse {
+    /**
+     * @generated from protobuf field: repeated wow.web.proto.ListMapsResponseMap maps = 1
+     */
+    maps: ListMapsResponseMap[];
+}
 // @generated message type with reflection information, may provide speed optimized methods
 class Wrapper$Type extends MessageType<Wrapper> {
     constructor() {
@@ -191,7 +234,9 @@ class JsEvent$Type extends MessageType<JsEvent> {
             { no: 20, name: "browse_folder_response", kind: "message", oneof: "event", T: () => BrowseFolderResponse },
             { no: 30, name: "empty_response", kind: "message", oneof: "event", T: () => EmptyResponse },
             { no: 40, name: "load_data_event", kind: "message", oneof: "event", T: () => LoadDataEvent },
-            { no: 50, name: "load_update_event", kind: "message", oneof: "event", T: () => LoadUpdateEvent }
+            { no: 50, name: "load_update_event", kind: "message", oneof: "event", T: () => LoadUpdateEvent },
+            { no: 60, name: "list_maps_request", kind: "message", oneof: "event", T: () => ListMapsRequest },
+            { no: 70, name: "list_maps_response", kind: "message", oneof: "event", T: () => ListMapsResponse }
         ]);
     }
     create(value?: PartialMessage<JsEvent>): JsEvent {
@@ -242,6 +287,18 @@ class JsEvent$Type extends MessageType<JsEvent> {
                         loadUpdateEvent: LoadUpdateEvent.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).loadUpdateEvent)
                     };
                     break;
+                case /* wow.web.proto.ListMapsRequest list_maps_request */ 60:
+                    message.event = {
+                        oneofKind: "listMapsRequest",
+                        listMapsRequest: ListMapsRequest.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).listMapsRequest)
+                    };
+                    break;
+                case /* wow.web.proto.ListMapsResponse list_maps_response */ 70:
+                    message.event = {
+                        oneofKind: "listMapsResponse",
+                        listMapsResponse: ListMapsResponse.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).listMapsResponse)
+                    };
+                    break;
                 default:
                     let u = options.readUnknownField;
                     if (u === "throw")
@@ -272,6 +329,12 @@ class JsEvent$Type extends MessageType<JsEvent> {
         /* wow.web.proto.LoadUpdateEvent load_update_event = 50; */
         if (message.event.oneofKind === "loadUpdateEvent")
             LoadUpdateEvent.internalBinaryWrite(message.event.loadUpdateEvent, writer.tag(50, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.ListMapsRequest list_maps_request = 60; */
+        if (message.event.oneofKind === "listMapsRequest")
+            ListMapsRequest.internalBinaryWrite(message.event.listMapsRequest, writer.tag(60, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.ListMapsResponse list_maps_response = 70; */
+        if (message.event.oneofKind === "listMapsResponse")
+            ListMapsResponse.internalBinaryWrite(message.event.listMapsResponse, writer.tag(70, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -594,3 +657,151 @@ class LoadUpdateEvent$Type extends MessageType<LoadUpdateEvent> {
  * @generated MessageType for protobuf message wow.web.proto.LoadUpdateEvent
  */
 export const LoadUpdateEvent = new LoadUpdateEvent$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ListMapsRequest$Type extends MessageType<ListMapsRequest> {
+    constructor() {
+        super("wow.web.proto.ListMapsRequest", []);
+    }
+    create(value?: PartialMessage<ListMapsRequest>): ListMapsRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        if (value !== undefined)
+            reflectionMergePartial<ListMapsRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ListMapsRequest): ListMapsRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ListMapsRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message wow.web.proto.ListMapsRequest
+ */
+export const ListMapsRequest = new ListMapsRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ListMapsResponseMap$Type extends MessageType<ListMapsResponseMap> {
+    constructor() {
+        super("wow.web.proto.ListMapsResponseMap", [
+            { no: 1, name: "map_id", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 2, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "loading_screen", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ListMapsResponseMap>): ListMapsResponseMap {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.mapId = 0;
+        message.name = "";
+        message.loadingScreen = "";
+        if (value !== undefined)
+            reflectionMergePartial<ListMapsResponseMap>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ListMapsResponseMap): ListMapsResponseMap {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* int32 map_id */ 1:
+                    message.mapId = reader.int32();
+                    break;
+                case /* string name */ 2:
+                    message.name = reader.string();
+                    break;
+                case /* string loading_screen */ 3:
+                    message.loadingScreen = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ListMapsResponseMap, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* int32 map_id = 1; */
+        if (message.mapId !== 0)
+            writer.tag(1, WireType.Varint).int32(message.mapId);
+        /* string name = 2; */
+        if (message.name !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.name);
+        /* string loading_screen = 3; */
+        if (message.loadingScreen !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.loadingScreen);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message wow.web.proto.ListMapsResponseMap
+ */
+export const ListMapsResponseMap = new ListMapsResponseMap$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ListMapsResponse$Type extends MessageType<ListMapsResponse> {
+    constructor() {
+        super("wow.web.proto.ListMapsResponse", [
+            { no: 1, name: "maps", kind: "message", repeat: 2 /*RepeatType.UNPACKED*/, T: () => ListMapsResponseMap }
+        ]);
+    }
+    create(value?: PartialMessage<ListMapsResponse>): ListMapsResponse {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.maps = [];
+        if (value !== undefined)
+            reflectionMergePartial<ListMapsResponse>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ListMapsResponse): ListMapsResponse {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* repeated wow.web.proto.ListMapsResponseMap maps */ 1:
+                    message.maps.push(ListMapsResponseMap.internalBinaryRead(reader, reader.uint32(), options));
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ListMapsResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* repeated wow.web.proto.ListMapsResponseMap maps = 1; */
+        for (let i = 0; i < message.maps.length; i++)
+            ListMapsResponseMap.internalBinaryWrite(message.maps[i], writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message wow.web.proto.ListMapsResponse
+ */
+export const ListMapsResponse = new ListMapsResponse$Type();

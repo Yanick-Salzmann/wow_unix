@@ -143,7 +143,9 @@ add_executable(wow_unix src/main.cpp
         src/io/dbc/dbc_manager.h
         src/io/dbc/dbc_manager.cpp
         src/io/mpq_file.h
-        src/io/mpq_file.cpp)
+        src/io/mpq_file.cpp
+        src/web/event/ui_event_system.h
+        src/web/event/ui_event_system.cpp)
 
 add_dependencies(wow_unix fetch_mime_types proto_typescript)
 

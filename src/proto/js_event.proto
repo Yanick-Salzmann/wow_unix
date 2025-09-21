@@ -14,6 +14,8 @@ message JsEvent {
     EmptyResponse empty_response = 30;
     LoadDataEvent load_data_event = 40;
     LoadUpdateEvent load_update_event = 50;
+    ListMapsRequest list_maps_request = 60;
+    ListMapsResponse list_maps_response = 70;
   }
 }
 
@@ -45,4 +47,18 @@ message LoadUpdateEvent {
   int32 percentage = 1;
   bool completed = 5;
   string message = 10;
+}
+
+message ListMapsRequest {
+
+}
+
+message ListMapsResponseMap {
+  int32 map_id = 1;
+  string name = 2;
+  string loading_screen = 3;
+}
+
+message ListMapsResponse {
+  repeated ListMapsResponseMap maps = 1;
 }

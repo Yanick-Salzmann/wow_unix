@@ -8,21 +8,25 @@
 #undef Status
 #include "web/web_core.h"
 #include "io/mpq_manager.h"
+#include "web/event/ui_event_system.h"
 
 namespace wow::utils {
     class application_module {
         std::shared_ptr<gl::window> _window{};
         std::shared_ptr<web::web_core> _web_core{};
         io::mpq_manager_ptr _mpq_manager{};
+        web::event::ui_event_system_ptr _ui_event_system{};
 
     public:
         explicit application_module(
             std::shared_ptr<gl::window> window,
             std::shared_ptr<web::web_core> web_core,
-            io::mpq_manager_ptr mpq_manager
+            io::mpq_manager_ptr mpq_manager,
+            web::event::ui_event_system_ptr ui_event_system
         ) : _window(std::move(window)),
             _web_core(std::move(web_core)),
-            _mpq_manager(std::move(mpq_manager)) {
+            _mpq_manager(std::move(mpq_manager)),
+            _ui_event_system(std::move(ui_event_system)) {
         }
 
         const std::shared_ptr<gl::window> &window() {

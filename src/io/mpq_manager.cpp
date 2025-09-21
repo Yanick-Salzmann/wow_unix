@@ -178,7 +178,8 @@ namespace wow::io {
         }
 
         callback(95, "Loading DBC files...");
-        _dbc_manager->initialize(shared_from_this());
+        _dbc_manager->initialize(shared_from_this(), callback);
+        callback(100, "Done!");
     }
 
     mpq_file_ptr mpq_manager::open(const std::string &path) {
