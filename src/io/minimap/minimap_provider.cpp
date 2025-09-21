@@ -34,7 +34,7 @@ namespace wow::io::minimap {
                 << std::setw(2) << std::setfill('0') << x << "_"
                 << std::setw(2) << std::setfill('0') << y << ".blp";
 
-        if (auto key = utils::to_lower(path_stream.str()); _md5_translate.contains(key)) {
+        if (const auto key = utils::to_lower(path_stream.str()); _md5_translate.contains(key)) {
             return blp::blp_file{_mpq_manager->open(fmt::format("textures\\minimap\\{}", _md5_translate.at(key)))};
         }
 
