@@ -30,11 +30,15 @@ namespace wow::io::minimap {
 
     blp::blp_file minimap_provider::open_tile(const uint32_t x, const uint32_t y) const {
         std::stringstream path_stream{};
-        path_stream << "World\\Minimaps\\" << _base_path << "\\Map"
+        path_stream << _base_path << "\\Map"
                 << std::setw(2) << std::setfill('0') << x << "_"
                 << std::setw(2) << std::setfill('0') << y << ".blp";
 
-        return blp::blp_file{_mpq_manager->open(path_stream.str())};
+        if (auto key = utils::to_lower(path_stream.str()); _md5_translate.contains(key)) {
+            return blp::blp_file{_mpq_manager->open(fmt::format("textures\\minimap\\{}", _md5_translate.at(key)))};
+        }
+
+        return blp::blp_file{nullptr};
     }
 
     minimap_provider::minimap_provider(const dbc::dbc_manager_ptr &dbc_manager,
@@ -50,14 +54,35 @@ namespace wow::io::minimap {
         {
             std::lock_guard lock(_cache_lock);
             _cache.clear();
+
+            if (_md5_translate.empty()) {
+                auto fl = _mpq_manager->open("textures\\minimap\\md5translate.trs");
+                auto content = fl->read_text();
+
+                std::stringstream reader{};
+                reader << content;
+
+                std::string line{};
+                while (std::getline(reader, line)) {
+                    if (line.substr(0, 4) == "dir:") {
+                        continue;
+                    }
+
+                    std::stringstream line_reader{};
+                    line_reader << line;
+                    std::string md5{}, file{};
+                    line_reader >> file >> md5;
+                    _md5_translate[utils::to_lower(file)] = md5;
+                }
+            }
         }
 
         _base_path = utils::to_lower(_dbc_manager->map_dbc()->record(map_id).directory);
         _current_map_id = map_id;
     }
 
-    void minimap_provider::read_image(std::vector<uint8_t> &image_data, uint32_t map_id, uint32_t zoom_level,
-                                      int32_t tx, int32_t ty) {
+    void minimap_provider::read_image(std::vector<uint8_t> &image_data, const uint32_t map_id, uint32_t zoom_level,
+                                      const int32_t tx, const int32_t ty) {
         if (static_cast<int32_t>(map_id) < 0) {
             throw std::runtime_error("Invalid map id");
         }
@@ -93,14 +118,21 @@ namespace wow::io::minimap {
                             uint32_t tw = 0, th = 0;
                             const auto tile_image = tile.convert_to_rgba(per_tile_pixels, tw, th);
 
-                            auto pixel_advance = tw / per_tile_pixels;
-                            auto row_advance = th / per_tile_pixels;
+                            const auto pixel_advance = tw / per_tile_pixels;
+                            const auto row_advance = th / per_tile_pixels;
 
                             for (auto iy = 0; iy < per_tile_pixels; ++iy) {
                                 for (auto ix = 0; ix < per_tile_pixels; ++ix) {
                                     const auto cur_row = row_advance * iy;
                                     const auto cur_pixel = pixel_advance * ix;
+                                    const auto ofs_tile_image = cur_row * (tw * 4) + cur_pixel * 4;
 
+                                    const auto target_row = y * per_tile_pixels;
+                                    const auto target_pixel = x * per_tile_pixels;
+                                    const auto ofs_tile_data = (target_row + iy) * (256 * 4) + (target_pixel + ix) * 4;
+                                    for (int i = 0; i < 4; ++i) {
+                                        tile_data[ofs_tile_data + i] = tile_image[ofs_tile_image + i];
+                                    }
                                 }
                             }
                         }
@@ -108,5 +140,9 @@ namespace wow::io::minimap {
                 );
             }
         }
+
+        std::ranges::for_each(futures, [](auto &f) { f.get(); });
+        image_data = utils::to_png(tile_data, 256, 256);
+        add_to_cache(cache_key, image_data);
     }
 }

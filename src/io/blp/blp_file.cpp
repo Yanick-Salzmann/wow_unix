@@ -1,8 +1,6 @@
 #include "blp_file.h"
 #include <stdexcept>
 
-#include "stb_image_write.h"
-
 namespace wow::io::blp {
     void blp_file::load_format() {
         _format = blp_format::unknown;
@@ -398,11 +396,6 @@ namespace wow::io::blp {
 
     std::vector<uint8_t> blp_file::convert_to_png() const {
         const auto rgba_data = convert_to_rgba();
-
-        std::vector<uint8_t> png_data{};
-        stbi_write_png_to_func(write_to_vector, &png_data, _header.width, _header.height, 4,
-                               rgba_data.data(), _header.width * 4);
-
-        return png_data;
+        return utils::to_png(rgba_data, _header.width, _header.height);
     }
 }

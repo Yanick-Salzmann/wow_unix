@@ -38,6 +38,8 @@ namespace wow::utils {
             return *this;
         }
     };
+
+    std::vector<uint8_t> to_png(const std::vector<uint8_t>& data, uint32_t w, uint32_t h);
 }
 
 #endif //WOW_UNIX_IO_H

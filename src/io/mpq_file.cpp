@@ -25,4 +25,8 @@ namespace wow::io {
         memcpy(buffer, _buffer.data() + _offset, size);
         _offset += size;
     }
+
+    std::string mpq_file::read_text() {
+        return std::string{reinterpret_cast<char *>(_buffer.data()), _buffer.size()};
+    }
 }

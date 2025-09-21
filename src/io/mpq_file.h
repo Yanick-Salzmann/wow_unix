@@ -62,6 +62,8 @@ namespace wow::io {
             read(Size * sizeof(T), data);
             return *this;
         }
+
+        std::string read_text();
     };
 
     typedef std::shared_ptr<mpq_file> mpq_file_ptr;
