@@ -1,5 +1,7 @@
 #include "ui_event_system.h"
 
+#include "utils/string_utils.h"
+
 namespace wow::web::event {
     proto::ListMapsResponse ui_event_system::handle_list_maps() const {
         proto::ListMapsResponse response{};
@@ -9,7 +11,13 @@ namespace wow::web::event {
             entry->set_map_id(id);
             entry->set_name(record.name.text);
             if (_dbc_manager->loading_screen_dbc()->has_record(record.loading_screen)) {
-                entry->set_loading_screen(_dbc_manager->loading_screen_dbc()->record(record.loading_screen).name);
+                entry->set_loading_screen("blp://localhost/" +
+                                          utils::replace_all(
+                                              _dbc_manager->loading_screen_dbc()->record(record.loading_screen).path,
+                                              "\\", "/"
+                                          ));
+            } else {
+                entry->set_loading_screen("blp://localhost/Interface/Glues/loading.blp");
             }
         }
 

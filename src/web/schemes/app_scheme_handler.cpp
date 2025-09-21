@@ -3,7 +3,7 @@
 #include "spdlog/spdlog.h"
 #include "utils/string_utils.h"
 
-namespace wow::web {
+namespace wow::web::schemes {
     void process_mime_types(std::map<std::string, std::string> &mime_types) {
         std::ifstream file{"mime_types.txt"};
         std::string line{};

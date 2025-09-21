@@ -30,6 +30,7 @@ namespace wow::io {
         dbc::dbc_manager_ptr _dbc_manager;
 
         std::vector<loaded_archive> _archives{};
+        std::mutex _archive_lock{};
 
         uint32_t _total_mpq_count = 0;
         uint32_t _loaded_mpq_count = 0;

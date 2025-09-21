@@ -4,10 +4,11 @@
 #include <utility>
 #include <gtk/gtk.h>
 
-#include "app_scheme_handler.h"
+#include "schemes/app_scheme_handler.h"
 #include "spdlog/spdlog.h"
 #include "windows_virtual_keys.h"
 #include "event/shell_events.h"
+#include "schemes/blp_scheme_handler.h"
 
 namespace wow::web {
     int map_glfw_key_to_virtual_key(const int key) {
@@ -289,7 +290,8 @@ namespace wow::web {
             CefString(&settings.locales_dir_path) = std::filesystem::absolute("./locales");
             CefString(&settings.resources_dir_path) = std::filesystem::absolute("./");
             CefString(&settings.root_cache_path) = std::filesystem::absolute("./cache");
-            CefString(&settings.cache_path) = weakly_canonical(std::filesystem::absolute("./cache/local")).make_preferred().string();
+            CefString(&settings.cache_path) = weakly_canonical(std::filesystem::absolute("./cache/local")).
+                    make_preferred().string();
             settings.no_sandbox = true;
             settings.windowless_rendering_enabled = true;
             settings.remote_debugging_port = 9222;
@@ -304,7 +306,8 @@ namespace wow::web {
 
             event::initialize_shell_events(_event_manager);
 
-            CefRegisterSchemeHandlerFactory("app", "", new app_scheme_handler_factory());
+            CefRegisterSchemeHandlerFactory("app", "", new schemes::app_scheme_handler_factory());
+            CefRegisterSchemeHandlerFactory("blp", "", new schemes::blp_scheme_handler_factory());
 
             CefWindowInfo window_info{};
             window_info.SetAsWindowless(_window->handle());

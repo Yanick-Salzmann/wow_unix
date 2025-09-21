@@ -1,9 +1,11 @@
 #include "mpq_manager.h"
 
 #include <filesystem>
+#include <fstream>
 #include <regex>
 
 #include "StormLib.h"
+#include "blp/blp_file.h"
 #include "spdlog/spdlog.h"
 #include "utils/string_utils.h"
 
@@ -183,6 +185,7 @@ namespace wow::io {
     }
 
     mpq_file_ptr mpq_manager::open(const std::string &path) {
+        std::lock_guard lock(_archive_lock);
         for (const auto &[handle, name]: _archives) {
             HANDLE file_handle{};
             if (SFileOpenFileEx(handle, path.c_str(), 0, &file_handle)) {

@@ -1,21 +1,18 @@
-#ifndef WOW_UNIX_APP_SCHEME_HANDLER_H
-#define WOW_UNIX_APP_SCHEME_HANDLER_H
+#ifndef WOW_UNIX_BLP_SCHEME_HANDLER_H
+#define WOW_UNIX_BLP_SCHEME_HANDLER_H
 
 #include "include/cef_scheme.h"
-#include <fstream>
 
-namespace wow::web {
-    class app_scheme_handler_factory : public CefSchemeHandlerFactory {
-        IMPLEMENT_REFCOUNTING(app_scheme_handler_factory);
+namespace wow::web::schemes {
+    class blp_scheme_handler_factory final : public CefSchemeHandlerFactory {
+        IMPLEMENT_REFCOUNTING(blp_scheme_handler_factory);
 
-        class resource_handler : public CefResourceHandler {
+        class resource_handler final : public CefResourceHandler {
             IMPLEMENT_REFCOUNTING(resource_handler);
 
-            int64_t _full_size = 0;
-            std::string _data{};
-            std::string _mime_type{};
-            CefResponse::HeaderMap _headers{};
-            std::ifstream _file{};
+            std::vector<uint8_t> _data{};
+            size_t _offset = 0;
+            bool _found = false;
 
         public:
             bool Open(CefRefPtr<CefRequest> request, bool &handle_request, CefRefPtr<CefCallback> callback) override;
@@ -50,4 +47,4 @@ namespace wow::web {
     };
 }
 
-#endif //WOW_UNIX_APP_SCHEME_HANDLER_H
+#endif //WOW_UNIX_BLP_SCHEME_HANDLER_H

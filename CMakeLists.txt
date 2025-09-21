@@ -116,8 +116,8 @@ add_executable(wow_unix src/main.cpp
         src/gl/bindable_texture.h
         src/web/web_client.h
         src/web/web_client.cpp
-        src/web/app_scheme_handler.h
-        src/web/app_scheme_handler.cpp
+        src/web/schemes/app_scheme_handler.h
+        src/web/schemes/app_scheme_handler.cpp
         src/utils/string_utils.h
         src/utils/string_utils.cpp
         src/web/windows_virtual_keys.h
@@ -145,7 +145,13 @@ add_executable(wow_unix src/main.cpp
         src/io/mpq_file.h
         src/io/mpq_file.cpp
         src/web/event/ui_event_system.h
-        src/web/event/ui_event_system.cpp)
+        src/web/event/ui_event_system.cpp
+        src/io/blp/blp_file.h
+        src/io/blp/blp_file.cpp
+        src/utils/io.h
+        src/utils/io.cpp
+        src/web/schemes/blp_scheme_handler.h
+        src/web/schemes/blp_scheme_handler.cpp)
 
 add_dependencies(wow_unix fetch_mime_types proto_typescript)
 

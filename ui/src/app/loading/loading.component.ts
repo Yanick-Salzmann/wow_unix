@@ -3,6 +3,7 @@ import {CommonModule} from '@angular/common';
 import {Router, ActivatedRoute} from '@angular/router';
 import {EventService} from '../service/event.service';
 import {JsEvent, LoadUpdateEvent} from "../proto/js_event";
+import {BehaviorSubject} from "rxjs";
 
 @Component({
     selector: 'app-loading',
@@ -11,16 +12,15 @@ import {JsEvent, LoadUpdateEvent} from "../proto/js_event";
     standalone: true,
     imports: [CommonModule]
 })
-export class LoadingComponent implements OnInit, OnDestroy {
-    loadingProgress = 0;
-    loadingText = 'Initializing...';
-    private progressInterval: any;
+export class LoadingComponent implements OnInit {
+    $loadingProgress = new BehaviorSubject<number>(0);
+    $loadingText = new BehaviorSubject<string>('Initializing...');
+
     wowClientPath = '';
 
     constructor(
         private eventService: EventService,
         private router: Router,
-        private cdr: ChangeDetectorRef,
         private route: ActivatedRoute
     ) {
 
@@ -40,11 +40,10 @@ export class LoadingComponent implements OnInit, OnDestroy {
                 return;
             }
 
-            this.loadingProgress = event.event.loadUpdateEvent.percentage;
-            this.loadingText = event.event.loadUpdateEvent.message;
-            this.cdr.detectChanges();
+            this.$loadingProgress.next(event.event.loadUpdateEvent.percentage);
+            this.$loadingText.next(event.event.loadUpdateEvent.message);
 
-            if (this.loadingProgress >= 100) {
+            if (this.$loadingProgress.value >= 100) {
                 setTimeout(() => {
                     this.router.navigate(['/map-selection']);
                 }, 500);
@@ -59,11 +58,5 @@ export class LoadingComponent implements OnInit, OnDestroy {
                 }
             }
         })
-    }
-
-    ngOnDestroy() {
-        if (this.progressInterval) {
-            clearInterval(this.progressInterval);
-        }
     }
 }

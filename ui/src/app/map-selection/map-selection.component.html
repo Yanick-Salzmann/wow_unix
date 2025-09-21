@@ -10,22 +10,22 @@
             />
         </div>
     </div>
-    @if (isLoading) {
+    @if ($isLoadingSubject | async) {
         <div class="loading-container">
             <div class="loading-spinner"></div>
             <div class="loading-text">Loading maps...</div>
         </div>
     }
 
-    @if (!isLoading) {
+    @if (!($isLoadingSubject | async)) {
         <div class="maps-container">
-            @if (filteredMaps.length === 0) {
+            @if (!hasFilteredMaps()) {
                 <div class="no-maps">
                     No maps found matching your search.
                 </div>
             }
 
-            @for (map of filteredMaps; track map.mapId) {
+            @for (map of ($filteredMapsSubject | async); track map.mapId) {
                 <div
                         class="map-tile"
                         (click)="selectMap(map)"

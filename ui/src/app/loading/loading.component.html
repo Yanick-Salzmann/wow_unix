@@ -7,14 +7,14 @@
 
     <div class="progress-section">
       <div class="progress-bar-container">
-        <div class="progress-bar" [style.width.%]="loadingProgress"></div>
+        <div class="progress-bar" [style.width.%]="$loadingProgress | async"></div>
       </div>
-      <div class="progress-text">{{ loadingProgress }}%</div>
+      <div class="progress-text">{{ $loadingProgress | async }}%</div>
     </div>
 
     <div class="status-section">
       <p class="loading-status" aria-live="polite">
-        <span class="status-text">{{ loadingText }}</span>
+        <span class="status-text">{{ $loadingText | async }}</span>
         <span class="spinner" aria-hidden="true"></span>
       </p>
     </div>
