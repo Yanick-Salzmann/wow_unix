@@ -10,14 +10,14 @@
             />
         </div>
     </div>
-    @if ($isLoadingSubject | async) {
+    @if ($isLoading | async) {
         <div class="loading-container">
             <div class="loading-spinner"></div>
             <div class="loading-text">Loading maps...</div>
         </div>
     }
 
-    @if (!($isLoadingSubject | async)) {
+    @if (!($isLoading | async)) {
         <div class="maps-container">
             @if (!hasFilteredMaps()) {
                 <div class="no-maps">
@@ -25,7 +25,7 @@
                 </div>
             }
 
-            @for (map of ($filteredMapsSubject | async); track map.mapId) {
+            @for (map of ($filteredMaps | async); track map.mapId) {
                 <div
                         class="map-tile"
                         (click)="selectMap(map)"

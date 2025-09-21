@@ -14,8 +14,8 @@ import {BehaviorSubject} from "rxjs";
     imports: [CommonModule, FormsModule]
 })
 export class MapSelectionComponent implements OnInit {
-    $filteredMapsSubject = new BehaviorSubject<ListMapsResponseMap[]>([]);
-    $isLoadingSubject = new BehaviorSubject<boolean>(true);
+    $filteredMaps = new BehaviorSubject<ListMapsResponseMap[]>([]);
+    $isLoading = new BehaviorSubject<boolean>(true);
 
     maps: ListMapsResponseMap[] = [];
 
@@ -34,7 +34,7 @@ export class MapSelectionComponent implements OnInit {
     }
 
     async loadMaps() {
-        this.$isLoadingSubject.next(true);
+        this.$isLoading.next(true);
 
         try {
             const response = await this.eventService.sendMessageWithResponse({
@@ -46,23 +46,23 @@ export class MapSelectionComponent implements OnInit {
 
             if (response?.event?.oneofKind === 'listMapsResponse') {
                 this.maps = response.event.listMapsResponse.maps;
-                this.$filteredMapsSubject.next([...this.maps]);
-                this.$isLoadingSubject.next(false);
+                this.$filteredMaps.next([...this.maps]);
+                this.$isLoading.next(false);
             }
         } catch (error) {
             console.error('Failed to load maps:', error);
-            this.$isLoadingSubject.next(false);
+            this.$isLoading.next(false);
         }
     }
 
     filterMaps() {
         if (!this.filterText) {
-            this.$filteredMapsSubject.next([...this.maps]);
+            this.$filteredMaps.next([...this.maps]);
             return;
         }
 
         const searchTerm = this.filterText.toLowerCase();
-        this.$filteredMapsSubject.next(this.maps.filter(map =>
+        this.$filteredMaps.next(this.maps.filter(map =>
             map.name.toLowerCase().includes(searchTerm)
         ));
     }
@@ -72,6 +72,6 @@ export class MapSelectionComponent implements OnInit {
     }
 
     hasFilteredMaps(): boolean {
-        return this.$filteredMapsSubject.value.length > 0;
+        return this.$filteredMaps.value.length > 0;
     }
 }
