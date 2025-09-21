@@ -1,4 +1,4 @@
-import {InitializeRequest, JsEvent} from "../proto/js_event";
+import {JsEvent} from "../proto/js_event";
 import {Injectable} from "@angular/core";
 
 @Injectable({providedIn: 'root'})
@@ -26,7 +26,7 @@ export class EventService {
                 }
             },
             onFailure: (error_code, error_message) => {
-                console.error("Error from CEF:", error_message);
+                console.error("Error", error_code, "from CEF:", error_message);
             }
         });
     }
@@ -45,6 +45,23 @@ export class EventService {
                         console.warn("Ignoring response from CEF: ", response);
                     }
                     resolve();
+                },
+                onFailure: (error_code, error_message) => {
+                    console.warn("Error sending event ", event, " to CEF: ", error_code, ": ", error_message);
+                    reject(error_message);
+                }
+            })
+        })
+    }
+
+    sendMessageWithResponse(event: JsEvent): Promise<JsEvent> {
+        return new Promise((resolve, reject) => {
+            window.cefQuery({
+                persistent: false,
+                request: JSON.stringify(JsEvent.toJson(event)),
+                onSuccess: (response) => {
+                    const resp = JsEvent.fromJson(JSON.parse(response), {});
+                    resolve(resp);
                 },
                 onFailure: (error_code, error_message) => {
                     console.warn("Error sending event ", event, " to CEF: ", error_code, ": ", error_message);
@@ -81,7 +98,7 @@ export class EventService {
                     resolve(ev.browseFolderResponse.path);
                 },
                 onFailure: (error_code, error_message) => {
-                    reject(error_message);
+                    reject(error_code + ": " + error_message);
                 }
             })
         });

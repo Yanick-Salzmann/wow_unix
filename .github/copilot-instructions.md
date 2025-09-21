@@ -9,6 +9,7 @@ This repository uses a repo-level instructions file to guide Copilot behavior in
 - When completing, return only executable code; explanations belong in chat, not in code.
 - Do not generate tests or test files.
 - Do not create or modify README files or other documentation files.
+- Do not use ngIf and ngFor directives in angular. Use @if and @for instead.
 
 ## Style and scope
 - Follow existing project structure and patterns without reformatting unrelated code.

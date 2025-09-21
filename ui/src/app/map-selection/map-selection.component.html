@@ -1,0 +1,42 @@
+<div class="map-selection-container">
+    <div class="top-bar">
+        <div class="search-container">
+            <input
+                    type="text"
+                    [(ngModel)]="filterText"
+                    (input)="filterMaps()"
+                    placeholder="Search maps..."
+                    class="search-input"
+            />
+        </div>
+    </div>
+    @if (isLoading) {
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading maps...</div>
+        </div>
+    }
+
+    @if (!isLoading) {
+        <div class="maps-container">
+            @if (filteredMaps.length === 0) {
+                <div class="no-maps">
+                    No maps found matching your search.
+                </div>
+            }
+
+            @for (map of filteredMaps; track map.mapId) {
+                <div
+                        class="map-tile"
+                        (click)="selectMap(map)"
+                        [style.background-image]="'url(' + map.loadingScreen + ')'"
+                >
+                    <div class="map-info">
+                        <div class="map-name">{{ map.name }}</div>
+                        <div class="map-id">ID: {{ map.mapId }}</div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

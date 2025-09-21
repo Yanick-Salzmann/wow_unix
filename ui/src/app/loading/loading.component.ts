@@ -36,13 +36,19 @@ export class LoadingComponent implements OnInit, OnDestroy {
 
         console.log('Loading data from path:', this.wowClientPath);
         this.eventService.listenForEvent("loadUpdateEvent", (event) => {
-            if(event.event.oneofKind !== "loadUpdateEvent") {
+            if (event.event.oneofKind !== "loadUpdateEvent") {
                 return;
             }
 
             this.loadingProgress = event.event.loadUpdateEvent.percentage;
             this.loadingText = event.event.loadUpdateEvent.message;
             this.cdr.detectChanges();
+
+            if (this.loadingProgress >= 100) {
+                setTimeout(() => {
+                    this.router.navigate(['/map-selection']);
+                }, 500);
+            }
         })
 
         await this.eventService.sendMessage({
