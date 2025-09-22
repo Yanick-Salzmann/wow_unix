@@ -47,12 +47,8 @@ export class MinimapViewComponent implements OnInit, AfterViewInit, OnDestroy {
         if (!this.mapId) return;
 
         this.map = L.map('map-container', {
-            center: [32, 32],
-            zoom: 3,
             minZoom: 3,
             maxZoom: 6,
-            attributionControl: false,
-            zoomControl: true,
             crs: L.CRS.Simple,
         });
 
@@ -64,7 +60,7 @@ export class MinimapViewComponent implements OnInit, AfterViewInit, OnDestroy {
         const sw = this.map.unproject([0, tileSize], this.map.getMaxZoom());
         const ne = this.map.unproject([tileSize, 0], this.map.getMaxZoom());
 
-        this.map.setMaxBounds(L.latLngBounds(sw, ne));
+        this.map.setMaxBounds(new L.LatLngBounds(sw, ne));
         this.map.setView(this.map.unproject([tileSize / 2, tileSize / 2], this.map.getMaxZoom()), 6);
 
     }

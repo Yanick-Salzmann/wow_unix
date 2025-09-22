@@ -35,13 +35,21 @@
 #map-container {
   flex-grow: 1;
   width: 100%;
+  height: 100%;
   z-index: 0;
 }
 
-// Required Leaflet styles
-:host ::ng-deep {
-  .leaflet-container {
-    height: 100%;
-    width: 100%;
-  }
+:host ::ng-deep .leaflet-container {
+  height: 100% !important;
+  width: 100% !important;
+  background: transparent;
+}
+
+:host ::ng-deep .leaflet-tile-container {
+  transform-origin: 0 0;
+}
+
+:host ::ng-deep .leaflet-tile {
+  width: 256px !important;
+  height: 256px !important;
 }

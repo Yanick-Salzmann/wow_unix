@@ -31,7 +31,7 @@ namespace wow::io::minimap {
     blp::blp_file minimap_provider::open_tile(const uint32_t x, const uint32_t y) const {
         std::stringstream path_stream{};
         path_stream << _base_path << "\\Map"
-                << std::setw(2) << std::setfill('0') << x << "_"
+                << x << "_"
                 << std::setw(2) << std::setfill('0') << y << ".blp";
 
         if (const auto key = utils::to_lower(path_stream.str()); _md5_translate.contains(key)) {
@@ -98,6 +98,7 @@ namespace wow::io::minimap {
         const auto per_tile_pixels = 256 / num_tiles;
 
         std::vector<uint8_t> tile_data(256 * 256 * 4);
+        auto tile_ptr = reinterpret_cast<uint32_t *>(tile_data.data());
 
         const auto base_x = tx * num_tiles;
         const auto base_y = ty * num_tiles;
@@ -113,10 +114,12 @@ namespace wow::io::minimap {
             for (auto x = 0; x < num_tiles; ++x) {
                 futures.emplace_back(
                     _loader_pool.submit(
-                        [this, base_x, base_y, x, y, per_tile_pixels, &tile_data]() {
+                        [this, base_x, base_y, x, y, per_tile_pixels, tile_ptr]() {
                             const auto tile = open_tile(base_x + x, base_y + y);
                             uint32_t tw = 0, th = 0;
                             const auto tile_image = tile.convert_to_rgba(per_tile_pixels, tw, th);
+                            const auto img_ptr = reinterpret_cast<const uint32_t *>(tile_image.data());
+                            const std::vector img_small(img_ptr, img_ptr + tile_image.size() / 4);
 
                             const auto pixel_advance = tw / per_tile_pixels;
                             const auto row_advance = th / per_tile_pixels;
@@ -125,14 +128,12 @@ namespace wow::io::minimap {
                                 for (auto ix = 0; ix < per_tile_pixels; ++ix) {
                                     const auto cur_row = row_advance * iy;
                                     const auto cur_pixel = pixel_advance * ix;
-                                    const auto ofs_tile_image = cur_row * (tw * 4) + cur_pixel * 4;
+                                    const auto ofs_tile_image = cur_row * tw + cur_pixel;
 
                                     const auto target_row = y * per_tile_pixels;
                                     const auto target_pixel = x * per_tile_pixels;
-                                    const auto ofs_tile_data = (target_row + iy) * (256 * 4) + (target_pixel + ix) * 4;
-                                    for (int i = 0; i < 4; ++i) {
-                                        tile_data[ofs_tile_data + i] = tile_image[ofs_tile_image + i];
-                                    }
+                                    const auto ofs_tile_data = (target_row + iy) * 256 + (target_pixel + ix);
+                                    *(tile_ptr + ofs_tile_data) = img_small[ofs_tile_image];
                                 }
                             }
                         }

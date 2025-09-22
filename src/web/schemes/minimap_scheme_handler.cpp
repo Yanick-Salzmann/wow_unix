@@ -8,8 +8,6 @@ namespace wow::web::schemes {
                                                                 CefRefPtr<CefCallback> callback) {
         static std::string prefix = "minimap://localhost/";
 
-        SPDLOG_INFO("Request received: {}", request->GetURL().ToString());
-
         std::thread{
             [this, request, callback] {
                 const auto actual_path = request->GetURL().ToString().substr(prefix.length());
@@ -53,15 +51,20 @@ namespace wow::web::schemes {
 
     bool minimap_scheme_handler_factory::resource_handler::Skip(int64_t bytes_to_skip, int64_t &bytes_skipped,
                                                                 CefRefPtr<CefResourceSkipCallback> callback) {
-        if (const auto total = _data.size();
-            _offset + bytes_to_skip <= total) {
-            _offset += bytes_to_skip;
-            bytes_skipped = bytes_to_skip;
-        } else {
-            bytes_skipped = total - _offset;
-            _offset = total;
+        if (_offset >= _data.size()) {
+            bytes_skipped = 0;
+            return true;
         }
-        return bytes_skipped > 0;
+
+        auto total = _data.size();
+        total -= _offset;
+        if (bytes_to_skip > total) {
+            bytes_to_skip = total;
+        }
+
+        _offset += bytes_to_skip;
+        bytes_skipped = bytes_to_skip;
+        return true;
     }
 
     bool minimap_scheme_handler_factory::resource_handler::Read(void *data_out, int bytes_to_read, int &bytes_read,
