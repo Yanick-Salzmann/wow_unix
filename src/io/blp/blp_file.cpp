@@ -365,21 +365,19 @@ namespace wow::io::blp {
             bool found = false;
             for (int i = 1; i < _mipmaps.size(); ++i) {
                 if (const auto current_size = _header.width >> i;
-                    current_size < dimension) {
+                    current_size <= dimension) {
                     found = true;
                     layer = i;
+                    break;
                 }
-
-                if (!found) {
-                    layer = _mipmaps.size() - 1;
-                }
-
-                dimension = _header.width >> layer;
             }
-        } else {
-            dimension = _header.width;
+
+            if (!found) {
+                layer = _mipmaps.size() - 1;
+            }
         }
 
+        dimension = _header.width >> layer;
         w = dimension;
         h = dimension;
 

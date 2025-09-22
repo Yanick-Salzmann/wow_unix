@@ -1,6 +1,8 @@
 #include "minimap_provider.h"
 
+#include <fstream>
 #include <future>
+#include <utility>
 
 #include "io/blp/blp_file.h"
 #include "utils/string_utils.h"
@@ -28,22 +30,23 @@ namespace wow::io::minimap {
         _cache[cache_key] = image_data;
     }
 
-    blp::blp_file minimap_provider::open_tile(const uint32_t x, const uint32_t y) const {
+    blp::blp_file_ptr minimap_provider::open_tile(const uint32_t x, const uint32_t y) const {
         std::stringstream path_stream{};
         path_stream << _base_path << "\\Map"
                 << x << "_"
                 << std::setw(2) << std::setfill('0') << y << ".blp";
 
         if (const auto key = utils::to_lower(path_stream.str()); _md5_translate.contains(key)) {
-            return blp::blp_file{_mpq_manager->open(fmt::format("textures\\minimap\\{}", _md5_translate.at(key)))};
+            const auto file = _mpq_manager->open(fmt::format("textures\\minimap\\{}", _md5_translate.at(key)));
+            return std::make_shared<blp::blp_file>(file);
         }
 
-        return blp::blp_file{nullptr};
+        return {};
     }
 
-    minimap_provider::minimap_provider(const dbc::dbc_manager_ptr &dbc_manager,
-                                       const mpq_manager_ptr &mpq_manager) : _dbc_manager(dbc_manager),
-                                                                             _mpq_manager(mpq_manager) {
+    minimap_provider::minimap_provider(dbc::dbc_manager_ptr dbc_manager,
+                                       mpq_manager_ptr mpq_manager) : _dbc_manager(std::move(dbc_manager)),
+                                                                      _mpq_manager(std::move(mpq_manager)) {
     }
 
     void minimap_provider::switch_to_map(uint32_t map_id) {
@@ -116,10 +119,22 @@ namespace wow::io::minimap {
                     _loader_pool.submit(
                         [this, base_x, base_y, x, y, per_tile_pixels, tile_ptr]() {
                             const auto tile = open_tile(base_x + x, base_y + y);
+                            if (!tile) {
+                                return;
+                            }
+
                             uint32_t tw = 0, th = 0;
-                            const auto tile_image = tile.convert_to_rgba(per_tile_pixels, tw, th);
+                            const auto tile_image = tile->convert_to_rgba(per_tile_pixels, tw, th);
+
+                            if (per_tile_pixels < 256) {
+                                const auto data = utils::to_png(tile_image, tw, th);
+                                std::ofstream os{
+                                    fmt::format("./{}_{}_{}.png", base_x + x, base_y + y, per_tile_pixels),
+                                    std::ios::binary
+                                };
+                                os.write(reinterpret_cast<const std::ostream::char_type *>(data.data()), data.size());
+                            }
                             const auto img_ptr = reinterpret_cast<const uint32_t *>(tile_image.data());
-                            const std::vector img_small(img_ptr, img_ptr + tile_image.size() / 4);
 
                             const auto pixel_advance = tw / per_tile_pixels;
                             const auto row_advance = th / per_tile_pixels;
@@ -130,10 +145,10 @@ namespace wow::io::minimap {
                                     const auto cur_pixel = pixel_advance * ix;
                                     const auto ofs_tile_image = cur_row * tw + cur_pixel;
 
-                                    const auto target_row = y * per_tile_pixels;
-                                    const auto target_pixel = x * per_tile_pixels;
-                                    const auto ofs_tile_data = (target_row + iy) * 256 + (target_pixel + ix);
-                                    *(tile_ptr + ofs_tile_data) = img_small[ofs_tile_image];
+                                    const auto target_row = y * per_tile_pixels + iy;
+                                    const auto target_pixel = x * per_tile_pixels + ix;
+                                    const auto ofs_tile_data = target_row * 256 + target_pixel;
+                                    *(tile_ptr + ofs_tile_data) = *(img_ptr + ofs_tile_image);
                                 }
                             }
                         }

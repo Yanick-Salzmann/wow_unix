@@ -1,6 +1,7 @@
 import {Component, OnInit, OnDestroy, AfterViewInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ActivatedRoute, RouterModule} from '@angular/router';
+import {BehaviorSubject} from 'rxjs';
 import * as L from 'leaflet';
 
 const mapSize = 64 * (533.0 + 1.0 / 3.0);
@@ -18,6 +19,7 @@ export class MinimapViewComponent implements OnInit, AfterViewInit, OnDestroy {
     private map: L.Map | null = null;
     mapId: string = '';
     private mapInitialized = false;
+    mouseCoordinates$ = new BehaviorSubject<{ x: number; y: number } | null>(null);
 
     constructor(private route: ActivatedRoute) {
     }
@@ -63,5 +65,19 @@ export class MinimapViewComponent implements OnInit, AfterViewInit, OnDestroy {
         this.map.setMaxBounds(new L.LatLngBounds(sw, ne));
         this.map.setView(this.map.unproject([tileSize / 2, tileSize / 2], this.map.getMaxZoom()), 6);
 
+        this.map.on('mousemove', (e: L.LeafletMouseEvent) => {
+            const point = this.map!.project(e.latlng, this.map!.getMaxZoom());
+            const x = Math.round(point.x * mapSize / tileSize);
+            const y = Math.round(point.y * mapSize / tileSize);
+
+            this.mouseCoordinates$.next({
+                x: Math.max(0, Math.min(mapSize, x)),
+                y: Math.max(0, Math.min(mapSize, y))
+            });
+        });
+
+        this.map.on('mouseout', () => {
+            this.mouseCoordinates$.next(null);
+        });
     }
 }

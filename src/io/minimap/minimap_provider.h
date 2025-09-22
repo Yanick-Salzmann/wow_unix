@@ -29,12 +29,12 @@ namespace wow::io::minimap {
 
         void add_to_cache(uint64_t cache_key, const std::vector<uint8_t> &image_data);
 
-        blp::blp_file open_tile(uint32_t x, uint32_t y) const;
+        blp::blp_file_ptr open_tile(uint32_t x, uint32_t y) const;
 
     public:
         minimap_provider(
-            const dbc::dbc_manager_ptr &dbc_manager,
-            const mpq_manager_ptr &mpq_manager
+            dbc::dbc_manager_ptr dbc_manager,
+            mpq_manager_ptr mpq_manager
         );
 
         void switch_to_map(uint32_t map_id);

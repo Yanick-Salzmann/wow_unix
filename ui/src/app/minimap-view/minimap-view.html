@@ -1,8 +1,14 @@
 <div class="minimap-container">
   <div class="map-header">
-    <button class="back-button" [routerLink]="['/map-selection']">← Back to Maps</button>
+    <button class="back-button" [routerLink]="['/map-selection']">🗺️ Back to Maps</button>
     <h2 class="map-title">Map ID: {{mapId}}</h2>
+    <div class="coordinates-display">
+      @if (mouseCoordinates$ | async; as coordinates) {
+        <span class="coordinates-text">X: {{coordinates.x}}, Y: {{coordinates.y}}</span>
+      } @else {
+        <span class="coordinates-text">Move mouse over map</span>
+      }
+    </div>
   </div>
   <div id="map-container"></div>
 </div>
-
