@@ -25,7 +25,7 @@ namespace wow::io::minimap {
         return true;
     }
 
-    void minimap_provider::add_to_cache(uint64_t cache_key, const std::vector<uint8_t> &image_data) {
+    void minimap_provider::add_to_cache(const uint64_t cache_key, const std::vector<uint8_t> &image_data) {
         std::lock_guard lock(_cache_lock);
         _cache[cache_key] = image_data;
     }
@@ -80,7 +80,7 @@ namespace wow::io::minimap {
             }
         }
 
-        _base_path = utils::to_lower(_dbc_manager->map_dbc()->record(map_id).directory);
+        _base_path = utils::to_lower(_dbc_manager->map_dbc()->record(static_cast<int32_t>(map_id)).directory);
         _current_map_id = map_id;
     }
 
@@ -125,15 +125,6 @@ namespace wow::io::minimap {
 
                             uint32_t tw = 0, th = 0;
                             const auto tile_image = tile->convert_to_rgba(per_tile_pixels, tw, th);
-
-                            if (per_tile_pixels < 256) {
-                                const auto data = utils::to_png(tile_image, tw, th);
-                                std::ofstream os{
-                                    fmt::format("./{}_{}_{}.png", base_x + x, base_y + y, per_tile_pixels),
-                                    std::ios::binary
-                                };
-                                os.write(reinterpret_cast<const std::ostream::char_type *>(data.data()), data.size());
-                            }
                             const auto img_ptr = reinterpret_cast<const uint32_t *>(tile_image.data());
 
                             const auto pixel_advance = tw / per_tile_pixels;
