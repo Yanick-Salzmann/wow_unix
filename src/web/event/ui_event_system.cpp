@@ -42,9 +42,12 @@ namespace wow::web::event {
         return response;
     }
 
-    ui_event_system::ui_event_system(const event_manager_ptr &event_manager,
-                                     const io::dbc::dbc_manager_ptr &dbc_manager)
-        : _dbc_manager(dbc_manager) {
+    ui_event_system::ui_event_system(
+        const event_manager_ptr &event_manager,
+        const io::dbc::dbc_manager_ptr &dbc_manager,
+        const scene::world_frame_ptr &world_frame
+    ) : _dbc_manager(dbc_manager),
+        _world_frame(world_frame) {
         event_manager->listen(proto::JsEvent::kListMapsRequest, [this](const auto &) {
             const auto lmr = handle_list_maps();
             auto response = proto::JsEvent{};
@@ -57,6 +60,16 @@ namespace wow::web::event {
             auto response = proto::JsEvent{};
             response.mutable_list_map_pois_response()->CopyFrom(rp);
             return response;
+        });
+
+        event_manager->listen(proto::JsEvent::kEnterWorldRequest, [this, event_manager](const auto &req) {
+            const glm::vec2 pos{
+                req.enter_world_request().x(),
+                req.enter_world_request().y()
+            };
+
+            _world_frame->enter_world(req.enter_world_request().map_id(), pos);
+            return event_manager->empty_response();
         });
     }
 }

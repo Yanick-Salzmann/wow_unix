@@ -87,6 +87,12 @@ export interface JsEvent {
          */
         listMapPoisResponse: ListMapPoisResponse;
     } | {
+        oneofKind: "enterWorldRequest";
+        /**
+         * @generated from protobuf field: wow.web.proto.EnterWorldRequest enter_world_request = 11
+         */
+        enterWorldRequest: EnterWorldRequest;
+    } | {
         oneofKind: undefined;
     };
 }
@@ -234,6 +240,23 @@ export interface ListMapPoisResponse {
      */
     pois: MapPoi[];
 }
+/**
+ * @generated from protobuf message wow.web.proto.EnterWorldRequest
+ */
+export interface EnterWorldRequest {
+    /**
+     * @generated from protobuf field: int32 map_id = 1
+     */
+    mapId: number;
+    /**
+     * @generated from protobuf field: float x = 2
+     */
+    x: number;
+    /**
+     * @generated from protobuf field: float y = 3
+     */
+    y: number;
+}
 // @generated message type with reflection information, may provide speed optimized methods
 class Wrapper$Type extends MessageType<Wrapper> {
     constructor() {
@@ -293,7 +316,8 @@ class JsEvent$Type extends MessageType<JsEvent> {
             { no: 7, name: "list_maps_request", kind: "message", oneof: "event", T: () => ListMapsRequest },
             { no: 8, name: "list_maps_response", kind: "message", oneof: "event", T: () => ListMapsResponse },
             { no: 9, name: "list_map_pois_request", kind: "message", oneof: "event", T: () => ListMapPoisRequest },
-            { no: 10, name: "list_map_pois_response", kind: "message", oneof: "event", T: () => ListMapPoisResponse }
+            { no: 10, name: "list_map_pois_response", kind: "message", oneof: "event", T: () => ListMapPoisResponse },
+            { no: 11, name: "enter_world_request", kind: "message", oneof: "event", T: () => EnterWorldRequest }
         ]);
     }
     create(value?: PartialMessage<JsEvent>): JsEvent {
@@ -368,6 +392,12 @@ class JsEvent$Type extends MessageType<JsEvent> {
                         listMapPoisResponse: ListMapPoisResponse.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).listMapPoisResponse)
                     };
                     break;
+                case /* wow.web.proto.EnterWorldRequest enter_world_request */ 11:
+                    message.event = {
+                        oneofKind: "enterWorldRequest",
+                        enterWorldRequest: EnterWorldRequest.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).enterWorldRequest)
+                    };
+                    break;
                 default:
                     let u = options.readUnknownField;
                     if (u === "throw")
@@ -410,6 +440,9 @@ class JsEvent$Type extends MessageType<JsEvent> {
         /* wow.web.proto.ListMapPoisResponse list_map_pois_response = 10; */
         if (message.event.oneofKind === "listMapPoisResponse")
             ListMapPoisResponse.internalBinaryWrite(message.event.listMapPoisResponse, writer.tag(10, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.EnterWorldRequest enter_world_request = 11; */
+        if (message.event.oneofKind === "enterWorldRequest")
+            EnterWorldRequest.internalBinaryWrite(message.event.enterWorldRequest, writer.tag(11, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1053,3 +1086,66 @@ class ListMapPoisResponse$Type extends MessageType<ListMapPoisResponse> {
  * @generated MessageType for protobuf message wow.web.proto.ListMapPoisResponse
  */
 export const ListMapPoisResponse = new ListMapPoisResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class EnterWorldRequest$Type extends MessageType<EnterWorldRequest> {
+    constructor() {
+        super("wow.web.proto.EnterWorldRequest", [
+            { no: 1, name: "map_id", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 2, name: "x", kind: "scalar", T: 2 /*ScalarType.FLOAT*/ },
+            { no: 3, name: "y", kind: "scalar", T: 2 /*ScalarType.FLOAT*/ }
+        ]);
+    }
+    create(value?: PartialMessage<EnterWorldRequest>): EnterWorldRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.mapId = 0;
+        message.x = 0;
+        message.y = 0;
+        if (value !== undefined)
+            reflectionMergePartial<EnterWorldRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: EnterWorldRequest): EnterWorldRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* int32 map_id */ 1:
+                    message.mapId = reader.int32();
+                    break;
+                case /* float x */ 2:
+                    message.x = reader.float();
+                    break;
+                case /* float y */ 3:
+                    message.y = reader.float();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: EnterWorldRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* int32 map_id = 1; */
+        if (message.mapId !== 0)
+            writer.tag(1, WireType.Varint).int32(message.mapId);
+        /* float x = 2; */
+        if (message.x !== 0)
+            writer.tag(2, WireType.Bit32).float(message.x);
+        /* float y = 3; */
+        if (message.y !== 0)
+            writer.tag(3, WireType.Bit32).float(message.y);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message wow.web.proto.EnterWorldRequest
+ */
+export const EnterWorldRequest = new EnterWorldRequest$Type();

@@ -9,6 +9,7 @@
 #include "web/web_core.h"
 #include "io/mpq_manager.h"
 #include "io/minimap/minimap_provider.h"
+#include "scene/world_frame.h"
 #include "web/event/ui_event_system.h"
 
 namespace wow::utils {
@@ -18,6 +19,7 @@ namespace wow::utils {
         io::mpq_manager_ptr _mpq_manager{};
         web::event::ui_event_system_ptr _ui_event_system{};
         io::minimap::minimap_provider_ptr _minimap_provider{};
+        scene::world_frame_ptr _world_frame{};
 
     public:
         explicit application_module(
@@ -25,12 +27,14 @@ namespace wow::utils {
             std::shared_ptr<web::web_core> web_core,
             io::mpq_manager_ptr mpq_manager,
             web::event::ui_event_system_ptr ui_event_system,
-            io::minimap::minimap_provider_ptr minimap_provider
+            io::minimap::minimap_provider_ptr minimap_provider,
+            scene::world_frame_ptr world_frame
         ) : _window(std::move(window)),
             _web_core(std::move(web_core)),
             _mpq_manager(std::move(mpq_manager)),
             _ui_event_system(std::move(ui_event_system)),
-            _minimap_provider(std::move(minimap_provider)) {
+            _minimap_provider(std::move(minimap_provider)),
+            _world_frame(std::move(world_frame)) {
         }
 
         const std::shared_ptr<gl::window> &window() {

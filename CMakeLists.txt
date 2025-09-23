@@ -157,7 +157,10 @@ add_executable(wow_unix src/main.cpp
         src/io/minimap/minimap_loader_pool.h
         src/io/minimap/minimap_loader_pool.cpp
         src/io/minimap/minimap_provider.h
-        src/io/minimap/minimap_provider.cpp)
+        src/io/minimap/minimap_provider.cpp
+        src/scene/world_frame.h
+        src/scene/world_frame.cpp
+        src/utils/log_utils.h)
 
 add_dependencies(wow_unix fetch_mime_types proto_typescript)
 

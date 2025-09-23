@@ -37,15 +37,15 @@ export class MinimapViewComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
-        setTimeout(() => {
+        setTimeout(async () => {
             if (this.mapId && !this.mapInitialized) {
-                this.initMap();
+                await this.initMap();
                 this.mapInitialized = true;
             }
         }, 100);
     }
 
-    private initMap(): void {
+    private async initMap(): Promise<void> {
         if (!this.mapId) return;
 
         this.map = L.map('map-container', {
@@ -80,7 +80,7 @@ export class MinimapViewComponent implements OnInit, AfterViewInit, OnDestroy {
             this.mouseCoordinates$.next(null);
         });
 
-        this.loadMapPois();
+        await this.loadMapPois();
     }
 
     private async loadMapPois(): Promise<void> {
@@ -121,7 +121,7 @@ export class MinimapViewComponent implements OnInit, AfterViewInit, OnDestroy {
             const popupContent = `
                 <div class="poi-popup">
                     <h3 class="poi-name">${poi.name}</h3>
-                    <button class="enter-world-btn" onclick="window.enterWorld('${poi.name}', ${poi.x}, ${poi.y})">
+                    <button class="enter-world-btn" onclick="window.enterWorld(${poi.x}, ${poi.y})">
                         ✨ Enter World ✨
                     </button>
                 </div>
@@ -139,8 +139,8 @@ export class MinimapViewComponent implements OnInit, AfterViewInit, OnDestroy {
             this.markers.push(marker);
         });
 
-        (window as any).enterWorld = (poiName: string, x: number, y: number) => {
-            this.enterWorld(poiName, x, y);
+        (window as any).enterWorld = async (x: number, y: number) => {
+            await this.enterWorld(x, y);
         };
     }
 
@@ -160,24 +160,19 @@ export class MinimapViewComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    private enterWorld(poiName: string, x: number, y: number): void {
-        console.log(`Entering world at ${poiName} (${x}, ${y})`);
+    private async enterWorld(x: number, y: number) {
+        const transformedX = halfMapSize - y;
+        const transformedY = halfMapSize - x;
 
-        const button = document.querySelector('.enter-world-btn') as HTMLButtonElement;
-        if (button) {
-            button.classList.add('entering');
-            button.innerHTML = '🌟 Entering... 🌟';
-            button.disabled = true;
-        }
-
-        setTimeout(() => {
-            alert(`Welcome to ${poiName}!\nYou have entered the world at coordinates (${x}, ${y})`);
-
-            if (button) {
-                button.classList.remove('entering');
-                button.innerHTML = '✨ Enter World ✨';
-                button.disabled = false;
+        await this.eventService.sendMessage({
+            event: {
+                oneofKind: "enterWorldRequest",
+                enterWorldRequest: {
+                    mapId: parseInt(this.mapId),
+                    x: transformedX,
+                    y: transformedY
+                }
             }
-        }, 2000);
+        })
     }
 }

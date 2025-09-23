@@ -18,6 +18,7 @@ message JsEvent {
     ListMapsResponse list_maps_response = 8;
     ListMapPoisRequest list_map_pois_request = 9;
     ListMapPoisResponse list_map_pois_response = 10;
+    EnterWorldRequest enter_world_request = 11;
   }
 }
 
@@ -79,4 +80,10 @@ message MapPoi {
 message ListMapPoisResponse {
   int32 map_id = 1;
   repeated MapPoi pois = 2;
+}
+
+message EnterWorldRequest {
+  int32 map_id = 1;
+  float x = 2;
+  float y = 3;
 }
