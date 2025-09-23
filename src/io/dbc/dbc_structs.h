@@ -47,6 +47,29 @@ namespace wow::io::dbc {
         bool has_wide_screen;
     };
 
+    struct area_poi_record {
+        int32_t id;
+        int32_t importance;
+        int32_t normal_icon;
+        int32_t normal_icon_50;
+        int32_t normal_icon_0;
+        int32_t horde_icon;
+        int32_t horde_icon_50;
+        int32_t horde_icon_0;
+        int32_t alliance_icon;
+        int32_t alliance_icon_50;
+        int32_t alliance_icon_0;
+        int32_t faction;
+        float x, y, z;
+        int32_t map_id;
+        int32_t flags;
+        int32_t area_table;
+        loc_string name;
+        loc_string description;
+        int32_t world_state;
+        int32_t map_link;
+    };
+
 #pragma pack(pop)
 }
 

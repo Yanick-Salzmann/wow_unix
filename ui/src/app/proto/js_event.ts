@@ -35,45 +35,57 @@ export interface JsEvent {
     } | {
         oneofKind: "browseFolderRequest";
         /**
-         * @generated from protobuf field: wow.web.proto.BrowseFolderRequest browse_folder_request = 10
+         * @generated from protobuf field: wow.web.proto.BrowseFolderRequest browse_folder_request = 2
          */
         browseFolderRequest: BrowseFolderRequest;
     } | {
         oneofKind: "browseFolderResponse";
         /**
-         * @generated from protobuf field: wow.web.proto.BrowseFolderResponse browse_folder_response = 20
+         * @generated from protobuf field: wow.web.proto.BrowseFolderResponse browse_folder_response = 3
          */
         browseFolderResponse: BrowseFolderResponse;
     } | {
         oneofKind: "emptyResponse";
         /**
-         * @generated from protobuf field: wow.web.proto.EmptyResponse empty_response = 30
+         * @generated from protobuf field: wow.web.proto.EmptyResponse empty_response = 4
          */
         emptyResponse: EmptyResponse;
     } | {
         oneofKind: "loadDataEvent";
         /**
-         * @generated from protobuf field: wow.web.proto.LoadDataEvent load_data_event = 40
+         * @generated from protobuf field: wow.web.proto.LoadDataEvent load_data_event = 5
          */
         loadDataEvent: LoadDataEvent;
     } | {
         oneofKind: "loadUpdateEvent";
         /**
-         * @generated from protobuf field: wow.web.proto.LoadUpdateEvent load_update_event = 50
+         * @generated from protobuf field: wow.web.proto.LoadUpdateEvent load_update_event = 6
          */
         loadUpdateEvent: LoadUpdateEvent;
     } | {
         oneofKind: "listMapsRequest";
         /**
-         * @generated from protobuf field: wow.web.proto.ListMapsRequest list_maps_request = 60
+         * @generated from protobuf field: wow.web.proto.ListMapsRequest list_maps_request = 7
          */
         listMapsRequest: ListMapsRequest;
     } | {
         oneofKind: "listMapsResponse";
         /**
-         * @generated from protobuf field: wow.web.proto.ListMapsResponse list_maps_response = 70
+         * @generated from protobuf field: wow.web.proto.ListMapsResponse list_maps_response = 8
          */
         listMapsResponse: ListMapsResponse;
+    } | {
+        oneofKind: "listMapPoisRequest";
+        /**
+         * @generated from protobuf field: wow.web.proto.ListMapPoisRequest list_map_pois_request = 9
+         */
+        listMapPoisRequest: ListMapPoisRequest;
+    } | {
+        oneofKind: "listMapPoisResponse";
+        /**
+         * @generated from protobuf field: wow.web.proto.ListMapPoisResponse list_map_pois_response = 10
+         */
+        listMapPoisResponse: ListMapPoisResponse;
     } | {
         oneofKind: undefined;
     };
@@ -179,6 +191,49 @@ export interface ListMapsResponse {
      */
     maps: ListMapsResponseMap[];
 }
+/**
+ * @generated from protobuf message wow.web.proto.ListMapPoisRequest
+ */
+export interface ListMapPoisRequest {
+    /**
+     * @generated from protobuf field: int32 map_id = 1
+     */
+    mapId: number;
+}
+/**
+ * @generated from protobuf message wow.web.proto.MapPoi
+ */
+export interface MapPoi {
+    /**
+     * @generated from protobuf field: int32 id = 1
+     */
+    id: number;
+    /**
+     * @generated from protobuf field: string name = 2
+     */
+    name: string;
+    /**
+     * @generated from protobuf field: float x = 3
+     */
+    x: number;
+    /**
+     * @generated from protobuf field: float y = 4
+     */
+    y: number;
+}
+/**
+ * @generated from protobuf message wow.web.proto.ListMapPoisResponse
+ */
+export interface ListMapPoisResponse {
+    /**
+     * @generated from protobuf field: int32 map_id = 1
+     */
+    mapId: number;
+    /**
+     * @generated from protobuf field: repeated wow.web.proto.MapPoi pois = 2
+     */
+    pois: MapPoi[];
+}
 // @generated message type with reflection information, may provide speed optimized methods
 class Wrapper$Type extends MessageType<Wrapper> {
     constructor() {
@@ -230,13 +285,15 @@ class JsEvent$Type extends MessageType<JsEvent> {
     constructor() {
         super("wow.web.proto.JsEvent", [
             { no: 1, name: "initialize_request", kind: "message", oneof: "event", T: () => InitializeRequest },
-            { no: 10, name: "browse_folder_request", kind: "message", oneof: "event", T: () => BrowseFolderRequest },
-            { no: 20, name: "browse_folder_response", kind: "message", oneof: "event", T: () => BrowseFolderResponse },
-            { no: 30, name: "empty_response", kind: "message", oneof: "event", T: () => EmptyResponse },
-            { no: 40, name: "load_data_event", kind: "message", oneof: "event", T: () => LoadDataEvent },
-            { no: 50, name: "load_update_event", kind: "message", oneof: "event", T: () => LoadUpdateEvent },
-            { no: 60, name: "list_maps_request", kind: "message", oneof: "event", T: () => ListMapsRequest },
-            { no: 70, name: "list_maps_response", kind: "message", oneof: "event", T: () => ListMapsResponse }
+            { no: 2, name: "browse_folder_request", kind: "message", oneof: "event", T: () => BrowseFolderRequest },
+            { no: 3, name: "browse_folder_response", kind: "message", oneof: "event", T: () => BrowseFolderResponse },
+            { no: 4, name: "empty_response", kind: "message", oneof: "event", T: () => EmptyResponse },
+            { no: 5, name: "load_data_event", kind: "message", oneof: "event", T: () => LoadDataEvent },
+            { no: 6, name: "load_update_event", kind: "message", oneof: "event", T: () => LoadUpdateEvent },
+            { no: 7, name: "list_maps_request", kind: "message", oneof: "event", T: () => ListMapsRequest },
+            { no: 8, name: "list_maps_response", kind: "message", oneof: "event", T: () => ListMapsResponse },
+            { no: 9, name: "list_map_pois_request", kind: "message", oneof: "event", T: () => ListMapPoisRequest },
+            { no: 10, name: "list_map_pois_response", kind: "message", oneof: "event", T: () => ListMapPoisResponse }
         ]);
     }
     create(value?: PartialMessage<JsEvent>): JsEvent {
@@ -257,46 +314,58 @@ class JsEvent$Type extends MessageType<JsEvent> {
                         initializeRequest: InitializeRequest.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).initializeRequest)
                     };
                     break;
-                case /* wow.web.proto.BrowseFolderRequest browse_folder_request */ 10:
+                case /* wow.web.proto.BrowseFolderRequest browse_folder_request */ 2:
                     message.event = {
                         oneofKind: "browseFolderRequest",
                         browseFolderRequest: BrowseFolderRequest.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).browseFolderRequest)
                     };
                     break;
-                case /* wow.web.proto.BrowseFolderResponse browse_folder_response */ 20:
+                case /* wow.web.proto.BrowseFolderResponse browse_folder_response */ 3:
                     message.event = {
                         oneofKind: "browseFolderResponse",
                         browseFolderResponse: BrowseFolderResponse.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).browseFolderResponse)
                     };
                     break;
-                case /* wow.web.proto.EmptyResponse empty_response */ 30:
+                case /* wow.web.proto.EmptyResponse empty_response */ 4:
                     message.event = {
                         oneofKind: "emptyResponse",
                         emptyResponse: EmptyResponse.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).emptyResponse)
                     };
                     break;
-                case /* wow.web.proto.LoadDataEvent load_data_event */ 40:
+                case /* wow.web.proto.LoadDataEvent load_data_event */ 5:
                     message.event = {
                         oneofKind: "loadDataEvent",
                         loadDataEvent: LoadDataEvent.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).loadDataEvent)
                     };
                     break;
-                case /* wow.web.proto.LoadUpdateEvent load_update_event */ 50:
+                case /* wow.web.proto.LoadUpdateEvent load_update_event */ 6:
                     message.event = {
                         oneofKind: "loadUpdateEvent",
                         loadUpdateEvent: LoadUpdateEvent.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).loadUpdateEvent)
                     };
                     break;
-                case /* wow.web.proto.ListMapsRequest list_maps_request */ 60:
+                case /* wow.web.proto.ListMapsRequest list_maps_request */ 7:
                     message.event = {
                         oneofKind: "listMapsRequest",
                         listMapsRequest: ListMapsRequest.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).listMapsRequest)
                     };
                     break;
-                case /* wow.web.proto.ListMapsResponse list_maps_response */ 70:
+                case /* wow.web.proto.ListMapsResponse list_maps_response */ 8:
                     message.event = {
                         oneofKind: "listMapsResponse",
                         listMapsResponse: ListMapsResponse.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).listMapsResponse)
+                    };
+                    break;
+                case /* wow.web.proto.ListMapPoisRequest list_map_pois_request */ 9:
+                    message.event = {
+                        oneofKind: "listMapPoisRequest",
+                        listMapPoisRequest: ListMapPoisRequest.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).listMapPoisRequest)
+                    };
+                    break;
+                case /* wow.web.proto.ListMapPoisResponse list_map_pois_response */ 10:
+                    message.event = {
+                        oneofKind: "listMapPoisResponse",
+                        listMapPoisResponse: ListMapPoisResponse.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).listMapPoisResponse)
                     };
                     break;
                 default:
@@ -314,27 +383,33 @@ class JsEvent$Type extends MessageType<JsEvent> {
         /* wow.web.proto.InitializeRequest initialize_request = 1; */
         if (message.event.oneofKind === "initializeRequest")
             InitializeRequest.internalBinaryWrite(message.event.initializeRequest, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
-        /* wow.web.proto.BrowseFolderRequest browse_folder_request = 10; */
+        /* wow.web.proto.BrowseFolderRequest browse_folder_request = 2; */
         if (message.event.oneofKind === "browseFolderRequest")
-            BrowseFolderRequest.internalBinaryWrite(message.event.browseFolderRequest, writer.tag(10, WireType.LengthDelimited).fork(), options).join();
-        /* wow.web.proto.BrowseFolderResponse browse_folder_response = 20; */
+            BrowseFolderRequest.internalBinaryWrite(message.event.browseFolderRequest, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.BrowseFolderResponse browse_folder_response = 3; */
         if (message.event.oneofKind === "browseFolderResponse")
-            BrowseFolderResponse.internalBinaryWrite(message.event.browseFolderResponse, writer.tag(20, WireType.LengthDelimited).fork(), options).join();
-        /* wow.web.proto.EmptyResponse empty_response = 30; */
+            BrowseFolderResponse.internalBinaryWrite(message.event.browseFolderResponse, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.EmptyResponse empty_response = 4; */
         if (message.event.oneofKind === "emptyResponse")
-            EmptyResponse.internalBinaryWrite(message.event.emptyResponse, writer.tag(30, WireType.LengthDelimited).fork(), options).join();
-        /* wow.web.proto.LoadDataEvent load_data_event = 40; */
+            EmptyResponse.internalBinaryWrite(message.event.emptyResponse, writer.tag(4, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.LoadDataEvent load_data_event = 5; */
         if (message.event.oneofKind === "loadDataEvent")
-            LoadDataEvent.internalBinaryWrite(message.event.loadDataEvent, writer.tag(40, WireType.LengthDelimited).fork(), options).join();
-        /* wow.web.proto.LoadUpdateEvent load_update_event = 50; */
+            LoadDataEvent.internalBinaryWrite(message.event.loadDataEvent, writer.tag(5, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.LoadUpdateEvent load_update_event = 6; */
         if (message.event.oneofKind === "loadUpdateEvent")
-            LoadUpdateEvent.internalBinaryWrite(message.event.loadUpdateEvent, writer.tag(50, WireType.LengthDelimited).fork(), options).join();
-        /* wow.web.proto.ListMapsRequest list_maps_request = 60; */
+            LoadUpdateEvent.internalBinaryWrite(message.event.loadUpdateEvent, writer.tag(6, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.ListMapsRequest list_maps_request = 7; */
         if (message.event.oneofKind === "listMapsRequest")
-            ListMapsRequest.internalBinaryWrite(message.event.listMapsRequest, writer.tag(60, WireType.LengthDelimited).fork(), options).join();
-        /* wow.web.proto.ListMapsResponse list_maps_response = 70; */
+            ListMapsRequest.internalBinaryWrite(message.event.listMapsRequest, writer.tag(7, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.ListMapsResponse list_maps_response = 8; */
         if (message.event.oneofKind === "listMapsResponse")
-            ListMapsResponse.internalBinaryWrite(message.event.listMapsResponse, writer.tag(70, WireType.LengthDelimited).fork(), options).join();
+            ListMapsResponse.internalBinaryWrite(message.event.listMapsResponse, writer.tag(8, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.ListMapPoisRequest list_map_pois_request = 9; */
+        if (message.event.oneofKind === "listMapPoisRequest")
+            ListMapPoisRequest.internalBinaryWrite(message.event.listMapPoisRequest, writer.tag(9, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.ListMapPoisResponse list_map_pois_response = 10; */
+        if (message.event.oneofKind === "listMapPoisResponse")
+            ListMapPoisResponse.internalBinaryWrite(message.event.listMapPoisResponse, writer.tag(10, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -805,3 +880,176 @@ class ListMapsResponse$Type extends MessageType<ListMapsResponse> {
  * @generated MessageType for protobuf message wow.web.proto.ListMapsResponse
  */
 export const ListMapsResponse = new ListMapsResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ListMapPoisRequest$Type extends MessageType<ListMapPoisRequest> {
+    constructor() {
+        super("wow.web.proto.ListMapPoisRequest", [
+            { no: 1, name: "map_id", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ListMapPoisRequest>): ListMapPoisRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.mapId = 0;
+        if (value !== undefined)
+            reflectionMergePartial<ListMapPoisRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ListMapPoisRequest): ListMapPoisRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* int32 map_id */ 1:
+                    message.mapId = reader.int32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ListMapPoisRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* int32 map_id = 1; */
+        if (message.mapId !== 0)
+            writer.tag(1, WireType.Varint).int32(message.mapId);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message wow.web.proto.ListMapPoisRequest
+ */
+export const ListMapPoisRequest = new ListMapPoisRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class MapPoi$Type extends MessageType<MapPoi> {
+    constructor() {
+        super("wow.web.proto.MapPoi", [
+            { no: 1, name: "id", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 2, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "x", kind: "scalar", T: 2 /*ScalarType.FLOAT*/ },
+            { no: 4, name: "y", kind: "scalar", T: 2 /*ScalarType.FLOAT*/ }
+        ]);
+    }
+    create(value?: PartialMessage<MapPoi>): MapPoi {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.id = 0;
+        message.name = "";
+        message.x = 0;
+        message.y = 0;
+        if (value !== undefined)
+            reflectionMergePartial<MapPoi>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: MapPoi): MapPoi {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* int32 id */ 1:
+                    message.id = reader.int32();
+                    break;
+                case /* string name */ 2:
+                    message.name = reader.string();
+                    break;
+                case /* float x */ 3:
+                    message.x = reader.float();
+                    break;
+                case /* float y */ 4:
+                    message.y = reader.float();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: MapPoi, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* int32 id = 1; */
+        if (message.id !== 0)
+            writer.tag(1, WireType.Varint).int32(message.id);
+        /* string name = 2; */
+        if (message.name !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.name);
+        /* float x = 3; */
+        if (message.x !== 0)
+            writer.tag(3, WireType.Bit32).float(message.x);
+        /* float y = 4; */
+        if (message.y !== 0)
+            writer.tag(4, WireType.Bit32).float(message.y);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message wow.web.proto.MapPoi
+ */
+export const MapPoi = new MapPoi$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ListMapPoisResponse$Type extends MessageType<ListMapPoisResponse> {
+    constructor() {
+        super("wow.web.proto.ListMapPoisResponse", [
+            { no: 1, name: "map_id", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 2, name: "pois", kind: "message", repeat: 2 /*RepeatType.UNPACKED*/, T: () => MapPoi }
+        ]);
+    }
+    create(value?: PartialMessage<ListMapPoisResponse>): ListMapPoisResponse {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.mapId = 0;
+        message.pois = [];
+        if (value !== undefined)
+            reflectionMergePartial<ListMapPoisResponse>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ListMapPoisResponse): ListMapPoisResponse {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* int32 map_id */ 1:
+                    message.mapId = reader.int32();
+                    break;
+                case /* repeated wow.web.proto.MapPoi pois */ 2:
+                    message.pois.push(MapPoi.internalBinaryRead(reader, reader.uint32(), options));
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ListMapPoisResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* int32 map_id = 1; */
+        if (message.mapId !== 0)
+            writer.tag(1, WireType.Varint).int32(message.mapId);
+        /* repeated wow.web.proto.MapPoi pois = 2; */
+        for (let i = 0; i < message.pois.length; i++)
+            MapPoi.internalBinaryWrite(message.pois[i], writer.tag(2, WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message wow.web.proto.ListMapPoisResponse
+ */
+export const ListMapPoisResponse = new ListMapPoisResponse$Type();

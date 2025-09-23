@@ -108,7 +108,7 @@ namespace wow::io::blp {
         const auto indices = reader.read<uint32_t>();
         for (auto i = 0; i < 16; ++i) {
             const auto idx = static_cast<uint8_t>((indices >> (i * 2)) & 0x3);
-            block_data[block_offset + i] = colors[idx].data.color | (alpha_values[i] << 24);
+            block_data[block_offset + i] = (colors[idx].data.color & 0x00FFFFFF) | (alpha_values[i] << 24);
         }
     }
 

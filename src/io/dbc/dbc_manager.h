@@ -9,17 +9,22 @@ namespace wow::io::dbc {
     class dbc_manager {
         dbc_file_ptr<map_record> _map_dbc{};
         dbc_file_ptr<loading_screen_record> _loading_screen_dbc{};
+        dbc_file_ptr<area_poi_record> _area_poi_dbc{};
 
     public:
         void initialize(const mpq_manager_ptr &mpq_manager,
                         const std::function<void(int, const std::string &)> &callback);
 
-        const dbc_file_ptr<map_record> &map_dbc() const {
+        [[nodiscard]] const dbc_file_ptr<map_record> &map_dbc() const {
             return _map_dbc;
         }
 
-        const dbc_file_ptr<loading_screen_record> &loading_screen_dbc() const {
+        [[nodiscard]] const dbc_file_ptr<loading_screen_record> &loading_screen_dbc() const {
             return _loading_screen_dbc;
+        }
+
+        [[nodiscard]] const dbc_file_ptr<area_poi_record> &area_poi_dbc() const {
+            return _area_poi_dbc;
         }
     };
 

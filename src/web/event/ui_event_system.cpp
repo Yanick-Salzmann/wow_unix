@@ -24,6 +24,24 @@ namespace wow::web::event {
         return response;
     }
 
+    proto::ListMapPoisResponse ui_event_system::handle_list_map_pois(int32_t map_id) const {
+        proto::ListMapPoisResponse response{};
+        response.set_map_id(map_id);
+
+        for (const auto &val: *_dbc_manager->area_poi_dbc() | std::ranges::views::values) {
+            if (val.map_id != map_id) {
+                continue;
+            }
+
+            const auto poi = response.add_pois();
+            poi->set_id(val.id);
+            poi->set_name(val.name.text);
+            poi->set_x(val.x);
+            poi->set_y(val.y);
+        }
+        return response;
+    }
+
     ui_event_system::ui_event_system(const event_manager_ptr &event_manager,
                                      const io::dbc::dbc_manager_ptr &dbc_manager)
         : _dbc_manager(dbc_manager) {
@@ -31,6 +49,13 @@ namespace wow::web::event {
             const auto lmr = handle_list_maps();
             auto response = proto::JsEvent{};
             response.mutable_list_maps_response()->CopyFrom(lmr);
+            return response;
+        });
+
+        event_manager->listen(proto::JsEvent::kListMapPoisRequest, [this](const auto &req) {
+            const auto rp = handle_list_map_pois(req.list_map_pois_request().map_id());
+            auto response = proto::JsEvent{};
+            response.mutable_list_map_pois_response()->CopyFrom(rp);
             return response;
         });
     }

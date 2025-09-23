@@ -23,9 +23,7 @@ namespace wow::web::schemes {
                 try {
                     utils::app_module->minimap_provider()->read_image(_data, std::stoi(map_id), std::stoi(zoom_level),
                                                                       std::stoi(tx), std::stoi(ty));
-                } catch (std::exception &e) {
-                    SPDLOG_INFO("Couldn't load minimap image for map id {}, position {}/{}: {}", map_id, tx, ty,
-                                e.what());
+                } catch (std::exception &) {
                     _data.clear();
                 }
 

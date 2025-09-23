@@ -9,13 +9,15 @@ message Wrapper {
 message JsEvent {
   oneof event {
     InitializeRequest initialize_request = 1;
-    BrowseFolderRequest browse_folder_request = 10;
-    BrowseFolderResponse browse_folder_response = 20;
-    EmptyResponse empty_response = 30;
-    LoadDataEvent load_data_event = 40;
-    LoadUpdateEvent load_update_event = 50;
-    ListMapsRequest list_maps_request = 60;
-    ListMapsResponse list_maps_response = 70;
+    BrowseFolderRequest browse_folder_request = 2;
+    BrowseFolderResponse browse_folder_response = 3;
+    EmptyResponse empty_response = 4;
+    LoadDataEvent load_data_event = 5;
+    LoadUpdateEvent load_update_event = 6;
+    ListMapsRequest list_maps_request = 7;
+    ListMapsResponse list_maps_response = 8;
+    ListMapPoisRequest list_map_pois_request = 9;
+    ListMapPoisResponse list_map_pois_response = 10;
   }
 }
 
@@ -61,4 +63,20 @@ message ListMapsResponseMap {
 
 message ListMapsResponse {
   repeated ListMapsResponseMap maps = 1;
+}
+
+message ListMapPoisRequest {
+  int32 map_id = 1;
+}
+
+message MapPoi {
+  int32 id = 1;
+  string name = 2;
+  float x = 3;
+  float y = 4;
+}
+
+message ListMapPoisResponse {
+  int32 map_id = 1;
+  repeated MapPoi pois = 2;
 }
