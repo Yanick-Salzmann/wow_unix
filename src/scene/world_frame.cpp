@@ -5,6 +5,6 @@
 
 namespace wow::scene {
     void world_frame::enter_world(uint32_t map_id, const glm::vec2 &position) {
-        SPDLOG_INFO("Entering map {} at {}", map_id, position);
+        _map_manager->enter_world(map_id, position);
     }
 }

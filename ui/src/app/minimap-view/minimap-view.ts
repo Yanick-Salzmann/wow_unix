@@ -5,6 +5,7 @@ import {BehaviorSubject} from 'rxjs';
 import * as L from 'leaflet';
 import {EventService} from '../service/event.service';
 import {MapPoi} from '../proto/js_event';
+import {MapStateService} from '../service/map-state.service';
 
 const mapSize = 64 * (533.0 + 1.0 / 3.0);
 const tileSize = 64 * 256;
@@ -26,7 +27,8 @@ export class MinimapViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(
         private route: ActivatedRoute,
-        private eventService: EventService
+        private eventService: EventService,
+        private mapStateService: MapStateService
     ) {
     }
 
@@ -63,7 +65,13 @@ export class MinimapViewComponent implements OnInit, AfterViewInit, OnDestroy {
         const ne = this.map.unproject([tileSize, 0], this.map.getMaxZoom());
 
         this.map.setMaxBounds(new L.LatLngBounds(sw, ne));
-        this.map.setView(this.map.unproject([tileSize / 2, tileSize / 2], this.map.getMaxZoom()), 6);
+
+        const savedState = this.mapStateService.getMapState(this.mapId);
+        if (savedState) {
+            this.map.setView([savedState.center.lat, savedState.center.lng], savedState.zoom);
+        } else {
+            this.map.setView(this.map.unproject([tileSize / 2, tileSize / 2], this.map.getMaxZoom()), 6);
+        }
 
         this.map.on('mousemove', (e: L.LeafletMouseEvent) => {
             const point = this.map!.project(e.latlng, this.map!.getMaxZoom());
@@ -154,6 +162,14 @@ export class MinimapViewComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        if (this.map) {
+            const currentState = {
+                center: this.map.getCenter(),
+                zoom: this.map.getZoom()
+            };
+            this.mapStateService.saveMapState(this.mapId, currentState);
+        }
+
         this.clearMarkers();
         if (this.map) {
             this.map.remove();
@@ -161,6 +177,14 @@ export class MinimapViewComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private async enterWorld(x: number, y: number) {
+        if (this.map) {
+            const currentState = {
+                center: this.map.getCenter(),
+                zoom: this.map.getZoom()
+            };
+            this.mapStateService.saveMapState(this.mapId, currentState);
+        }
+
         const transformedX = halfMapSize - y;
         const transformedY = halfMapSize - x;
 

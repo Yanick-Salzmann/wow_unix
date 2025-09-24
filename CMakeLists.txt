@@ -56,7 +56,13 @@ FetchContent_Declare(
         GIT_TAG v1.2.0
 )
 
-FetchContent_MakeAvailable(spdlog glfw glad glm stb boost_di StormLib)
+FetchContent_Declare(
+        tomlplusplus
+        GIT_REPOSITORY https://github.com/marzer/tomlplusplus.git
+        GIT_TAG v3.4.0
+)
+
+FetchContent_MakeAvailable(spdlog glfw glad glm stb boost_di StormLib tomlplusplus)
 
 set(PROTO_FILES
         ${CMAKE_SOURCE_DIR}/src/proto/js_event.proto
@@ -70,9 +76,9 @@ add_custom_command(
         OUTPUT ${TS_PROTO_OUT_DIR}/js_event.ts
         COMMAND mkdir -p ${TS_PROTO_OUT_DIR}
         COMMAND npx protoc
-            --ts_out=${CMAKE_SOURCE_DIR}/ui/src/app/proto
-            --proto_path=${CMAKE_SOURCE_DIR}/src/proto
-            ${PROTO_FILES}
+        --ts_out=${CMAKE_SOURCE_DIR}/ui/src/app/proto
+        --proto_path=${CMAKE_SOURCE_DIR}/src/proto
+        ${PROTO_FILES}
         DEPENDS ${PROTO_FILES}
         COMMENT "Generating TypeScript protobuf files"
         VERBATIM
@@ -160,7 +166,13 @@ add_executable(wow_unix src/main.cpp
         src/io/minimap/minimap_provider.cpp
         src/scene/world_frame.h
         src/scene/world_frame.cpp
-        src/utils/log_utils.h)
+        src/utils/log_utils.h
+        src/scene/map_manager.h
+        src/scene/map_manager.cpp
+        src/utils/constants.h
+        src/utils/constants.cpp
+        src/config/config_manager.cpp
+        src/config/config_manager.h)
 
 add_dependencies(wow_unix fetch_mime_types proto_typescript)
 
@@ -177,6 +189,7 @@ target_include_directories(wow_unix PRIVATE
         ${CMAKE_CURRENT_BINARY_DIR}  # For generated protobuf headers
         ${boost_di_SOURCE_DIR}/include
         ${Boost_INCLUDE_DIRS}
+        ${tomlplusplus_SOURCE_DIR}/include
 )
 
 target_include_directories(wow_unix_browser PRIVATE src cef)

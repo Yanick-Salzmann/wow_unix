@@ -11,6 +11,7 @@
 #include "io/minimap/minimap_provider.h"
 #include "scene/world_frame.h"
 #include "web/event/ui_event_system.h"
+#include "config/config_manager.h"
 
 namespace wow::utils {
     class application_module {
@@ -20,6 +21,7 @@ namespace wow::utils {
         web::event::ui_event_system_ptr _ui_event_system{};
         io::minimap::minimap_provider_ptr _minimap_provider{};
         scene::world_frame_ptr _world_frame{};
+        config::config_manager_ptr _config_manager{};
 
     public:
         explicit application_module(
@@ -28,13 +30,15 @@ namespace wow::utils {
             io::mpq_manager_ptr mpq_manager,
             web::event::ui_event_system_ptr ui_event_system,
             io::minimap::minimap_provider_ptr minimap_provider,
-            scene::world_frame_ptr world_frame
+            scene::world_frame_ptr world_frame,
+            config::config_manager_ptr config_manager
         ) : _window(std::move(window)),
             _web_core(std::move(web_core)),
             _mpq_manager(std::move(mpq_manager)),
             _ui_event_system(std::move(ui_event_system)),
             _minimap_provider(std::move(minimap_provider)),
-            _world_frame(std::move(world_frame)) {
+            _world_frame(std::move(world_frame)),
+            _config_manager(std::move(config_manager)) {
         }
 
         const std::shared_ptr<gl::window> &window() {
@@ -55,6 +59,14 @@ namespace wow::utils {
 
         const io::minimap::minimap_provider_ptr &minimap_provider() {
             return _minimap_provider;
+        }
+
+        const scene::world_frame_ptr &world_frame() {
+            return _world_frame;
+        }
+
+        const config::config_manager_ptr &config_manager() {
+            return _config_manager;
         }
     };
 
