@@ -5,7 +5,7 @@ namespace wow::scene {
         const auto radius = _config_manager->map().load_radius;
         for (auto ty = adt_y - radius; ty <= adt_y + radius; ++ty) {
             for (auto tx = adt_x - radius; tx <= adt_x + radius; ++tx) {
-                const auto tile = fmt::format("World\\Maps\\{}\\{}_{}_{}.adt", _directory, _directory, tx, ty);
+                const auto tile = fmt::format(R"(World\Maps\{}\{}_{}_{}.adt)", _directory, _directory, tx, ty);
                 auto file = _mpq_manager->open(tile);
                 SPDLOG_INFO("Loading ADT {} (exists: {})", tile, file != nullptr);
             }

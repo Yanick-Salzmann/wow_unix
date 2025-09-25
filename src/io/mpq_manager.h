@@ -14,7 +14,7 @@
 namespace wow::io {
     namespace dbc {
         class dbc_manager;
-        typedef std::shared_ptr<dbc_manager> dbc_manager_ptr;
+        using dbc_manager_ptr = std::shared_ptr<dbc_manager>;
     }
 
     class mpq_manager : public std::enable_shared_from_this<mpq_manager> {
@@ -53,7 +53,7 @@ namespace wow::io {
         mpq_file_ptr open(const std::string &path);
     };
 
-    typedef std::shared_ptr<mpq_manager> mpq_manager_ptr;
+    using mpq_manager_ptr = std::shared_ptr<mpq_manager>;
 }
 
 #endif //WOW_UNIX_MPQ_MANAGER_H

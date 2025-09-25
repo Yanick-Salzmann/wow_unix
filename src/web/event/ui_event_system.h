@@ -25,7 +25,7 @@ namespace wow::web::event {
         );
     };
 
-    typedef std::shared_ptr<ui_event_system> ui_event_system_ptr;
+    using ui_event_system_ptr = std::shared_ptr<ui_event_system>;
 }
 
 #endif //WOW_UNIX_UI_EVENT_SYSTEM_H

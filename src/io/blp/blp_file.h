@@ -115,7 +115,7 @@ namespace wow::io::blp {
         [[nodiscard]] std::vector<uint8_t> convert_to_png() const;
     };
 
-    typedef std::shared_ptr<blp_file> blp_file_ptr;
+    using blp_file_ptr = std::shared_ptr<blp_file>;
 }
 
 #endif //WOW_UNIX_BLP_FILE_H

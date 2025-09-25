@@ -109,7 +109,7 @@ namespace wow::gl {
         [[nodiscard]] bool is_mouse_button_pressed(int button) const;
     };
 
-    typedef std::shared_ptr<window> window_ptr;
+    using window_ptr = std::shared_ptr<window>;
 
     inline window_ptr make_window() {
         return std::make_shared<window>();

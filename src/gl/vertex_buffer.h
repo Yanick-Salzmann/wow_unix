@@ -31,7 +31,7 @@ namespace wow::gl {
 
     };
 
-    typedef std::shared_ptr<vertex_buffer> vertex_buffer_ptr;
+    using vertex_buffer_ptr = std::shared_ptr<vertex_buffer>;
 }
 
 #endif //WOW_UNIX_VERTEX_BUFFER_H

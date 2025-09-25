@@ -10,7 +10,7 @@ namespace wow::gl {
         virtual void bind() = 0;
     };
 
-    typedef std::shared_ptr<bindable_texture> bindable_texture_ptr;
+    using bindable_texture_ptr = std::shared_ptr<bindable_texture>;
 }
 
 #endif //WOW_UNIX_BINDABLE_TEXTURE_H

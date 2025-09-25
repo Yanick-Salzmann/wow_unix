@@ -38,7 +38,7 @@ namespace wow::gl {
         }
     };
 
-    typedef std::shared_ptr<index_buffer> index_buffer_ptr;
+    using index_buffer_ptr = std::shared_ptr<index_buffer>;
 }
 
 #endif //WOW_UNIX_INDEX_BUFFER_H

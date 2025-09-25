@@ -2,6 +2,7 @@
 #define WOW_UNIX_IO_H
 #include <vector>
 #include <cstdint>
+#include <memory>
 
 namespace wow::utils {
     class binary_reader {
@@ -38,6 +39,8 @@ namespace wow::utils {
             return *this;
         }
     };
+
+    using binary_reader_ptr = std::shared_ptr<binary_reader>;
 
     std::vector<uint8_t> to_png(const std::vector<uint8_t>& data, uint32_t w, uint32_t h);
 }

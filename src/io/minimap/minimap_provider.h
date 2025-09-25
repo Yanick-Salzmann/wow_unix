@@ -42,7 +42,7 @@ namespace wow::io::minimap {
         void read_image(std::vector<uint8_t> &image_data, uint32_t map_id, uint32_t zoom_level, int32_t tx, int32_t ty);
     };
 
-    typedef std::shared_ptr<minimap_provider> minimap_provider_ptr;
+    using minimap_provider_ptr = std::shared_ptr<minimap_provider>;
 }
 
 #endif //WOW_UNIX_MINIMAP_PROVIDER_H

@@ -29,5 +29,5 @@ namespace wow::config {
         }
     };
 
-    typedef std::shared_ptr<config_manager> config_manager_ptr;
+    using config_manager_ptr = std::shared_ptr<config_manager>;
 }

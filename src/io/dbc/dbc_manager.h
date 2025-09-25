@@ -28,7 +28,7 @@ namespace wow::io::dbc {
         }
     };
 
-    typedef std::shared_ptr<dbc_manager> dbc_manager_ptr;
+    using dbc_manager_ptr = std::shared_ptr<dbc_manager>;
 }
 
 #endif //WOW_UNIX_DBC_MANAGER_H

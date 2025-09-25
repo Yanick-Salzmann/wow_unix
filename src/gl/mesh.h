@@ -22,7 +22,7 @@ namespace wow::gl {
 
     class mesh;
 
-    typedef std::shared_ptr<mesh> mesh_ptr;
+    using mesh_ptr = std::shared_ptr<mesh>;
 
     class mesh {
         GLuint _vao{};
@@ -83,3 +83,4 @@ namespace wow::gl {
 }
 
 #endif //WOW_UNIX_MESH_H
+

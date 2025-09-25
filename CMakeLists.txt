@@ -62,7 +62,12 @@ FetchContent_Declare(
         GIT_TAG v3.4.0
 )
 
-FetchContent_MakeAvailable(spdlog glfw glad glm stb boost_di StormLib tomlplusplus)
+set(STORMLIB_BUILD_TYPE_BACKUP ${CMAKE_BUILD_TYPE})
+set(CMAKE_BUILD_TYPE Release)
+FetchContent_MakeAvailable(StormLib)
+set(CMAKE_BUILD_TYPE ${STORMLIB_BUILD_TYPE_BACKUP})
+
+FetchContent_MakeAvailable(spdlog glfw glad glm stb boost_di tomlplusplus)
 
 set(PROTO_FILES
         ${CMAKE_SOURCE_DIR}/src/proto/js_event.proto
@@ -172,7 +177,11 @@ add_executable(wow_unix src/main.cpp
         src/utils/constants.h
         src/utils/constants.cpp
         src/config/config_manager.cpp
-        src/config/config_manager.h)
+        src/config/config_manager.h
+        src/io/terrain/adt_tile.h
+        src/io/terrain/adt_tile.cpp
+        src/io/terrain/adt_chunk.h
+        src/io/terrain/adt_chunk.cpp)
 
 add_dependencies(wow_unix fetch_mime_types proto_typescript)
 

@@ -7,7 +7,7 @@
 
 namespace wow::io::minimap {
     class minimap_loader_pool {
-        typedef std::shared_ptr<std::packaged_task<void()>> work_item_ptr;
+        using work_item_ptr = std::shared_ptr<std::packaged_task<void()>>;
 
         std::vector<std::thread> _worker_threads{};
         std::mutex _work_lock{};

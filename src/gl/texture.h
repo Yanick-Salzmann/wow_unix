@@ -25,7 +25,7 @@ namespace wow::gl {
         void png_image(const std::string &path);
     };
 
-    typedef std::shared_ptr<texture> texture_ptr;
+    using texture_ptr = std::shared_ptr<texture>;
 
     inline texture_ptr make_texture() {
         return std::make_shared<texture>();

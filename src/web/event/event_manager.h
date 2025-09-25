@@ -35,7 +35,7 @@ namespace wow::web::event {
         }
     };
 
-    typedef std::shared_ptr<event_manager> event_manager_ptr;
+    using event_manager_ptr = std::shared_ptr<event_manager>;
 }
 
 #endif //WOW_UNIX_EVENT_MANAGER_H

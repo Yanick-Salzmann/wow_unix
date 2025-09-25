@@ -48,7 +48,7 @@ namespace wow::gl {
         program& sampler2d(int index, int location);
     };
 
-    typedef std::shared_ptr<program> program_ptr;
+    using program_ptr = std::shared_ptr<program>;
 }
 
 #endif //WOW_UNIX_PROGRAM_H

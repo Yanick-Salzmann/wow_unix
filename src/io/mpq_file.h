@@ -66,7 +66,7 @@ namespace wow::io {
         std::string read_text();
     };
 
-    typedef std::shared_ptr<mpq_file> mpq_file_ptr;
+    using mpq_file_ptr = std::shared_ptr<mpq_file>;
 }
 
 #endif //WOW_UNIX_MPQ_FILE_H
