@@ -165,8 +165,6 @@ add_executable(wow_unix src/main.cpp
         src/web/schemes/blp_scheme_handler.cpp
         src/web/schemes/minimap_scheme_handler.h
         src/web/schemes/minimap_scheme_handler.cpp
-        src/io/minimap/minimap_loader_pool.h
-        src/io/minimap/minimap_loader_pool.cpp
         src/io/minimap/minimap_provider.h
         src/io/minimap/minimap_provider.cpp
         src/scene/world_frame.h
@@ -181,7 +179,11 @@ add_executable(wow_unix src/main.cpp
         src/io/terrain/adt_tile.h
         src/io/terrain/adt_tile.cpp
         src/io/terrain/adt_chunk.h
-        src/io/terrain/adt_chunk.cpp)
+        src/io/terrain/adt_chunk.cpp
+        src/utils/work_pool.h
+        src/utils/work_pool.cpp)
+
+target_compile_options(wow_unix PRIVATE -Wno-multichar)
 
 add_dependencies(wow_unix fetch_mime_types proto_typescript)
 

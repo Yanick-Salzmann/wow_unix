@@ -3,19 +3,17 @@
 
 #include <vector>
 #include <unordered_map>
-#include <cstdint>
 #include <mutex>
 
-#include "minimap_loader_pool.h"
 #include "io/blp/blp_file.h"
 #include "io/dbc/dbc_manager.h"
-#include "utils/io.h"
+#include "utils/work_pool.h"
 
 namespace wow::io::minimap {
     class minimap_provider {
         dbc::dbc_manager_ptr _dbc_manager{};
         mpq_manager_ptr _mpq_manager{};
-        minimap_loader_pool _loader_pool{};
+        utils::work_pool _loader_pool{};
 
         std::map<std::string, std::string> _md5_translate{};
 

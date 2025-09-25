@@ -6,7 +6,9 @@
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
 #include "io/dbc/dbc_manager.h"
+#include "io/terrain/adt_tile.h"
 #include "utils/constants.h"
+#include "utils/work_pool.h"
 
 namespace wow::scene {
     class map_manager {
@@ -17,6 +19,14 @@ namespace wow::scene {
         std::string _directory{};
 
         glm::vec3 _position{};
+
+        utils::work_pool _tile_load_pool{};
+
+        std::mutex _async_load_lock{};
+        std::list<io::terrain::adt_tile_ptr> _async_loaded_tiles{};
+        std::map<uint32_t, io::terrain::adt_tile_ptr> _loaded_tiles{};
+
+        void async_load_tile(uint32_t x, uint32_t y, utils::binary_reader_ptr data);
 
         void initial_load_thread(int32_t adt_x, int32_t adt_y);
 

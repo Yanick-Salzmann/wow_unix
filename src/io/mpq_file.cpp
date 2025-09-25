@@ -29,4 +29,8 @@ namespace wow::io {
     std::string mpq_file::read_text() {
         return std::string{reinterpret_cast<char *>(_buffer.data()), _buffer.size()};
     }
+
+    utils::binary_reader_ptr mpq_file::to_binary_reader() {
+        return std::make_shared<utils::binary_reader>(_buffer);
+    }
 }

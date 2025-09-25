@@ -38,11 +38,15 @@ namespace wow::utils {
             read(data.data(), data.size() * sizeof(T));
             return *this;
         }
+
+        [[nodiscard]] bool eof() const {
+            return _offset >= _data.size();
+        }
     };
 
     using binary_reader_ptr = std::shared_ptr<binary_reader>;
 
-    std::vector<uint8_t> to_png(const std::vector<uint8_t>& data, uint32_t w, uint32_t h);
+    std::vector<uint8_t> to_png(const std::vector<uint8_t> &data, uint32_t w, uint32_t h);
 }
 
 #endif //WOW_UNIX_IO_H

@@ -1,15 +1,32 @@
 #include "map_manager.h"
 
 namespace wow::scene {
+    void map_manager::async_load_tile(uint32_t x, uint32_t y, utils::binary_reader_ptr data) {
+        const auto adt = std::make_shared<io::terrain::adt_tile>(x, y, data);
+        SPDLOG_INFO("I/O loaded ADT tile {},{}", x, y);
+        std::lock_guard lock(_async_load_lock);
+        _async_loaded_tiles.push_back(adt);
+    }
+
     void map_manager::initial_load_thread(int32_t adt_x, int32_t adt_y) {
         const auto radius = _config_manager->map().load_radius;
+        std::vector<std::shared_future<void> > futures{};
+
         for (auto ty = adt_y - radius; ty <= adt_y + radius; ++ty) {
             for (auto tx = adt_x - radius; tx <= adt_x + radius; ++tx) {
                 const auto tile = fmt::format(R"(World\Maps\{}\{}_{}_{}.adt)", _directory, _directory, tx, ty);
                 auto file = _mpq_manager->open(tile);
-                SPDLOG_INFO("Loading ADT {} (exists: {})", tile, file != nullptr);
+                if (!file) {
+                    SPDLOG_DEBUG("Not loading ADT tile {},{} for map {} - file not found", tx, ty, _directory);
+                    continue;
+                }
+
+                auto reader = file->to_binary_reader();
+                futures.push_back(_tile_load_pool.submit([this, tx, ty, reader] { async_load_tile(tx, ty, reader); }));
             }
         }
+
+        std::ranges::for_each(futures, [](const auto &f) { f.get(); });
     }
 
     void map_manager::enter_world(uint32_t map_id, const glm::vec2 &position) {

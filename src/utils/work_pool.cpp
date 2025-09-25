@@ -1,7 +1,7 @@
-#include "minimap_loader_pool.h"
+#include "work_pool.h"
 
-namespace wow::io::minimap {
-    void minimap_loader_pool::worker_function() {
+namespace wow::utils {
+    void work_pool::worker_function() {
         while (_running) {
             work_item_ptr work_item{};
             {
@@ -20,8 +20,8 @@ namespace wow::io::minimap {
         }
     }
 
-    minimap_loader_pool::minimap_loader_pool() {
-        const auto num_threads = std::thread::hardware_concurrency() * 2;
+    work_pool::work_pool() {
+        const auto num_threads = std::max(1u, std::thread::hardware_concurrency());
         for (auto i = 0; i < num_threads; ++i) {
             _worker_threads.emplace_back(std::thread{
                 [this] {
@@ -31,7 +31,7 @@ namespace wow::io::minimap {
         }
     }
 
-    minimap_loader_pool::~minimap_loader_pool() {
+    work_pool::~work_pool() {
         _running = false;
         _work_cv.notify_all();
         for (auto &thread: _worker_threads) {
@@ -39,7 +39,7 @@ namespace wow::io::minimap {
         }
     }
 
-    std::shared_future<void> minimap_loader_pool::submit(const std::function<void()> &task) {
+    std::shared_future<void> work_pool::submit(const std::function<void()> &task) {
         auto work_item{std::make_shared<std::packaged_task<void()> >(std::move(task))};
         {
             std::lock_guard lock(_work_lock);

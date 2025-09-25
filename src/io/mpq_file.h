@@ -5,6 +5,8 @@
 #include <StormLib.h>
 #include <vector>
 
+#include "utils/io.h"
+
 namespace wow::io {
     class mpq_file {
         HANDLE _file{};
@@ -64,6 +66,8 @@ namespace wow::io {
         }
 
         std::string read_text();
+
+        utils::binary_reader_ptr to_binary_reader();
     };
 
     using mpq_file_ptr = std::shared_ptr<mpq_file>;
