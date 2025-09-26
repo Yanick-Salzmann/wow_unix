@@ -15,6 +15,7 @@ namespace wow::scene {
         config::config_manager_ptr _config_manager{};
         io::dbc::dbc_manager_ptr _dbc_manager{};
         io::mpq_manager_ptr _mpq_manager{};
+        scene::texture_manager_ptr _texture_manager;
 
         std::string _directory{};
 
@@ -34,10 +35,12 @@ namespace wow::scene {
         explicit map_manager(
             io::dbc::dbc_manager_ptr dbc_manager,
             config::config_manager_ptr config_manager,
-            io::mpq_manager_ptr mpq_manager
+            io::mpq_manager_ptr mpq_manager,
+            scene::texture_manager_ptr texture_manager
         ) : _config_manager(std::move(config_manager)),
             _dbc_manager(std::move(dbc_manager)),
-            _mpq_manager(std::move(mpq_manager)) {
+            _mpq_manager(std::move(mpq_manager)),
+            _texture_manager(std::move(texture_manager)) {
         }
 
         void enter_world(uint32_t map_id, const glm::vec2 &position);

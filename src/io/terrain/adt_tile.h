@@ -3,6 +3,7 @@
 #include <map>
 #include <memory>
 
+#include "scene/texture_manager.h"
 #include "utils/io.h"
 
 namespace wow::io::terrain {
@@ -27,13 +28,27 @@ namespace wow::io::terrain {
 
         bool _async_load_successful = false;
 
+        scene::texture_manager_ptr _texture_manager;
+
+        std::map<uint32_t, gl::texture_ptr> _texture_map{};
+
         std::map<uint32_t, data_chunk> _data_chunks{};
         std::vector<chunk_info> _chunk_indices{};
 
         void read_chunks(const utils::binary_reader_ptr &reader);
+
         bool load_chunk_indices();
+        void load_textures();
+
     public:
-        adt_tile(uint32_t x, uint32_t y, const utils::binary_reader_ptr &reader);
+        adt_tile(
+            uint32_t x,
+            uint32_t y,
+            const utils::binary_reader_ptr &reader,
+            scene::texture_manager_ptr texture_manager
+        );
+
+        void async_unload();
     };
 
     using adt_tile_ptr = std::shared_ptr<adt_tile>;

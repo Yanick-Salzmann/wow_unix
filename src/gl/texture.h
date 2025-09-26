@@ -20,9 +20,14 @@ namespace wow::gl {
         void unbind();
 
         void rgba_image(uint32_t width, uint32_t height, const void *data);
+
         void bgra_image(uint32_t width, uint32_t height, const void *data);
 
         void png_image(const std::string &path);
+
+        GLuint native() const;
+
+        static void initialize_default_texture();
     };
 
     using texture_ptr = std::shared_ptr<texture>;

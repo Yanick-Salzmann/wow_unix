@@ -2,20 +2,20 @@
 
 namespace wow::scene {
     void map_manager::async_load_tile(uint32_t x, uint32_t y, utils::binary_reader_ptr data) {
-        const auto adt = std::make_shared<io::terrain::adt_tile>(x, y, data);
+        const auto adt = std::make_shared<io::terrain::adt_tile>(x, y, data, _texture_manager);
         SPDLOG_INFO("I/O loaded ADT tile {},{}", x, y);
         std::lock_guard lock(_async_load_lock);
         _async_loaded_tiles.push_back(adt);
     }
 
-    void map_manager::initial_load_thread(int32_t adt_x, int32_t adt_y) {
+    void map_manager::initial_load_thread(const int32_t adt_x, const int32_t adt_y) {
         const auto radius = _config_manager->map().load_radius;
         std::vector<std::shared_future<void> > futures{};
 
         for (auto ty = adt_y - radius; ty <= adt_y + radius; ++ty) {
             for (auto tx = adt_x - radius; tx <= adt_x + radius; ++tx) {
                 const auto tile = fmt::format(R"(World\Maps\{}\{}_{}_{}.adt)", _directory, _directory, tx, ty);
-                auto file = _mpq_manager->open(tile);
+                const auto file = _mpq_manager->open(tile);
                 if (!file) {
                     SPDLOG_DEBUG("Not loading ADT tile {},{} for map {} - file not found", tx, ty, _directory);
                     continue;
@@ -27,6 +27,7 @@ namespace wow::scene {
         }
 
         std::ranges::for_each(futures, [](const auto &f) { f.get(); });
+        _async_loaded_tiles.clear();
     }
 
     void map_manager::enter_world(uint32_t map_id, const glm::vec2 &position) {

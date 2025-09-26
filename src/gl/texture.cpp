@@ -2,12 +2,16 @@
 #include <stb_image.h>
 
 namespace wow::gl {
+    static GLuint default_texture = 0;
+
     texture::texture() {
-        glGenTextures(1, &_texture);
+        _texture = default_texture;
     }
 
     texture::~texture() {
-        glDeleteTextures(1, &_texture);
+        if (_texture != default_texture) {
+            glDeleteTextures(1, &_texture);
+        }
     }
 
     void texture::bind() {
@@ -19,6 +23,10 @@ namespace wow::gl {
     }
 
     void texture::rgba_image(uint32_t width, uint32_t height, const void *data) {
+        if (_texture == default_texture) {
+            glGenTextures(1, &_texture);
+        }
+
         bind();
         glTexImage2D(
             GL_TEXTURE_2D,
@@ -36,6 +44,10 @@ namespace wow::gl {
     }
 
     void texture::bgra_image(uint32_t width, uint32_t height, const void *data) {
+        if (_texture == default_texture) {
+            glGenTextures(1, &_texture);
+        }
+
         bind();
         glTexImage2D(
             GL_TEXTURE_2D,
@@ -65,5 +77,20 @@ namespace wow::gl {
             stbi_load(path.c_str(), &width, &height, &channels, 4)
         );
         rgba_image(width, height, data.get());
+    }
+
+    GLuint texture::native() const {
+        return _texture == default_texture ? 0 : _texture;
+    }
+
+    void texture::initialize_default_texture() {
+        glGenTextures(1, &default_texture);
+        glBindTexture(GL_TEXTURE_2D, default_texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                     static_cast<const GLvoid *>("\xff\x00\xff\xff\x00\x00\x00\xff\x00\x00\x00\xff\xff\x00\xff\xff")
+        );
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 }

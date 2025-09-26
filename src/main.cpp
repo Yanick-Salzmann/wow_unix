@@ -11,18 +11,21 @@ int main(const int argc, char *argv[]) {
 
     const auto window = wow::utils::app_module->window();
     const auto core = wow::utils::app_module->web_core();
+    const auto world_frame = wow::utils::app_module->world_frame();
 
     core->initialize(argc, argv);
 
     while (window->process_events()) {
         window->begin_frame();
+
+        world_frame->on_frame();
         core->render();
+
         window->end_frame();
     }
 
     core->shutdown();
     window->terminate();
-
 
     return 0;
 }

@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 #include "window.h"
 
+#include "texture.h"
 #include "spdlog/spdlog.h"
 
 namespace wow::gl {
@@ -118,6 +119,8 @@ namespace wow::gl {
             SPDLOG_ERROR("Cannot initialize GLAD");
             throw std::runtime_error("Cannot initialize GLAD");
         }
+
+        texture::initialize_default_texture();
 
         glDebugMessageCallback(gl_debug_callback, nullptr);
         glEnable(GL_DEBUG_OUTPUT);
