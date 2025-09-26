@@ -68,6 +68,8 @@ namespace wow::io::terrain {
         }
 
         load_textures();
+
+        _data_chunks.clear();
     }
 
     void adt_tile::async_unload() {

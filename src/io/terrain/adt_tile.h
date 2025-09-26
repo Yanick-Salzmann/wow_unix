@@ -3,6 +3,7 @@
 #include <map>
 #include <memory>
 
+#include "adt_chunk.h"
 #include "scene/texture_manager.h"
 #include "utils/io.h"
 
@@ -34,6 +35,8 @@ namespace wow::io::terrain {
 
         std::map<uint32_t, data_chunk> _data_chunks{};
         std::vector<chunk_info> _chunk_indices{};
+
+        std::vector<adt_chunk_ptr> _chunks{};
 
         void read_chunks(const utils::binary_reader_ptr &reader);
 
