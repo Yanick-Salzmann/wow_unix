@@ -45,7 +45,7 @@ namespace wow::scene {
             SPDLOG_INFO("Loading texture {}", name);
 
             _texture_map[name] = texture;
-        }§
+        }
 
         return texture;
     }
