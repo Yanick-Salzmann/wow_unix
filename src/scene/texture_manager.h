@@ -17,7 +17,7 @@ namespace wow::scene {
         void unload_texture(const gl::texture *texture, const std::string& texture_name) const;
 
     public:
-        texture_manager(gpu_dispatcher_ptr dispatcher);
+        explicit texture_manager(gpu_dispatcher_ptr dispatcher);
 
         gl::texture_ptr load(const std::string& path);
     };

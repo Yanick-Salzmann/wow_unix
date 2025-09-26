@@ -36,7 +36,7 @@ namespace wow::io::terrain {
         }
 
         const auto str_data = _data_chunks['MTEX'].data;
-        const auto str_ptr = (const char *) str_data.data();
+        const auto str_ptr = reinterpret_cast<const char *>(str_data.data());
         const auto str_end = str_ptr + str_data.size();
         auto cur_offset = str_ptr;
 
