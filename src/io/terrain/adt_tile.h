@@ -1,5 +1,6 @@
 #ifndef WOW_UNIX_ADT_TILE_H
 #define WOW_UNIX_ADT_TILE_H
+
 #include <map>
 #include <memory>
 
@@ -27,21 +28,25 @@ namespace wow::io::terrain {
         uint32_t _x{};
         uint32_t _y{};
 
-        bool _async_load_successful = false;
+        std::atomic_bool _async_load_successful = false;
+        std::atomic_bool _async_unloaded = false;
+        std::map<uint32_t, data_chunk> _data_chunks{};
 
         scene::texture_manager_ptr _texture_manager;
 
         std::map<uint32_t, gl::texture_ptr> _texture_map{};
 
-        std::map<uint32_t, data_chunk> _data_chunks{};
-        std::vector<chunk_info> _chunk_indices{};
+        std::array<chunk_info, 256> _chunk_indices{};
 
-        std::vector<adt_chunk_ptr> _chunks{};
+        std::array<adt_chunk_ptr, 256> _chunks{};
 
         void read_chunks(const utils::binary_reader_ptr &reader);
 
         bool load_chunk_indices();
+
         void load_textures();
+
+        void load_chunks(const utils::binary_reader_ptr &reader);
 
     public:
         adt_tile(
@@ -50,6 +55,12 @@ namespace wow::io::terrain {
             const utils::binary_reader_ptr &reader,
             scene::texture_manager_ptr texture_manager
         );
+
+        ~adt_tile() {
+            if (!_async_unloaded && _async_load_successful) {
+                async_unload();
+            }
+        }
 
         void async_unload();
     };

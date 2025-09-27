@@ -284,8 +284,6 @@ namespace wow::web {
             args.argc = argc;
             args.argv = argv;
 
-            gtk_disable_setlocale();
-
             CefSettings settings{};
             CefString(&settings.browser_subprocess_path) = std::filesystem::absolute("./wow_unix_browser");
             CefString(&settings.locales_dir_path) = std::filesystem::absolute("./locales");

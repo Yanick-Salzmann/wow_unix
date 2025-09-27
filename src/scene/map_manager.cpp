@@ -27,7 +27,6 @@ namespace wow::scene {
         }
 
         std::ranges::for_each(futures, [](const auto &f) { f.get(); });
-        _async_loaded_tiles.clear();
     }
 
     void map_manager::enter_world(uint32_t map_id, const glm::vec2 &position) {
@@ -47,5 +46,9 @@ namespace wow::scene {
                     end_adt);
 
         std::thread{&map_manager::initial_load_thread, this, start_adt, end_adt}.detach();
+    }
+
+    void map_manager::shutdown() {
+        _async_loaded_tiles.clear();
     }
 }

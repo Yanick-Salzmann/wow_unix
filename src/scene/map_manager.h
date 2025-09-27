@@ -44,6 +44,8 @@ namespace wow::scene {
         }
 
         void enter_world(uint32_t map_id, const glm::vec2 &position);
+
+        void shutdown();
     };
 
     using map_manager_ptr = std::shared_ptr<map_manager>;

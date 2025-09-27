@@ -19,6 +19,8 @@ namespace wow::scene {
             _dispatcher(std::move(dispatcher)) {
         }
 
+        void shutdown() const;
+
         void enter_world(uint32_t map_id, const glm::vec2 &position) const;
 
         void on_frame() const;

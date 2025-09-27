@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.24) # DO NOT overwrite this line
 project(wow_unix)
 
 set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 
 find_package(OpenGL REQUIRED COMPONENTS OpenGL EGL)
 find_package(PkgConfig REQUIRED)

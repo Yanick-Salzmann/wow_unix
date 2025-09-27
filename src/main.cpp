@@ -24,6 +24,8 @@ int main(const int argc, char *argv[]) {
         window->end_frame();
     }
 
+    world_frame->shutdown();
+
     core->shutdown();
     window->terminate();
 

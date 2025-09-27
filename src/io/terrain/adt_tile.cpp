@@ -25,8 +25,7 @@ namespace wow::io::terrain {
             return false;
         }
 
-        _chunk_indices.resize(256);
-        memcpy(_chunk_indices.data(), data.data(), 256 * sizeof(decltype(_chunk_indices)::value_type));
+        memcpy(_chunk_indices.data(), data.data(), _chunk_indices.size() * sizeof(decltype(_chunk_indices)::value_type));
         return true;
     }
 
@@ -45,6 +44,22 @@ namespace wow::io::terrain {
             const auto texture_name = std::string{cur_offset};
             cur_offset += texture_name.size() + 1;
             _texture_map[offset] = _texture_manager->load(texture_name);
+        }
+    }
+
+    void adt_tile::load_chunks(const utils::binary_reader_ptr &reader) {
+        for (const auto &mcin: _chunk_indices) {
+            reader->seek(mcin.offset);
+            std::vector<uint8_t> data(mcin.size);
+            reader->read(data.data(), mcin.size);
+            const auto chunk = std::make_shared<adt_chunk>(utils::make_binary_reader(data));
+            auto [x, y] = chunk->index();
+            if (x >= 16 || y >= 16) {
+                SPDLOG_WARN("Invalid chunk index {},{} in ADT tile {},{}", x, y, _x, _y);
+                continue;
+            }
+
+            _chunks[x + 16 * y] = chunk;
         }
     }
 
@@ -68,11 +83,15 @@ namespace wow::io::terrain {
         }
 
         load_textures();
+        load_chunks(reader);
 
         _data_chunks.clear();
+
+        _async_load_successful = true;
     }
 
     void adt_tile::async_unload() {
+        _async_unloaded = true;
         _texture_map.clear();
     }
 }

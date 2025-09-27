@@ -14,6 +14,16 @@ namespace wow::utils {
 
         void read(void *data, size_t size);
 
+        binary_reader &seek_mod(ssize_t diff) {
+            _offset += diff;
+            return *this;
+        }
+
+        binary_reader &seek(size_t offset) {
+            _offset = offset;
+            return *this;
+        }
+
         template<typename T>
         T read() {
             T val{};
@@ -33,6 +43,12 @@ namespace wow::utils {
             return *this;
         }
 
+        template<typename T, size_t size>
+        binary_reader &read(std::array<T, size> &data) {
+            read(data.data(), size * sizeof(T));
+            return *this;
+        }
+
         template<typename T>
         binary_reader &read(std::vector<T> &data) {
             read(data.data(), data.size() * sizeof(T));
@@ -47,6 +63,10 @@ namespace wow::utils {
     using binary_reader_ptr = std::shared_ptr<binary_reader>;
 
     std::vector<uint8_t> to_png(const std::vector<uint8_t> &data, uint32_t w, uint32_t h);
+
+    inline binary_reader_ptr make_binary_reader(const std::vector<uint8_t> &data) {
+        return std::make_shared<binary_reader>(data);
+    }
 }
 
 #endif //WOW_UNIX_IO_H

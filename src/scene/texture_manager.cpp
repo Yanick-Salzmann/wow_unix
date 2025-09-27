@@ -22,31 +22,29 @@ namespace wow::scene {
     }
 
     gl::texture_ptr texture_manager::load(const std::string &path) {
-        const auto name = utils::to_lower(path);
-        const auto texture = std::shared_ptr<gl::texture>(new gl::texture(), [this, name](const gl::texture *ptr) {
-            {
-                std::lock_guard inner_lock(_texture_lock);
-                _texture_map.erase(name);
-            }
-
-            unload_texture(ptr, name);
-        });
-
-
         {
             std::lock_guard lock(_texture_lock);
+
+            const auto name = utils::to_lower(path);
             if (const auto it = _texture_map.find(name); it != _texture_map.end()) {
                 if (const auto tex = it->second.lock()) {
                     return tex;
                 }
             }
 
+            const auto texture = std::shared_ptr<gl::texture>(new gl::texture(), [this, name](const gl::texture *ptr) {
+                {
+                    std::lock_guard inner_lock(_texture_lock);
+                    _texture_map.erase(name);
+                }
+
+                unload_texture(ptr, name);
+            });
 
             SPDLOG_INFO("Loading texture {}", name);
 
             _texture_map[name] = texture;
+            return texture;
         }
-
-        return texture;
     }
 }
