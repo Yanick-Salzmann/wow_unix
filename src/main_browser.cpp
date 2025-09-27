@@ -14,8 +14,7 @@ public:
                 auto &scheme: schemes) {
             registrar->AddCustomScheme(
                 scheme,
-                CEF_SCHEME_OPTION_STANDARD | CEF_SCHEME_OPTION_CORS_ENABLED |
-                CEF_SCHEME_OPTION_SECURE | CEF_SCHEME_OPTION_CSP_BYPASSING
+                CEF_SCHEME_OPTION_STANDARD
             );
                 }
     }

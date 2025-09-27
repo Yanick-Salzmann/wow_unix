@@ -285,12 +285,11 @@ namespace wow::web {
             args.argv = argv;
 
             CefSettings settings{};
-            CefString(&settings.browser_subprocess_path) = std::filesystem::absolute("./wow_unix_browser");
-            CefString(&settings.locales_dir_path) = std::filesystem::absolute("./locales");
-            CefString(&settings.resources_dir_path) = std::filesystem::absolute("./");
-            CefString(&settings.root_cache_path) = std::filesystem::absolute("./cache");
-            CefString(&settings.cache_path) = weakly_canonical(std::filesystem::absolute("./cache/local")).
-                    make_preferred().string();
+            CefString(&settings.browser_subprocess_path) = canonical(std::filesystem::absolute("./wow_unix_browser"));
+            CefString(&settings.locales_dir_path) = canonical(std::filesystem::absolute("./locales"));
+            CefString(&settings.resources_dir_path) = canonical(std::filesystem::absolute("./"));
+            CefString(&settings.cache_path) = canonical(std::filesystem::absolute("./cache"));
+
             settings.no_sandbox = true;
             settings.windowless_rendering_enabled = true;
             settings.remote_debugging_port = 9222;

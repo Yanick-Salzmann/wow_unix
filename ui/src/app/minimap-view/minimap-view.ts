@@ -182,6 +182,7 @@ export class MinimapViewComponent implements OnInit, AfterViewInit, OnDestroy {
                 center: this.map.getCenter(),
                 zoom: this.map.getZoom()
             };
+
             this.mapStateService.saveMapState(this.mapId, currentState);
         }
 
