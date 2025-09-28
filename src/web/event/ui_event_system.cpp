@@ -47,7 +47,8 @@ namespace wow::web::event {
         const io::dbc::dbc_manager_ptr &dbc_manager,
         const scene::world_frame_ptr &world_frame
     ) : _dbc_manager(dbc_manager),
-        _world_frame(world_frame) {
+        _world_frame(world_frame),
+        _event_manager(event_manager) {
         event_manager->listen(proto::JsEvent::kListMapsRequest, [this](const auto &) {
             const auto lmr = handle_list_maps();
             auto response = proto::JsEvent{};

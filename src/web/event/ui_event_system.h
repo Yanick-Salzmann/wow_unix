@@ -12,6 +12,7 @@ namespace wow::web::event {
     class ui_event_system {
         io::dbc::dbc_manager_ptr _dbc_manager{};
         scene::world_frame_ptr _world_frame{};
+        event_manager_ptr _event_manager{};
 
         proto::ListMapsResponse handle_list_maps() const;
 
@@ -23,6 +24,10 @@ namespace wow::web::event {
             const io::dbc::dbc_manager_ptr &dbc_manager,
             const scene::world_frame_ptr &world_frame
         );
+
+        const event_manager_ptr& event_manager() const {
+            return _event_manager;
+        }
     };
 
     using ui_event_system_ptr = std::shared_ptr<ui_event_system>;

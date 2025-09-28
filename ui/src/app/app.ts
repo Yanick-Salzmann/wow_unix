@@ -1,7 +1,6 @@
 import {Component} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {EventService} from "./service/event.service";
-import {JsEvent} from "./proto/js_event";
 
 @Component({
     selector: 'app-root',

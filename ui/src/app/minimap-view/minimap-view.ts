@@ -1,6 +1,6 @@
 import {Component, OnInit, OnDestroy, AfterViewInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {ActivatedRoute, RouterModule} from '@angular/router';
+import {ActivatedRoute, Router, RouterModule} from '@angular/router';
 import {BehaviorSubject} from 'rxjs';
 import * as L from 'leaflet';
 import {EventService} from '../service/event.service';
@@ -28,7 +28,8 @@ export class MinimapViewComponent implements OnInit, AfterViewInit, OnDestroy {
     constructor(
         private route: ActivatedRoute,
         private eventService: EventService,
-        private mapStateService: MapStateService
+        private mapStateService: MapStateService,
+        private router: Router
     ) {
     }
 
@@ -199,5 +200,7 @@ export class MinimapViewComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             }
         })
+
+        await this.router.navigate(['/map-loading']);
     }
 }

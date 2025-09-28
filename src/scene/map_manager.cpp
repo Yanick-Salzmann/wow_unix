@@ -1,5 +1,7 @@
 #include "map_manager.h"
 
+#include "utils/di.h"
+
 namespace wow::scene {
     void map_manager::async_load_tile(uint32_t x, uint32_t y, utils::binary_reader_ptr data) {
         const auto adt = std::make_shared<io::terrain::adt_tile>(x, y, data, _texture_manager);
@@ -27,7 +29,7 @@ namespace wow::scene {
         }
 
         std::ranges::for_each(futures, [](const auto &f) { f.get(); });
-        _camera->enter_world();
+        _camera->enter_world(glm::vec3{_position.x, _position.y, 100.0f});
     }
 
     void map_manager::enter_world(uint32_t map_id, const glm::vec2 &position) {
@@ -46,6 +48,10 @@ namespace wow::scene {
         SPDLOG_INFO("Entering map {} ({}) at {},{} (adt {} {})", map_id, _directory, position.x, position.y, start_adt,
                     end_adt);
 
+        web::proto::JsEvent enter_event{};
+        enter_event.mutable_loading_screen_show_event()->set_image_path("");
+        utils::app_module->ui_event_system()->event_manager()->submit(enter_event);
+
         std::thread{&map_manager::initial_load_thread, this, start_adt, end_adt}.detach();
     }
 
@@ -56,7 +62,7 @@ namespace wow::scene {
             _async_loaded_tiles.clear();
         }
 
-        for (const auto& tile : _loaded_tiles) {
+        for (const auto &tile: _loaded_tiles) {
             tile->on_frame();
         }
     }
@@ -64,5 +70,22 @@ namespace wow::scene {
     void map_manager::shutdown() {
         _async_loaded_tiles.clear();
         _loaded_tiles.clear();
+    }
+
+    float map_manager::height(float x, float y) {
+        const auto tx = static_cast<int32_t>(x / utils::TILE_SIZE);
+        const auto ty = static_cast<int32_t>(y / utils::TILE_SIZE);
+        if (tx < 0 || ty < 0 || tx >= 64 || ty >= 64) {
+            return 0.0f;
+        }
+
+        const auto cx = static_cast<int32_t>((x - static_cast<float>(tx) * utils::TILE_SIZE) / utils::CHUNK_SIZE);
+        const auto cy = static_cast<int32_t>((y - static_cast<float>(ty) * utils::TILE_SIZE) / utils::CHUNK_SIZE);
+
+        if (cx < 0 || cy < 0 || cx >= 16 || cy >= 16) {
+            return 0.0f;
+        }
+
+        return 0.0f;
     }
 }

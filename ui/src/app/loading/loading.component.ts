@@ -1,8 +1,7 @@
-import {Component, OnInit, OnDestroy, ChangeDetectorRef} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Router, ActivatedRoute} from '@angular/router';
 import {EventService} from '../service/event.service';
-import {JsEvent, LoadUpdateEvent} from "../proto/js_event";
 import {BehaviorSubject} from "rxjs";
 
 @Component({

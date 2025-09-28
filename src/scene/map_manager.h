@@ -53,6 +53,8 @@ namespace wow::scene {
         void on_frame();
 
         void shutdown();
+
+        float height(float x, float y);
     };
 
     using map_manager_ptr = std::shared_ptr<map_manager>;

@@ -93,6 +93,12 @@ export interface JsEvent {
          */
         enterWorldRequest: EnterWorldRequest;
     } | {
+        oneofKind: "loadingScreenShowEvent";
+        /**
+         * @generated from protobuf field: wow.web.proto.LoadingScreenShowEvent loading_screen_show_event = 12
+         */
+        loadingScreenShowEvent: LoadingScreenShowEvent;
+    } | {
         oneofKind: undefined;
     };
 }
@@ -257,6 +263,15 @@ export interface EnterWorldRequest {
      */
     y: number;
 }
+/**
+ * @generated from protobuf message wow.web.proto.LoadingScreenShowEvent
+ */
+export interface LoadingScreenShowEvent {
+    /**
+     * @generated from protobuf field: string image_path = 1
+     */
+    imagePath: string;
+}
 // @generated message type with reflection information, may provide speed optimized methods
 class Wrapper$Type extends MessageType<Wrapper> {
     constructor() {
@@ -317,7 +332,8 @@ class JsEvent$Type extends MessageType<JsEvent> {
             { no: 8, name: "list_maps_response", kind: "message", oneof: "event", T: () => ListMapsResponse },
             { no: 9, name: "list_map_pois_request", kind: "message", oneof: "event", T: () => ListMapPoisRequest },
             { no: 10, name: "list_map_pois_response", kind: "message", oneof: "event", T: () => ListMapPoisResponse },
-            { no: 11, name: "enter_world_request", kind: "message", oneof: "event", T: () => EnterWorldRequest }
+            { no: 11, name: "enter_world_request", kind: "message", oneof: "event", T: () => EnterWorldRequest },
+            { no: 12, name: "loading_screen_show_event", kind: "message", oneof: "event", T: () => LoadingScreenShowEvent }
         ]);
     }
     create(value?: PartialMessage<JsEvent>): JsEvent {
@@ -398,6 +414,12 @@ class JsEvent$Type extends MessageType<JsEvent> {
                         enterWorldRequest: EnterWorldRequest.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).enterWorldRequest)
                     };
                     break;
+                case /* wow.web.proto.LoadingScreenShowEvent loading_screen_show_event */ 12:
+                    message.event = {
+                        oneofKind: "loadingScreenShowEvent",
+                        loadingScreenShowEvent: LoadingScreenShowEvent.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).loadingScreenShowEvent)
+                    };
+                    break;
                 default:
                     let u = options.readUnknownField;
                     if (u === "throw")
@@ -443,6 +465,9 @@ class JsEvent$Type extends MessageType<JsEvent> {
         /* wow.web.proto.EnterWorldRequest enter_world_request = 11; */
         if (message.event.oneofKind === "enterWorldRequest")
             EnterWorldRequest.internalBinaryWrite(message.event.enterWorldRequest, writer.tag(11, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.LoadingScreenShowEvent loading_screen_show_event = 12; */
+        if (message.event.oneofKind === "loadingScreenShowEvent")
+            LoadingScreenShowEvent.internalBinaryWrite(message.event.loadingScreenShowEvent, writer.tag(12, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1149,3 +1174,50 @@ class EnterWorldRequest$Type extends MessageType<EnterWorldRequest> {
  * @generated MessageType for protobuf message wow.web.proto.EnterWorldRequest
  */
 export const EnterWorldRequest = new EnterWorldRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class LoadingScreenShowEvent$Type extends MessageType<LoadingScreenShowEvent> {
+    constructor() {
+        super("wow.web.proto.LoadingScreenShowEvent", [
+            { no: 1, name: "image_path", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<LoadingScreenShowEvent>): LoadingScreenShowEvent {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.imagePath = "";
+        if (value !== undefined)
+            reflectionMergePartial<LoadingScreenShowEvent>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: LoadingScreenShowEvent): LoadingScreenShowEvent {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string image_path */ 1:
+                    message.imagePath = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: LoadingScreenShowEvent, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string image_path = 1; */
+        if (message.imagePath !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.imagePath);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message wow.web.proto.LoadingScreenShowEvent
+ */
+export const LoadingScreenShowEvent = new LoadingScreenShowEvent$Type();

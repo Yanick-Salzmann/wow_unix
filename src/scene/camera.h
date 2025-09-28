@@ -17,13 +17,15 @@ namespace wow::scene {
         glm::vec3 _up{0.0f, 0.0f, 1.0f};
 
         bool _is_in_world = false;
+        bool _updated = false;
+        bool _matrix_changed = false;
 
         gl::window_ptr _window{};
 
         std::chrono::steady_clock::time_point _last_update{};
 
     public:
-        camera(gl::window_ptr window);
+        explicit camera(gl::window_ptr window);
 
         void update_aspect_ratio(float aspect);
 
@@ -37,10 +39,7 @@ namespace wow::scene {
 
         void update();
 
-        void enter_world() {
-            _last_update = std::chrono::steady_clock::now();
-            _is_in_world = true;
-        }
+        void enter_world(const glm::vec3& position);
 
         void leave_world() {
             _is_in_world = false;
