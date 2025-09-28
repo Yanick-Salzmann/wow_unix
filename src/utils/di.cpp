@@ -23,7 +23,9 @@ namespace wow::utils {
             bind<web::event::ui_event_system>().in(singleton),
             bind<io::minimap::minimap_provider>().in(singleton),
             bind<scene::world_frame>().in(singleton),
-            bind<config::config_manager>().in(singleton)
+            bind<config::config_manager>().in(singleton),
+            bind<scene::gpu_dispatcher>().in(singleton),
+            bind<scene::camera>().in(singleton)
         ).create<std::shared_ptr<application_module> >();
     }
 }

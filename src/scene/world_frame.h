@@ -2,6 +2,7 @@
 #define WOW_UNIX_WORLD_FRAME_H
 #include <memory>
 
+#include "camera.h"
 #include "gpu_dispatcher.h"
 #include "map_manager.h"
 #include "glm/vec2.hpp"
@@ -10,13 +11,16 @@ namespace wow::scene {
     class world_frame {
         map_manager_ptr _map_manager{};
         gpu_dispatcher_ptr _dispatcher{};
+        camera_ptr _camera{};
 
     public:
         explicit world_frame(
             map_manager_ptr map_manager,
-            gpu_dispatcher_ptr dispatcher
+            gpu_dispatcher_ptr dispatcher,
+            camera_ptr camera
         ) : _map_manager(std::move(map_manager)),
-            _dispatcher(std::move(dispatcher)) {
+            _dispatcher(std::move(dispatcher)),
+            _camera(std::move(camera)) {
         }
 
         void shutdown() const;

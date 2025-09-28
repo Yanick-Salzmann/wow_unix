@@ -33,6 +33,12 @@ namespace wow::gl {
             return *this;
         }
 
+        template<typename T, size_t size>
+        index_buffer &set_data(const std::array<T, size> &data) {
+            set_data(data.data(), size * sizeof(T));
+            return *this;
+        }
+
         [[nodiscard]] const GLenum &type() const {
             return _type;
         }

@@ -12,6 +12,7 @@
 #include "scene/world_frame.h"
 #include "web/event/ui_event_system.h"
 #include "config/config_manager.h"
+#include "scene/camera.h"
 
 namespace wow::utils {
     class application_module {
@@ -22,6 +23,8 @@ namespace wow::utils {
         io::minimap::minimap_provider_ptr _minimap_provider{};
         scene::world_frame_ptr _world_frame{};
         config::config_manager_ptr _config_manager{};
+        scene::gpu_dispatcher_ptr _gpu_dispatcher{};
+        scene::camera_ptr _camera{};
 
     public:
         explicit application_module(
@@ -31,14 +34,18 @@ namespace wow::utils {
             web::event::ui_event_system_ptr ui_event_system,
             io::minimap::minimap_provider_ptr minimap_provider,
             scene::world_frame_ptr world_frame,
-            config::config_manager_ptr config_manager
+            config::config_manager_ptr config_manager,
+            scene::gpu_dispatcher_ptr gpu_dispatcher,
+            scene::camera_ptr camera
         ) : _window(std::move(window)),
             _web_core(std::move(web_core)),
             _mpq_manager(std::move(mpq_manager)),
             _ui_event_system(std::move(ui_event_system)),
             _minimap_provider(std::move(minimap_provider)),
             _world_frame(std::move(world_frame)),
-            _config_manager(std::move(config_manager)) {
+            _config_manager(std::move(config_manager)),
+            _gpu_dispatcher(std::move(gpu_dispatcher)),
+            _camera(std::move(camera)) {
         }
 
         const std::shared_ptr<gl::window> &window() {
@@ -67,6 +74,14 @@ namespace wow::utils {
 
         const config::config_manager_ptr &config_manager() {
             return _config_manager;
+        }
+
+        const scene::gpu_dispatcher_ptr &gpu_dispatcher() {
+            return _gpu_dispatcher;
+        }
+
+        const scene::camera_ptr &camera() {
+            return _camera;
         }
     };
 

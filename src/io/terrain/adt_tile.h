@@ -62,6 +62,8 @@ namespace wow::io::terrain {
             }
         }
 
+        void on_frame() const;
+
         void async_unload();
     };
 

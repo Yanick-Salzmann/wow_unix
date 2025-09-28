@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 #include "window.h"
 
+#include "mesh.h"
 #include "texture.h"
 #include "spdlog/spdlog.h"
 
@@ -121,6 +122,7 @@ namespace wow::gl {
         }
 
         texture::initialize_default_texture();
+        mesh::terrain_mesh();
 
         glDebugMessageCallback(gl_debug_callback, nullptr);
         glEnable(GL_DEBUG_OUTPUT);

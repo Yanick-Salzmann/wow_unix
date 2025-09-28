@@ -274,11 +274,12 @@ namespace wow::web {
 
         _texture = gl::make_texture();
         _mesh = gl::mesh::create_ui_quad();
-        _mesh->texture("ui_texture", _texture);
+        _mesh->texture("ui_texture", _texture)
+                .blend(gl::blend_mode::alpha);
     }
 
     void web_core::initialize(int argc, char *argv[]) {
-        _task = std::packaged_task<bool()>([argc, argv, this]() {
+        _task = std::packaged_task<bool()>([argc, argv, this] {
             SPDLOG_INFO("Initializing CEF");
             CefMainArgs args{};
             args.argc = argc;
@@ -313,7 +314,7 @@ namespace wow::web {
 
             CefBrowserSettings browser_settings{};
             browser_settings.windowless_frame_rate = 60;
-            browser_settings.background_color = CefColorSetARGB(255, 255, 255, 255);
+            browser_settings.background_color = CefColorSetARGB(0, 255, 255, 255);
             browser_settings.javascript_access_clipboard = STATE_ENABLED;
             browser_settings.local_storage = STATE_ENABLED;
 

@@ -4,6 +4,8 @@
 #include <atomic>
 #include <memory>
 
+#include "gl/index_buffer.h"
+#include "gl/vertex_buffer.h"
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
 #include "utils/io.h"
@@ -67,19 +69,30 @@ namespace wow::io::terrain {
 
 #pragma pack(pop)
 
+        static gl::index_buffer_ptr _index_buffer;
+        gl::vertex_buffer_ptr _vertex_buffer{};
+
         std::atomic_bool _is_async_loaded = false;
+        bool _is_sync_loaded = false;
+        bool _sync_load_requested = false;
+
         map_chunk_header _header{};
 
         std::array<adt_vector, 145> _vectors{};
 
         void load_heights(const utils::binary_reader_ptr& reader);
+        void load_normals(const utils::binary_reader_ptr& reader);
+
+        void sync_load();
 
     public:
-        adt_chunk(const utils::binary_reader_ptr& reader);
+        explicit adt_chunk(const utils::binary_reader_ptr& reader);
 
         [[nodiscard]] std::pair<uint32_t, uint32_t> index() const {
             return {_header.index_x, _header.index_y};
         }
+
+        void on_frame();
     };
 
     using adt_chunk_ptr = std::shared_ptr<adt_chunk>;

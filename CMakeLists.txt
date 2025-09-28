@@ -186,7 +186,9 @@ add_executable(wow_unix src/main.cpp
         src/scene/texture_manager.h
         src/scene/texture_manager.cpp
         src/scene/gpu_dispatcher.h
-        src/scene/gpu_dispatcher.cpp)
+        src/scene/gpu_dispatcher.cpp
+        src/scene/camera.h
+        src/scene/camera.cpp)
 
 target_compile_options(wow_unix PRIVATE -Wno-multichar)
 

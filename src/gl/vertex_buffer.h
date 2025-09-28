@@ -12,9 +12,11 @@ namespace wow::gl {
 
     public:
         vertex_buffer();
+
         ~vertex_buffer();
 
         void bind();
+
         void unbind();
 
         void set_data(const void *data, size_t size);
@@ -29,6 +31,10 @@ namespace wow::gl {
             set_data(data, size * sizeof(T));
         }
 
+        template<typename T, size_t size>
+        void set_data(const std::array<T, size> &data) {
+            set_data(data.data(), size * sizeof(T));
+        }
     };
 
     using vertex_buffer_ptr = std::shared_ptr<vertex_buffer>;

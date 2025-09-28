@@ -25,7 +25,8 @@ namespace wow::io::terrain {
             return false;
         }
 
-        memcpy(_chunk_indices.data(), data.data(), _chunk_indices.size() * sizeof(decltype(_chunk_indices)::value_type));
+        memcpy(_chunk_indices.data(), data.data(),
+               _chunk_indices.size() * sizeof(decltype(_chunk_indices)::value_type));
         return true;
     }
 
@@ -88,6 +89,18 @@ namespace wow::io::terrain {
         _data_chunks.clear();
 
         _async_load_successful = true;
+    }
+
+    void adt_tile::on_frame() const {
+        if (!_async_load_successful || _async_unloaded) {
+            return;
+        }
+
+        for (const auto &chunk: _chunks) {
+            if (chunk) {
+                chunk->on_frame();
+            }
+        }
     }
 
     void adt_tile::async_unload() {

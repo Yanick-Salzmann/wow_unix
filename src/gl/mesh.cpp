@@ -109,6 +109,22 @@ namespace wow::gl {
             _program->sampler2d(index, uniform);
             index++;
         }
+
+        switch (_blend_mode) {
+            case blend_mode::none:
+                glDisable(GL_BLEND);
+                break;
+
+            case blend_mode::alpha:
+                glEnable(GL_BLEND);
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                break;
+
+            case blend_mode::color:
+                glEnable(GL_BLEND);
+                glBlendFunc(GL_ONE, GL_ONE);
+                break;
+        }
     }
 
     void mesh::unbind() const {
@@ -207,5 +223,25 @@ namespace wow::gl {
                 .program(program);
 
         return quad_mesh;
+    }
+
+    mesh_ptr mesh::terrain_mesh() {
+        static auto mesh = std::make_shared<gl::mesh>();
+        static std::once_flag flag{};
+        std::call_once(flag, [] {
+            const auto program = std::make_shared<gl::program>();
+            program->compile_vertex_shader_from_file("shaders/terrain_vertex.glsl")
+                    .compile_fragment_shader_from_file("shaders/terrain_fragment.glsl")
+                    .link();
+
+            mesh->set_index_count(768)
+                    .add_vertex_attribute(0, 3, GL_FLOAT, false, 10 * sizeof(float), nullptr)
+                    .add_vertex_attribute(0, 3, GL_FLOAT, false, 10 * sizeof(float), (void *) (3 * sizeof(float)))
+                    .add_vertex_attribute(0, 2, GL_FLOAT, false, 10 * sizeof(float), (void *) (6 * sizeof(float)))
+                    .add_vertex_attribute(0, 2, GL_FLOAT, false, 10 * sizeof(float), (void *) (8 * sizeof(float)))
+                    .program(program);
+        });
+
+        return mesh;
     }
 }

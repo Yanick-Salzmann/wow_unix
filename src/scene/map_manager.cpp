@@ -9,7 +9,7 @@ namespace wow::scene {
     }
 
     void map_manager::initial_load_thread(const int32_t adt_x, const int32_t adt_y) {
-        const auto radius = _config_manager->map().load_radius;
+        const auto radius = 1; //_config_manager->map().load_radius;
         std::vector<std::shared_future<void> > futures{};
 
         for (auto ty = adt_y - radius; ty <= adt_y + radius; ++ty) {
@@ -27,6 +27,7 @@ namespace wow::scene {
         }
 
         std::ranges::for_each(futures, [](const auto &f) { f.get(); });
+        _camera->enter_world();
     }
 
     void map_manager::enter_world(uint32_t map_id, const glm::vec2 &position) {
@@ -48,7 +49,20 @@ namespace wow::scene {
         std::thread{&map_manager::initial_load_thread, this, start_adt, end_adt}.detach();
     }
 
+    void map_manager::on_frame() {
+        if (!_async_loaded_tiles.empty()) {
+            std::lock_guard lock(_async_load_lock);
+            _loaded_tiles.insert(_loaded_tiles.end(), _async_loaded_tiles.begin(), _async_loaded_tiles.end());
+            _async_loaded_tiles.clear();
+        }
+
+        for (const auto& tile : _loaded_tiles) {
+            tile->on_frame();
+        }
+    }
+
     void map_manager::shutdown() {
         _async_loaded_tiles.clear();
+        _loaded_tiles.clear();
     }
 }
