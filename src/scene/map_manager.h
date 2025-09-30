@@ -23,16 +23,28 @@ namespace wow::scene {
 
         glm::vec3 _position{};
 
+        bool _is_running = true;
+
         utils::work_pool _tile_load_pool{};
 
+        std::thread _load_thread{};
         std::mutex _async_load_lock{};
+        std::mutex _sync_load_lock{};
         std::list<io::terrain::adt_tile_ptr> _async_loaded_tiles{};
         std::list<io::terrain::adt_tile_ptr> _loaded_tiles{};
+        std::list<io::terrain::adt_tile_ptr> _tiles_to_unload{};
 
+        std::atomic_int _initial_load_count = 0;
+        int32_t _initial_total_load = 0;
+        bool _is_initial_load_complete = false;
 
         void async_load_tile(uint32_t x, uint32_t y, utils::binary_reader_ptr data);
 
         void initial_load_thread(int32_t adt_x, int32_t adt_y);
+
+        void handle_load_tick();
+
+        void position_update_thread();
 
     public:
         explicit map_manager(
@@ -41,11 +53,12 @@ namespace wow::scene {
             io::mpq_manager_ptr mpq_manager,
             texture_manager_ptr texture_manager,
             camera_ptr camera
-        ) : _config_manager(std::move(config_manager)),
-            _dbc_manager(std::move(dbc_manager)),
-            _mpq_manager(std::move(mpq_manager)),
-            _texture_manager(std::move(texture_manager)),
-            _camera(std::move(camera)) {
+        );
+
+        void update(glm::vec3 position);
+
+        bool is_initial_load_complete() const {
+            return _is_initial_load_complete;
         }
 
         void enter_world(uint32_t map_id, const glm::vec2 &position);
@@ -53,6 +66,8 @@ namespace wow::scene {
         void on_frame();
 
         void shutdown();
+
+        void add_load_progress();
 
         float height(float x, float y);
     };

@@ -25,6 +25,7 @@ namespace wow::utils {
         config::config_manager_ptr _config_manager{};
         scene::gpu_dispatcher_ptr _gpu_dispatcher{};
         scene::camera_ptr _camera{};
+        scene::map_manager_ptr _map_manager{};
 
     public:
         explicit application_module(
@@ -36,7 +37,8 @@ namespace wow::utils {
             scene::world_frame_ptr world_frame,
             config::config_manager_ptr config_manager,
             scene::gpu_dispatcher_ptr gpu_dispatcher,
-            scene::camera_ptr camera
+            scene::camera_ptr camera,
+            scene::map_manager_ptr map_manager
         ) : _window(std::move(window)),
             _web_core(std::move(web_core)),
             _mpq_manager(std::move(mpq_manager)),
@@ -45,7 +47,8 @@ namespace wow::utils {
             _world_frame(std::move(world_frame)),
             _config_manager(std::move(config_manager)),
             _gpu_dispatcher(std::move(gpu_dispatcher)),
-            _camera(std::move(camera)) {
+            _camera(std::move(camera)),
+            _map_manager(std::move(map_manager)) {
         }
 
         const std::shared_ptr<gl::window> &window() {
@@ -82,6 +85,10 @@ namespace wow::utils {
 
         const scene::camera_ptr &camera() {
             return _camera;
+        }
+
+        const scene::map_manager_ptr &map_manager() {
+            return _map_manager;
         }
     };
 

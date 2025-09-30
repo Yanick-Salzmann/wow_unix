@@ -1,24 +1,29 @@
 #include "map_manager.h"
 
 #include "utils/di.h"
+#include "utils/string_utils.h"
 
 namespace wow::scene {
     void map_manager::async_load_tile(uint32_t x, uint32_t y, utils::binary_reader_ptr data) {
         const auto adt = std::make_shared<io::terrain::adt_tile>(x, y, data, _texture_manager);
-        SPDLOG_INFO("I/O loaded ADT tile {},{}", x, y);
         std::lock_guard lock(_async_load_lock);
         _async_loaded_tiles.push_back(adt);
+        add_load_progress();
     }
 
     void map_manager::initial_load_thread(const int32_t adt_x, const int32_t adt_y) {
-        const auto radius = 1; //_config_manager->map().load_radius;
+        const auto radius = _config_manager->map().load_radius;
         std::vector<std::shared_future<void> > futures{};
+
+        _initial_load_count = 0;
+        _initial_total_load = (radius * 2 + 1) * (radius * 2 + 1) * 257;
 
         for (auto ty = adt_y - radius; ty <= adt_y + radius; ++ty) {
             for (auto tx = adt_x - radius; tx <= adt_x + radius; ++tx) {
                 const auto tile = fmt::format(R"(World\Maps\{}\{}_{}_{}.adt)", _directory, _directory, tx, ty);
                 const auto file = _mpq_manager->open(tile);
                 if (!file) {
+                    add_load_progress();
                     SPDLOG_DEBUG("Not loading ADT tile {},{} for map {} - file not found", tx, ty, _directory);
                     continue;
                 }
@@ -29,7 +34,98 @@ namespace wow::scene {
         }
 
         std::ranges::for_each(futures, [](const auto &f) { f.get(); });
-        _camera->enter_world(glm::vec3{_position.x, _position.y, 100.0f});
+        _camera->enter_world(glm::vec3{_position.x, _position.y, 200.0f});
+    }
+
+    void map_manager::handle_load_tick() {
+        if (!_async_loaded_tiles.empty()) {
+            std::lock_guard lock(_async_load_lock);
+            _loaded_tiles.insert(_loaded_tiles.end(), _async_loaded_tiles.begin(), _async_loaded_tiles.end());
+            _async_loaded_tiles.clear();
+        }
+
+        if (_initial_total_load > 0 && _initial_load_count >= _initial_total_load) {
+            web::proto::JsEvent ev = {};
+            ev.mutable_loading_screen_complete_event();
+            utils::app_module->ui_event_system()->event_manager()->submit(ev);
+            _initial_total_load = 0;
+            _is_initial_load_complete = true;
+        }
+    }
+
+    void map_manager::position_update_thread() {
+        auto last_update = std::chrono::steady_clock::now();
+
+        while (_is_running) {
+            const auto tx = static_cast<int32_t>(_position.x / utils::TILE_SIZE);
+            const auto ty = static_cast<int32_t>(_position.y / utils::TILE_SIZE);
+
+            const auto tmp = _loaded_tiles;
+            {
+                std::lock_guard lock(_sync_load_lock);
+                _loaded_tiles.clear();
+            }
+
+            std::unordered_set<int32_t> wanted_indices{};
+            for (auto x = tx - _config_manager->map().load_radius; x <= tx + _config_manager->map().load_radius; ++x) {
+                for (auto y = ty - _config_manager->map().load_radius; y <= ty + _config_manager->map().load_radius; ++
+                     y) {
+                    wanted_indices.insert(y * 64 + x);
+                }
+            }
+
+            for (const auto &tile: tmp) {
+                const auto dx = tx - static_cast<int32_t>(tile->x());
+                const auto dy = ty - static_cast<int32_t>(tile->y());
+                if (dx > _config_manager->map().load_radius || dy > _config_manager->map().load_radius) {
+                    tile->async_unload();
+                    SPDLOG_INFO("Removing tile {} {} from map {}", tile->x(), tile->y(), _directory);
+                    std::lock_guard lock(_sync_load_lock);
+                    _tiles_to_unload.push_back(tile);
+                    continue;
+                }
+
+                wanted_indices.erase(tile->y() * 64 + tile->x());
+                std::lock_guard lock(_sync_load_lock);
+                _loaded_tiles.push_back(tile);
+            }
+
+            for (const auto &index: wanted_indices) {
+                const auto x = index % 64;
+                const auto y = index / 64;
+                const auto tile = fmt::format(R"(World\Maps\{}\{}_{}_{}.adt)", _directory, _directory, x, y);
+                const auto file = _mpq_manager->open(tile);
+                if (!file) {
+                    SPDLOG_DEBUG("Not loading ADT tile {},{} for map {} - file not found", x, y, _directory);
+                    continue;
+                }
+
+                const auto reader = file->to_binary_reader();
+                async_load_tile(x, y, reader);
+            }
+
+            const auto now = std::chrono::steady_clock::now();
+            if (const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_update);
+                elapsed.count() < 100) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(100 - elapsed.count()));
+            }
+
+            last_update = now;
+        }
+    }
+
+    map_manager::map_manager(io::dbc::dbc_manager_ptr dbc_manager, config::config_manager_ptr config_manager,
+                             io::mpq_manager_ptr mpq_manager, texture_manager_ptr texture_manager,
+                             camera_ptr camera) : _config_manager(std::move(config_manager)),
+                                                  _dbc_manager(std::move(dbc_manager)),
+                                                  _mpq_manager(std::move(mpq_manager)),
+                                                  _texture_manager(std::move(texture_manager)),
+                                                  _camera(std::move(camera)) {
+        _load_thread = std::thread{&map_manager::position_update_thread, this};
+    }
+
+    void map_manager::update(const glm::vec3 position) {
+        _position = position;
     }
 
     void map_manager::enter_world(uint32_t map_id, const glm::vec2 &position) {
@@ -48,31 +144,62 @@ namespace wow::scene {
         SPDLOG_INFO("Entering map {} ({}) at {},{} (adt {} {})", map_id, _directory, position.x, position.y, start_adt,
                     end_adt);
 
+        const auto dbc_ls = _dbc_manager->loading_screen_dbc();
+
+        std::string loading_screen{"blp://localhost/Interface/Glues/loading.blp"};
+        if (dbc_ls->has_record(rec.loading_screen)) {
+            loading_screen = "blp://localhost/" +
+                             utils::replace_all(dbc_ls->record(rec.loading_screen).path, "\\", "/");
+        }
+
         web::proto::JsEvent enter_event{};
-        enter_event.mutable_loading_screen_show_event()->set_image_path("");
+        enter_event.mutable_loading_screen_show_event()->set_image_path(loading_screen);
         utils::app_module->ui_event_system()->event_manager()->submit(enter_event);
 
         std::thread{&map_manager::initial_load_thread, this, start_adt, end_adt}.detach();
     }
 
     void map_manager::on_frame() {
-        if (!_async_loaded_tiles.empty()) {
-            std::lock_guard lock(_async_load_lock);
-            _loaded_tiles.insert(_loaded_tiles.end(), _async_loaded_tiles.begin(), _async_loaded_tiles.end());
-            _async_loaded_tiles.clear();
+        handle_load_tick();
+
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
+
+        glEnable(GL_CULL_FACE);
+        glFrontFace(GL_CW);
+
+        std::list<io::terrain::adt_tile_ptr> to_render{};
+        {
+            std::lock_guard lock(_sync_load_lock);
+            to_render.insert(to_render.end(), _loaded_tiles.begin(), _loaded_tiles.end());
+            _tiles_to_unload.clear();
         }
 
-        for (const auto &tile: _loaded_tiles) {
+        for (const auto &tile: to_render) {
             tile->on_frame();
         }
+
+        glDisable(GL_CULL_FACE);
+        glDisable(GL_DEPTH_TEST);
     }
 
     void map_manager::shutdown() {
+        _is_running = false;
+        _load_thread.join();
+
         _async_loaded_tiles.clear();
         _loaded_tiles.clear();
     }
 
-    float map_manager::height(float x, float y) {
+    void map_manager::add_load_progress() {
+        ++_initial_load_count;
+        auto ev = web::proto::JsEvent{};
+        ev.mutable_loading_screen_progress_event()->set_percentage(
+            static_cast<float>(_initial_load_count) / static_cast<float>(_initial_total_load));
+        utils::app_module->ui_event_system()->event_manager()->submit(ev);
+    }
+
+    float map_manager::height(const float x, const float y) {
         const auto tx = static_cast<int32_t>(x / utils::TILE_SIZE);
         const auto ty = static_cast<int32_t>(y / utils::TILE_SIZE);
         if (tx < 0 || ty < 0 || tx >= 64 || ty >= 64) {

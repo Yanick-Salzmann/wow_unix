@@ -28,7 +28,8 @@ namespace wow::gl {
         const program& compile_fragment_shader(const char *source) const;
         void link() const;
 
-        int uniform_location(const char *name) const;
+        int32_t uniform_location(const char *name) const;
+        int32_t attribute_location(const char *name) const;
 
         program &mat3(const glm::mat3 &matrix, const char *name);
 

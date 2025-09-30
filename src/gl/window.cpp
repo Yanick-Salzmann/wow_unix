@@ -1,9 +1,11 @@
 #include <glad/glad.h>
+#include <execinfo.h>
 #include "window.h"
 
 #include "mesh.h"
 #include "texture.h"
 #include "spdlog/spdlog.h"
+#include "utils/di.h"
 
 namespace wow::gl {
     void gl_debug_callback(const GLenum source, GLenum type, GLuint id, const GLenum severity, GLsizei length,
@@ -48,6 +50,7 @@ namespace wow::gl {
     void window::on_resize(int width, int height) const {
         glfwGetFramebufferSize(_window, &width, &height);
         glViewport(0, 0, width, height);
+        utils::app_module->camera()->update_aspect_ratio(static_cast<float>(width) / static_cast<float>(height));
     }
 
     window::window() {
@@ -55,6 +58,11 @@ namespace wow::gl {
             report_glfw_error("Cannot initialize GLFW");
             throw std::runtime_error("Cannot initialize GLFW");
         }
+
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
         _window = glfwCreateWindow(1024, 768, "wow-unix", nullptr, nullptr);
         if (!_window) {
@@ -154,6 +162,7 @@ namespace wow::gl {
 
     void window::begin_frame() {
         glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_DEPTH_BUFFER_BIT);
     }
 
     void window::end_frame() const {

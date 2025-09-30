@@ -12,6 +12,7 @@
 
 namespace wow::gl {
     struct vertex_attribute {
+        std::string name;
         GLuint index;
         GLint size;
         GLenum type;
@@ -70,7 +71,7 @@ namespace wow::gl {
             return *this;
         }
 
-        mesh &add_vertex_attribute(GLuint index, GLint size, GLenum type,
+        mesh &add_vertex_attribute(std::string name, GLuint index, GLint size, GLenum type,
                                    GLboolean normalized = GL_FALSE,
                                    GLsizei stride = 0,
                                    const void *offset = nullptr);

@@ -3,8 +3,11 @@
 
 #include <chrono>
 #include <memory>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 
+#include "frustum.h"
 #include "gl/window.h"
 
 namespace wow::scene {
@@ -15,6 +18,11 @@ namespace wow::scene {
         glm::vec3 _position{};
         glm::vec3 _forward{1.0f, 0.0f, 0.0f};
         glm::vec3 _up{0.0f, 0.0f, 1.0f};
+        glm::vec3 _right = glm::cross(_up, _forward);
+
+        glm::vec2 _last_mouse_pos{};
+
+        frustum _frustum{};
 
         bool _is_in_world = false;
         bool _updated = false;
@@ -37,12 +45,20 @@ namespace wow::scene {
             return _projection;
         }
 
-        void update();
+        bool update();
 
-        void enter_world(const glm::vec3& position);
+        void enter_world(const glm::vec3 &position);
 
         void leave_world() {
             _is_in_world = false;
+        }
+
+        [[nodiscard]] const frustum &view_frustum() const {
+            return _frustum;
+        }
+
+        glm::vec3 position() const {
+            return _position;
         }
     };
 

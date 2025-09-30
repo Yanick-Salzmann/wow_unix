@@ -7,6 +7,7 @@
 #include "adt_chunk.h"
 #include "scene/texture_manager.h"
 #include "utils/io.h"
+#include "utils/math.h"
 
 namespace wow::io::terrain {
     class adt_tile {
@@ -27,6 +28,8 @@ namespace wow::io::terrain {
 
         uint32_t _x{};
         uint32_t _y{};
+
+        utils::bounding_box _bounds{};
 
         std::atomic_bool _async_load_successful = false;
         std::atomic_bool _async_unloaded = false;
@@ -65,6 +68,14 @@ namespace wow::io::terrain {
         void on_frame() const;
 
         void async_unload();
+
+        uint32_t x() const {
+            return _x;
+        }
+
+        uint32_t y() const {
+            return _y;
+        }
     };
 
     using adt_tile_ptr = std::shared_ptr<adt_tile>;

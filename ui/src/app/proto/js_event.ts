@@ -99,6 +99,18 @@ export interface JsEvent {
          */
         loadingScreenShowEvent: LoadingScreenShowEvent;
     } | {
+        oneofKind: "loadingScreenProgressEvent";
+        /**
+         * @generated from protobuf field: wow.web.proto.LoadingScreenProgressEvent loading_screen_progress_event = 13
+         */
+        loadingScreenProgressEvent: LoadingScreenProgressEvent;
+    } | {
+        oneofKind: "loadingScreenCompleteEvent";
+        /**
+         * @generated from protobuf field: wow.web.proto.LoadingScreenCompleteEvent loading_screen_complete_event = 14
+         */
+        loadingScreenCompleteEvent: LoadingScreenCompleteEvent;
+    } | {
         oneofKind: undefined;
     };
 }
@@ -272,6 +284,20 @@ export interface LoadingScreenShowEvent {
      */
     imagePath: string;
 }
+/**
+ * @generated from protobuf message wow.web.proto.LoadingScreenProgressEvent
+ */
+export interface LoadingScreenProgressEvent {
+    /**
+     * @generated from protobuf field: float percentage = 1
+     */
+    percentage: number;
+}
+/**
+ * @generated from protobuf message wow.web.proto.LoadingScreenCompleteEvent
+ */
+export interface LoadingScreenCompleteEvent {
+}
 // @generated message type with reflection information, may provide speed optimized methods
 class Wrapper$Type extends MessageType<Wrapper> {
     constructor() {
@@ -333,7 +359,9 @@ class JsEvent$Type extends MessageType<JsEvent> {
             { no: 9, name: "list_map_pois_request", kind: "message", oneof: "event", T: () => ListMapPoisRequest },
             { no: 10, name: "list_map_pois_response", kind: "message", oneof: "event", T: () => ListMapPoisResponse },
             { no: 11, name: "enter_world_request", kind: "message", oneof: "event", T: () => EnterWorldRequest },
-            { no: 12, name: "loading_screen_show_event", kind: "message", oneof: "event", T: () => LoadingScreenShowEvent }
+            { no: 12, name: "loading_screen_show_event", kind: "message", oneof: "event", T: () => LoadingScreenShowEvent },
+            { no: 13, name: "loading_screen_progress_event", kind: "message", oneof: "event", T: () => LoadingScreenProgressEvent },
+            { no: 14, name: "loading_screen_complete_event", kind: "message", oneof: "event", T: () => LoadingScreenCompleteEvent }
         ]);
     }
     create(value?: PartialMessage<JsEvent>): JsEvent {
@@ -420,6 +448,18 @@ class JsEvent$Type extends MessageType<JsEvent> {
                         loadingScreenShowEvent: LoadingScreenShowEvent.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).loadingScreenShowEvent)
                     };
                     break;
+                case /* wow.web.proto.LoadingScreenProgressEvent loading_screen_progress_event */ 13:
+                    message.event = {
+                        oneofKind: "loadingScreenProgressEvent",
+                        loadingScreenProgressEvent: LoadingScreenProgressEvent.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).loadingScreenProgressEvent)
+                    };
+                    break;
+                case /* wow.web.proto.LoadingScreenCompleteEvent loading_screen_complete_event */ 14:
+                    message.event = {
+                        oneofKind: "loadingScreenCompleteEvent",
+                        loadingScreenCompleteEvent: LoadingScreenCompleteEvent.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).loadingScreenCompleteEvent)
+                    };
+                    break;
                 default:
                     let u = options.readUnknownField;
                     if (u === "throw")
@@ -468,6 +508,12 @@ class JsEvent$Type extends MessageType<JsEvent> {
         /* wow.web.proto.LoadingScreenShowEvent loading_screen_show_event = 12; */
         if (message.event.oneofKind === "loadingScreenShowEvent")
             LoadingScreenShowEvent.internalBinaryWrite(message.event.loadingScreenShowEvent, writer.tag(12, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.LoadingScreenProgressEvent loading_screen_progress_event = 13; */
+        if (message.event.oneofKind === "loadingScreenProgressEvent")
+            LoadingScreenProgressEvent.internalBinaryWrite(message.event.loadingScreenProgressEvent, writer.tag(13, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.LoadingScreenCompleteEvent loading_screen_complete_event = 14; */
+        if (message.event.oneofKind === "loadingScreenCompleteEvent")
+            LoadingScreenCompleteEvent.internalBinaryWrite(message.event.loadingScreenCompleteEvent, writer.tag(14, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1221,3 +1267,88 @@ class LoadingScreenShowEvent$Type extends MessageType<LoadingScreenShowEvent> {
  * @generated MessageType for protobuf message wow.web.proto.LoadingScreenShowEvent
  */
 export const LoadingScreenShowEvent = new LoadingScreenShowEvent$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class LoadingScreenProgressEvent$Type extends MessageType<LoadingScreenProgressEvent> {
+    constructor() {
+        super("wow.web.proto.LoadingScreenProgressEvent", [
+            { no: 1, name: "percentage", kind: "scalar", T: 2 /*ScalarType.FLOAT*/ }
+        ]);
+    }
+    create(value?: PartialMessage<LoadingScreenProgressEvent>): LoadingScreenProgressEvent {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.percentage = 0;
+        if (value !== undefined)
+            reflectionMergePartial<LoadingScreenProgressEvent>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: LoadingScreenProgressEvent): LoadingScreenProgressEvent {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* float percentage */ 1:
+                    message.percentage = reader.float();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: LoadingScreenProgressEvent, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* float percentage = 1; */
+        if (message.percentage !== 0)
+            writer.tag(1, WireType.Bit32).float(message.percentage);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message wow.web.proto.LoadingScreenProgressEvent
+ */
+export const LoadingScreenProgressEvent = new LoadingScreenProgressEvent$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class LoadingScreenCompleteEvent$Type extends MessageType<LoadingScreenCompleteEvent> {
+    constructor() {
+        super("wow.web.proto.LoadingScreenCompleteEvent", []);
+    }
+    create(value?: PartialMessage<LoadingScreenCompleteEvent>): LoadingScreenCompleteEvent {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        if (value !== undefined)
+            reflectionMergePartial<LoadingScreenCompleteEvent>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: LoadingScreenCompleteEvent): LoadingScreenCompleteEvent {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: LoadingScreenCompleteEvent, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message wow.web.proto.LoadingScreenCompleteEvent
+ */
+export const LoadingScreenCompleteEvent = new LoadingScreenCompleteEvent$Type();

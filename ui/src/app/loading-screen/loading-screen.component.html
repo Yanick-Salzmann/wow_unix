@@ -1,3 +1,8 @@
 <div class="loading-screen">
+    @if (loadingScreenImageInfo$ | async; as imageInfo) {
+        <img [ngSrc]="imageInfo.url" alt="Loading Screen Image" [width]="imageInfo.width" [height]="imageInfo.height">
+        <div class="loading-bar-container">
+            <div class="loading-bar" [style.width.%]="(loadingProgress$ | async)! * 100"></div>
+        </div>
+    }
 </div>
-

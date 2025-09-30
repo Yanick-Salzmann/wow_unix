@@ -9,6 +9,7 @@
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
 #include "utils/io.h"
+#include "utils/math.h"
 
 namespace wow::io::terrain {
     class adt_chunk {
@@ -76,23 +77,30 @@ namespace wow::io::terrain {
         bool _is_sync_loaded = false;
         bool _sync_load_requested = false;
 
+        utils::bounding_box _bounds{};
+
         map_chunk_header _header{};
 
         std::array<adt_vector, 145> _vectors{};
 
-        void load_heights(const utils::binary_reader_ptr& reader);
-        void load_normals(const utils::binary_reader_ptr& reader);
+        void load_heights(const utils::binary_reader_ptr &reader);
+
+        void load_normals(const utils::binary_reader_ptr &reader);
 
         void sync_load();
 
     public:
-        explicit adt_chunk(const utils::binary_reader_ptr& reader);
+        explicit adt_chunk(const utils::binary_reader_ptr &reader);
 
         [[nodiscard]] std::pair<uint32_t, uint32_t> index() const {
             return {_header.index_x, _header.index_y};
         }
 
         void on_frame();
+
+        [[nodiscard]] const utils::bounding_box &bounds() const {
+            return _bounds;
+        }
     };
 
     using adt_chunk_ptr = std::shared_ptr<adt_chunk>;

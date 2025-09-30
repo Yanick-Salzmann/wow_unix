@@ -20,6 +20,8 @@ message JsEvent {
     ListMapPoisResponse list_map_pois_response = 10;
     EnterWorldRequest enter_world_request = 11;
     LoadingScreenShowEvent loading_screen_show_event = 12;
+    LoadingScreenProgressEvent loading_screen_progress_event = 13;
+    LoadingScreenCompleteEvent loading_screen_complete_event = 14;
   }
 }
 
@@ -91,4 +93,12 @@ message EnterWorldRequest {
 
 message LoadingScreenShowEvent {
   string image_path = 1;
+}
+
+message LoadingScreenProgressEvent {
+  float percentage = 1;
+}
+
+message LoadingScreenCompleteEvent {
+
 }

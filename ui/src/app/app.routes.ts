@@ -4,6 +4,7 @@ import { LoadingComponent } from './loading/loading.component';
 import { MapSelectionComponent } from './map-selection/map-selection.component';
 import { MinimapViewComponent } from './minimap-view/minimap-view';
 import {LoadingScreenComponent} from "./loading-screen/loading-screen.component";
+import {WorldFrame} from "./world-frame/world-frame";
 
 export const routes: Routes = [
   { path: 'splash', component: SplashComponent },
@@ -11,6 +12,7 @@ export const routes: Routes = [
   { path: 'map-selection', component: MapSelectionComponent },
   { path: 'minimap/:mapId', component: MinimapViewComponent },
   { path: 'map-loading', component: LoadingScreenComponent },
+  { path: 'world-frame', component: WorldFrame },
   { path: '', redirectTo: 'splash', pathMatch: 'full' },
   { path: '**', redirectTo: 'splash' }
 ];

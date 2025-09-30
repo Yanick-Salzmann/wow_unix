@@ -60,9 +60,9 @@ namespace wow::gl {
         return *this;
     }
 
-    mesh &mesh::add_vertex_attribute(GLuint index, GLint size, GLenum type,
+    mesh &mesh::add_vertex_attribute(std::string name, GLuint index, GLint size, GLenum type,
                                      GLboolean normalized, GLsizei stride, const void *offset) {
-        _vertex_attributes.push_back({index, size, type, normalized, stride, offset});
+        _vertex_attributes.push_back({std::move(name), index, size, type, normalized, stride, offset});
         if (_vertex_buffer) {
             setup_vertex_attributes();
         }
@@ -168,6 +168,7 @@ namespace wow::gl {
         _vertex_buffer->bind();
 
         for (const auto &[
+                 name,
                  index,
                  size,
                  type,
@@ -175,8 +176,9 @@ namespace wow::gl {
                  stride,
                  offset
              ]: _vertex_attributes) {
-            glEnableVertexAttribArray(index);
-            glVertexAttribPointer(index, size, type, normalized, stride, offset);
+            const auto loc = _program->attribute_location(fmt::format("{}{}", name, index).c_str());
+            glEnableVertexAttribArray(loc);
+            glVertexAttribPointer(loc, size, type, normalized, stride, offset);
         }
 
         glBindVertexArray(0);
@@ -216,11 +218,12 @@ namespace wow::gl {
                 .link();
 
         quad_mesh->vertex_buffer(vb)
+                .program(program)
                 .index_buffer(ib)
                 .set_index_count(6)
-                .add_vertex_attribute(0, 2,GL_FLOAT, false, 4 * sizeof(float), nullptr)
-                .add_vertex_attribute(1, 2,GL_FLOAT, false, 4 * sizeof(float), (void *) (2 * sizeof(float)))
-                .program(program);
+                .add_vertex_attribute("vertex_position", 0, 2,GL_FLOAT, false, 4 * sizeof(float), nullptr)
+                .add_vertex_attribute("vertex_texcoord", 0, 2,GL_FLOAT, false, 4 * sizeof(float),
+                                      (void *) (2 * sizeof(float)));
 
         return quad_mesh;
     }
@@ -235,10 +238,13 @@ namespace wow::gl {
                     .link();
 
             mesh->set_index_count(768)
-                    .add_vertex_attribute(0, 3, GL_FLOAT, false, 10 * sizeof(float), nullptr)
-                    .add_vertex_attribute(0, 3, GL_FLOAT, false, 10 * sizeof(float), (void *) (3 * sizeof(float)))
-                    .add_vertex_attribute(0, 2, GL_FLOAT, false, 10 * sizeof(float), (void *) (6 * sizeof(float)))
-                    .add_vertex_attribute(0, 2, GL_FLOAT, false, 10 * sizeof(float), (void *) (8 * sizeof(float)))
+                    .add_vertex_attribute("position", 0, 3, GL_FLOAT, false, 10 * sizeof(float), nullptr)
+                    .add_vertex_attribute("normal", 0, 3, GL_FLOAT, false, 10 * sizeof(float),
+                                          (void *) (3 * sizeof(float)))
+                    .add_vertex_attribute("tex_coord", 0, 2, GL_FLOAT, false, 10 * sizeof(float),
+                                          (void *) (6 * sizeof(float)))
+                    .add_vertex_attribute("alpha_coord", 0, 2, GL_FLOAT, false, 10 * sizeof(float),
+                                          (void *) (8 * sizeof(float)))
                     .program(program);
         });
 

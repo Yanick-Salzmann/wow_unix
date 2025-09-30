@@ -1,24 +1,24 @@
 import {Component} from '@angular/core';
-import {EventService} from "../service/event.service";
 import {BehaviorSubject} from "rxjs";
+import {AsyncPipe, NgOptimizedImage} from "@angular/common";
+import {LoadingScreenService} from "../service/loading-screen.service";
 
 @Component({
-    selector: 'app-loading-screen',
-    standalone: true,
-    templateUrl: './loading-screen.component.html',
-    styleUrls: ['./loading-screen.component.scss']
+  selector: 'app-loading-screen',
+  standalone: true,
+  imports: [
+    AsyncPipe,
+    NgOptimizedImage
+  ],
+  templateUrl: './loading-screen.component.html',
+  styleUrls: ['./loading-screen.component.scss']
 })
 export class LoadingScreenComponent {
-    private loadingScreenImage$ = new BehaviorSubject<string>("");
+  public loadingScreenImageInfo$: BehaviorSubject<{ url: string; width: number; height: number } | null>;
+  public loadingProgress$: BehaviorSubject<number>;
 
-    constructor(eventService: EventService) {
-        eventService.listenForEvent("loadingScreenShowEvent", async (event) => {
-            if (event.event.oneofKind != "loadingScreenShowEvent") {
-                console.warn("Received wrong event type in LoadingScreenComponent: ", event);
-                return;
-            }
-
-            this.loadingScreenImage$.next(event.event.loadingScreenShowEvent.imagePath);
-        });
-    }
+  constructor(loadingScreenService: LoadingScreenService) {
+    this.loadingScreenImageInfo$ = loadingScreenService.loadingScreenImageInfo$;
+    this.loadingProgress$ = loadingScreenService.loadingProgress$;
+  }
 }

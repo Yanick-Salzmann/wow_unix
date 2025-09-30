@@ -188,9 +188,13 @@ add_executable(wow_unix src/main.cpp
         src/scene/gpu_dispatcher.h
         src/scene/gpu_dispatcher.cpp
         src/scene/camera.h
-        src/scene/camera.cpp)
+        src/scene/camera.cpp
+        src/utils/math.h
+        src/utils/math.cpp
+        src/scene/frustum.h
+        src/scene/frustum.cpp)
 
-target_compile_options(wow_unix PRIVATE -Wno-multichar)
+target_compile_options(wow_unix PRIVATE -Wno-multichar -DGLM_ENABLE_EXPERIMENTAL -rdynamic)
 
 add_dependencies(wow_unix fetch_mime_types proto_typescript)
 

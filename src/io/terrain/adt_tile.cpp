@@ -1,6 +1,7 @@
 #include "adt_tile.h"
 
 #include "spdlog/spdlog.h"
+#include "utils/di.h"
 
 namespace wow::io::terrain {
     void adt_tile::read_chunks(const utils::binary_reader_ptr &reader) {
@@ -88,11 +89,30 @@ namespace wow::io::terrain {
 
         _data_chunks.clear();
 
+        constexpr auto flt_max = std::numeric_limits<float>::max();
+        constexpr auto flt_min = -flt_max;
+        _bounds.min() = glm::vec3{flt_max, flt_max, flt_max};
+        _bounds.max() = glm::vec3{flt_min, flt_min, flt_min};
+
+        for (const auto &chunk: _chunks) {
+            auto b = chunk->bounds();
+            _bounds.take_min(b.min()).take_max(b.max());
+        }
+
+        if (_bounds.max().z - _bounds.min().z < 5) {
+            _bounds.max().z = _bounds.min().z + 5;
+        }
+
         _async_load_successful = true;
     }
 
     void adt_tile::on_frame() const {
         if (!_async_load_successful || _async_unloaded) {
+            return;
+        }
+
+        if (utils::app_module->map_manager()->is_initial_load_complete() &&
+            !utils::app_module->camera()->view_frustum().intersects_aabb(_bounds)) {
             return;
         }
 

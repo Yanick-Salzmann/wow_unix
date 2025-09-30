@@ -92,11 +92,17 @@ namespace wow::gl {
             glGetProgramiv(_program, GL_INFO_LOG_LENGTH, &length);
             std::vector<char> log(length + 1);
             glGetProgramInfoLog(_program, length, &length, log.data());
+            SPDLOG_ERROR("Error linking program: {}", log.data());
+            throw std::runtime_error("Error linking program");
         }
     }
 
-    int program::uniform_location(const char *name) const {
+    int32_t program::uniform_location(const char *name) const {
         return glGetUniformLocation(_program, name);
+    }
+
+    int32_t program::attribute_location(const char *name) const {
+        return glGetAttribLocation(_program, name);
     }
 
     program &program::mat3(const glm::mat3 &matrix, const char *name) {
@@ -147,7 +153,7 @@ namespace wow::gl {
         return *this;
     }
 
-    program & program::sampler2d(int index, int location) {
+    program &program::sampler2d(int index, int location) {
         glUniform1i(location, index);
         return *this;
     }

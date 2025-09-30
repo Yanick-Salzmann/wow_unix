@@ -10,7 +10,9 @@ namespace wow::scene {
     }
 
     void world_frame::on_frame() const {
-        _camera->update();
+        if (_camera->update()) {
+            _map_manager->update(_camera->position());
+        }
 
         _dispatcher->process_one_frame();
         _map_manager->on_frame();

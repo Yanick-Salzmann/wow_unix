@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {EventService} from "./service/event.service";
+import {LoadingScreenService} from "./service/loading-screen.service";
 
 @Component({
     selector: 'app-root',
@@ -10,7 +11,8 @@ import {EventService} from "./service/event.service";
     styleUrl: './app.scss'
 })
 export class App {
-    constructor(eventService: EventService) {
+    constructor(eventService: EventService, loadingScreenService: LoadingScreenService) {
         eventService.initialize();
+        loadingScreenService.initialize();
     }
 }

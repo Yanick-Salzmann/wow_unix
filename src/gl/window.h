@@ -7,6 +7,7 @@
 #include <vector>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "glm/vec2.hpp"
 
 #define GLFW_EXPOSE_NATIVE_X11
 #include "GLFW/glfw3native.h"
@@ -73,7 +74,7 @@ namespace wow::gl {
 
         ~window();
 
-        bool process_events() const;
+        [[nodiscard]] bool process_events() const;
 
         void begin_frame();
 
@@ -83,7 +84,6 @@ namespace wow::gl {
 
         [[nodiscard]] std::pair<int, int> size() const;
 
-        // Returns the DPI scaling factor for the window.
         [[nodiscard]] float dpi_scaling() const {
             float x_scale = 1.0f, y_scale = 1.0f;
             if (_window) {
@@ -96,17 +96,23 @@ namespace wow::gl {
             return glfwGetX11Window(_window);
         }
 
-        GLFWwindow *native_handle() const {
+        [[nodiscard]] GLFWwindow *native_handle() const {
             return _window;
         }
 
         void change_cursor(cef_cursor_type_t cursor) const;
 
-        std::pair<int, int> screen_coordinates(int x, int y) const;
+        [[nodiscard]] std::pair<int, int> screen_coordinates(int x, int y) const;
 
         [[nodiscard]] bool is_key_pressed(int key) const;
 
         [[nodiscard]] bool is_mouse_button_pressed(int button) const;
+
+        [[nodiscard]] glm::vec2 get_mouse_position() const {
+            double x, y;
+            glfwGetCursorPos(_window, &x, &y);
+            return {x, y};
+        }
     };
 
     using window_ptr = std::shared_ptr<window>;

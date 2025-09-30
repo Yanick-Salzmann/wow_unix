@@ -98,6 +98,7 @@ namespace wow::io::terrain {
         _vertex_buffer->set_data(_vectors);
 
         _is_sync_loaded = true;
+        utils::app_module->map_manager()->add_load_progress();
     }
 
     adt_chunk::adt_chunk(const utils::binary_reader_ptr &reader) {
@@ -118,6 +119,15 @@ namespace wow::io::terrain {
         reader->seek(_header.ofs_normals);
         load_normals(reader);
 
+        _bounds = utils::bounding_box(_vectors[0].position, _vectors[0].position);
+        for (const auto &v: _vectors) {
+            _bounds.take_min_max(v.position);
+        }
+
+        if (_bounds.max().z - _bounds.min().z < 5) {
+            _bounds.max().z = _bounds.min().z + 5;
+        }
+
         _is_async_loaded = true;
     }
 
@@ -133,6 +143,10 @@ namespace wow::io::terrain {
 
             _sync_load_requested = true;
             utils::app_module->gpu_dispatcher()->dispatch([this] { sync_load(); });
+            return;
+        }
+
+        if (!utils::app_module->camera()->view_frustum().intersects_aabb(_bounds)) {
             return;
         }
 
