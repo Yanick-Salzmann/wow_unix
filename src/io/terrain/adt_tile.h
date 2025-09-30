@@ -76,6 +76,14 @@ namespace wow::io::terrain {
         uint32_t y() const {
             return _y;
         }
+
+        adt_chunk_ptr chunk(uint32_t index) const {
+            if (index >= _chunks.size()) {
+                return nullptr;
+            }
+
+            return _chunks[index];
+        }
     };
 
     using adt_tile_ptr = std::shared_ptr<adt_tile>;

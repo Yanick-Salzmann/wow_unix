@@ -101,6 +101,10 @@ namespace wow::io::terrain {
         [[nodiscard]] const utils::bounding_box &bounds() const {
             return _bounds;
         }
+
+        int32_t area_id() const {
+            return _header.area_id;
+        }
     };
 
     using adt_chunk_ptr = std::shared_ptr<adt_chunk>;

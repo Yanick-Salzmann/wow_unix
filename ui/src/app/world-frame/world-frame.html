@@ -3,8 +3,19 @@
   </div>
   <footer class="footer-bar">
     <div class="footer-content">
-      World Frame Footer - Placeholder Content
+      <div class="area-info">
+        @if (areaInfo$ | async; as areaInfo) {
+          <span>{{ areaInfo.name }} ({{ areaInfo.id }})</span>
+        }
+      </div>
+      <div class="position-info">
+        @if (worldPosition$ | async; as pos) {
+          <span class="map-name">{{ pos.mapName }} ({{pos.mapId}})</span>
+          <span class="coords">
+            X: {{ pos.x | number:'1.0-0' }} | Y: {{ pos.y | number:'1.0-0' }} | Z: {{ pos.z | number:'1.0-0' }}
+          </span>
+        }
+      </div>
     </div>
   </footer>
 </div>
-

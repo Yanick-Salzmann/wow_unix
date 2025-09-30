@@ -6,7 +6,6 @@
 
 namespace wow::scene {
     void texture_manager::unload_texture(const gl::texture *texture, const std::string &texture_name) const {
-        SPDLOG_INFO("Unloading texture {}", texture_name);
         if (texture != nullptr) {
             const auto native = texture->native();
             if (native) {
@@ -40,8 +39,6 @@ namespace wow::scene {
 
                 unload_texture(ptr, name);
             });
-
-            SPDLOG_INFO("Loading texture {}", name);
 
             _texture_map[name] = texture;
             return texture;

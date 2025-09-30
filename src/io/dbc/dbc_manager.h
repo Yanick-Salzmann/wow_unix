@@ -10,6 +10,7 @@ namespace wow::io::dbc {
         dbc_file_ptr<map_record> _map_dbc{};
         dbc_file_ptr<loading_screen_record> _loading_screen_dbc{};
         dbc_file_ptr<area_poi_record> _area_poi_dbc{};
+        dbc_file_ptr<area_table_record> _area_table_dbc{};
 
     public:
         void initialize(const mpq_manager_ptr &mpq_manager,
@@ -25,6 +26,10 @@ namespace wow::io::dbc {
 
         [[nodiscard]] const dbc_file_ptr<area_poi_record> &area_poi_dbc() const {
             return _area_poi_dbc;
+        }
+
+        [[nodiscard]] const dbc_file_ptr<area_table_record> &area_table_dbc() const {
+            return _area_table_dbc;
         }
     };
 

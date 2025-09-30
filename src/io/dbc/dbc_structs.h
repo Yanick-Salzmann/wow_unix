@@ -70,6 +70,26 @@ namespace wow::io::dbc {
         int32_t map_link;
     };
 
+    struct area_table_record {
+        int32_t id;
+        int32_t map_id;
+        int32_t parent_id;
+        int32_t area_bit;
+        int32_t flags;
+        int32_t sound_provider;
+        int32_t underwater_sound_provider;
+        int32_t sound_ambience;
+        int32_t zone_music;
+        int32_t zone_intro_music;
+        int32_t level;
+        loc_string name;
+        int32_t faction;
+        int32_t liquid_Type;
+        float min_elevation;
+        float ambient_multiplier;
+        int32_t light;
+    };
+
 #pragma pack(pop)
 }
 

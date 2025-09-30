@@ -15,18 +15,43 @@
 }
 
 .footer-bar {
-  position: fixed;
+  position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(0, 0, 0, 0.7);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 12px 20px;
-  z-index: 1000;
+  background-color: #1a1a1a;
+  color: #fff;
+  padding: 8px 12px;
+  font-family: sans-serif;
+  font-size: 14px;
+  border-top: 1px solid #444;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .footer-content {
-  color: #ffffff;
-  font-size: 14px;
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.area-info, .position-info {
+  display: flex;
+  align-items: center;
+}
+
+.position-info {
+  gap: 15px;
+}
+
+.map-name {
+  font-weight: bold;
+}
+
+.coords {
+  font-family: monospace;
+  font-size: 13px;
+  background-color: #333;
+  padding: 2px 6px;
+  border-radius: 3px;
 }

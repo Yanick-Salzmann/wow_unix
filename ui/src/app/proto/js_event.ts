@@ -111,6 +111,18 @@ export interface JsEvent {
          */
         loadingScreenCompleteEvent: LoadingScreenCompleteEvent;
     } | {
+        oneofKind: "areaUpdateEvent";
+        /**
+         * @generated from protobuf field: wow.web.proto.AreaUpdateEvent area_update_event = 15
+         */
+        areaUpdateEvent: AreaUpdateEvent;
+    } | {
+        oneofKind: "worldPositionUpdateEvent";
+        /**
+         * @generated from protobuf field: wow.web.proto.WorldPositionUpdateEvent world_position_update_event = 16
+         */
+        worldPositionUpdateEvent: WorldPositionUpdateEvent;
+    } | {
         oneofKind: undefined;
     };
 }
@@ -298,6 +310,44 @@ export interface LoadingScreenProgressEvent {
  */
 export interface LoadingScreenCompleteEvent {
 }
+/**
+ * @generated from protobuf message wow.web.proto.AreaUpdateEvent
+ */
+export interface AreaUpdateEvent {
+    /**
+     * @generated from protobuf field: string area_name = 1
+     */
+    areaName: string;
+    /**
+     * @generated from protobuf field: int32 area_id = 2
+     */
+    areaId: number;
+}
+/**
+ * @generated from protobuf message wow.web.proto.WorldPositionUpdateEvent
+ */
+export interface WorldPositionUpdateEvent {
+    /**
+     * @generated from protobuf field: string map_name = 1
+     */
+    mapName: string;
+    /**
+     * @generated from protobuf field: int32 map_id = 2
+     */
+    mapId: number;
+    /**
+     * @generated from protobuf field: float x = 3
+     */
+    x: number;
+    /**
+     * @generated from protobuf field: float y = 4
+     */
+    y: number;
+    /**
+     * @generated from protobuf field: float z = 5
+     */
+    z: number;
+}
 // @generated message type with reflection information, may provide speed optimized methods
 class Wrapper$Type extends MessageType<Wrapper> {
     constructor() {
@@ -361,7 +411,9 @@ class JsEvent$Type extends MessageType<JsEvent> {
             { no: 11, name: "enter_world_request", kind: "message", oneof: "event", T: () => EnterWorldRequest },
             { no: 12, name: "loading_screen_show_event", kind: "message", oneof: "event", T: () => LoadingScreenShowEvent },
             { no: 13, name: "loading_screen_progress_event", kind: "message", oneof: "event", T: () => LoadingScreenProgressEvent },
-            { no: 14, name: "loading_screen_complete_event", kind: "message", oneof: "event", T: () => LoadingScreenCompleteEvent }
+            { no: 14, name: "loading_screen_complete_event", kind: "message", oneof: "event", T: () => LoadingScreenCompleteEvent },
+            { no: 15, name: "area_update_event", kind: "message", oneof: "event", T: () => AreaUpdateEvent },
+            { no: 16, name: "world_position_update_event", kind: "message", oneof: "event", T: () => WorldPositionUpdateEvent }
         ]);
     }
     create(value?: PartialMessage<JsEvent>): JsEvent {
@@ -460,6 +512,18 @@ class JsEvent$Type extends MessageType<JsEvent> {
                         loadingScreenCompleteEvent: LoadingScreenCompleteEvent.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).loadingScreenCompleteEvent)
                     };
                     break;
+                case /* wow.web.proto.AreaUpdateEvent area_update_event */ 15:
+                    message.event = {
+                        oneofKind: "areaUpdateEvent",
+                        areaUpdateEvent: AreaUpdateEvent.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).areaUpdateEvent)
+                    };
+                    break;
+                case /* wow.web.proto.WorldPositionUpdateEvent world_position_update_event */ 16:
+                    message.event = {
+                        oneofKind: "worldPositionUpdateEvent",
+                        worldPositionUpdateEvent: WorldPositionUpdateEvent.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).worldPositionUpdateEvent)
+                    };
+                    break;
                 default:
                     let u = options.readUnknownField;
                     if (u === "throw")
@@ -514,6 +578,12 @@ class JsEvent$Type extends MessageType<JsEvent> {
         /* wow.web.proto.LoadingScreenCompleteEvent loading_screen_complete_event = 14; */
         if (message.event.oneofKind === "loadingScreenCompleteEvent")
             LoadingScreenCompleteEvent.internalBinaryWrite(message.event.loadingScreenCompleteEvent, writer.tag(14, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.AreaUpdateEvent area_update_event = 15; */
+        if (message.event.oneofKind === "areaUpdateEvent")
+            AreaUpdateEvent.internalBinaryWrite(message.event.areaUpdateEvent, writer.tag(15, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.WorldPositionUpdateEvent world_position_update_event = 16; */
+        if (message.event.oneofKind === "worldPositionUpdateEvent")
+            WorldPositionUpdateEvent.internalBinaryWrite(message.event.worldPositionUpdateEvent, writer.tag(16, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1352,3 +1422,137 @@ class LoadingScreenCompleteEvent$Type extends MessageType<LoadingScreenCompleteE
  * @generated MessageType for protobuf message wow.web.proto.LoadingScreenCompleteEvent
  */
 export const LoadingScreenCompleteEvent = new LoadingScreenCompleteEvent$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class AreaUpdateEvent$Type extends MessageType<AreaUpdateEvent> {
+    constructor() {
+        super("wow.web.proto.AreaUpdateEvent", [
+            { no: 1, name: "area_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "area_id", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+        ]);
+    }
+    create(value?: PartialMessage<AreaUpdateEvent>): AreaUpdateEvent {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.areaName = "";
+        message.areaId = 0;
+        if (value !== undefined)
+            reflectionMergePartial<AreaUpdateEvent>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: AreaUpdateEvent): AreaUpdateEvent {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string area_name */ 1:
+                    message.areaName = reader.string();
+                    break;
+                case /* int32 area_id */ 2:
+                    message.areaId = reader.int32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: AreaUpdateEvent, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string area_name = 1; */
+        if (message.areaName !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.areaName);
+        /* int32 area_id = 2; */
+        if (message.areaId !== 0)
+            writer.tag(2, WireType.Varint).int32(message.areaId);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message wow.web.proto.AreaUpdateEvent
+ */
+export const AreaUpdateEvent = new AreaUpdateEvent$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class WorldPositionUpdateEvent$Type extends MessageType<WorldPositionUpdateEvent> {
+    constructor() {
+        super("wow.web.proto.WorldPositionUpdateEvent", [
+            { no: 1, name: "map_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "map_id", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 3, name: "x", kind: "scalar", T: 2 /*ScalarType.FLOAT*/ },
+            { no: 4, name: "y", kind: "scalar", T: 2 /*ScalarType.FLOAT*/ },
+            { no: 5, name: "z", kind: "scalar", T: 2 /*ScalarType.FLOAT*/ }
+        ]);
+    }
+    create(value?: PartialMessage<WorldPositionUpdateEvent>): WorldPositionUpdateEvent {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.mapName = "";
+        message.mapId = 0;
+        message.x = 0;
+        message.y = 0;
+        message.z = 0;
+        if (value !== undefined)
+            reflectionMergePartial<WorldPositionUpdateEvent>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: WorldPositionUpdateEvent): WorldPositionUpdateEvent {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string map_name */ 1:
+                    message.mapName = reader.string();
+                    break;
+                case /* int32 map_id */ 2:
+                    message.mapId = reader.int32();
+                    break;
+                case /* float x */ 3:
+                    message.x = reader.float();
+                    break;
+                case /* float y */ 4:
+                    message.y = reader.float();
+                    break;
+                case /* float z */ 5:
+                    message.z = reader.float();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: WorldPositionUpdateEvent, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string map_name = 1; */
+        if (message.mapName !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.mapName);
+        /* int32 map_id = 2; */
+        if (message.mapId !== 0)
+            writer.tag(2, WireType.Varint).int32(message.mapId);
+        /* float x = 3; */
+        if (message.x !== 0)
+            writer.tag(3, WireType.Bit32).float(message.x);
+        /* float y = 4; */
+        if (message.y !== 0)
+            writer.tag(4, WireType.Bit32).float(message.y);
+        /* float z = 5; */
+        if (message.z !== 0)
+            writer.tag(5, WireType.Bit32).float(message.z);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message wow.web.proto.WorldPositionUpdateEvent
+ */
+export const WorldPositionUpdateEvent = new WorldPositionUpdateEvent$Type();

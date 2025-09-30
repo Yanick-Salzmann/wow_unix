@@ -20,10 +20,14 @@ namespace wow::scene {
         camera_ptr _camera;
 
         std::string _directory{};
+        int32_t _map_id = -1;
+        std::string _map_name{};
 
         glm::vec3 _position{};
+        bool _position_changed = false;
 
         bool _is_running = true;
+        int32_t _last_area_id = -1;
 
         utils::work_pool _tile_load_pool{};
 
@@ -45,6 +49,8 @@ namespace wow::scene {
         void handle_load_tick();
 
         void position_update_thread();
+
+        void update_area_id();
 
     public:
         explicit map_manager(
@@ -70,6 +76,8 @@ namespace wow::scene {
         void add_load_progress();
 
         float height(float x, float y);
+
+        io::terrain::adt_chunk_ptr chunk_at(uint32_t x, uint32_t y);
     };
 
     using map_manager_ptr = std::shared_ptr<map_manager>;

@@ -57,6 +57,13 @@ namespace wow::scene {
         auto last_update = std::chrono::steady_clock::now();
 
         while (_is_running) {
+            if (!_is_initial_load_complete || !_position_changed) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                continue;
+            }
+
+            _position_changed = false;
+
             const auto tx = static_cast<int32_t>(_position.x / utils::TILE_SIZE);
             const auto ty = static_cast<int32_t>(_position.y / utils::TILE_SIZE);
 
@@ -79,7 +86,6 @@ namespace wow::scene {
                 const auto dy = ty - static_cast<int32_t>(tile->y());
                 if (dx > _config_manager->map().load_radius || dy > _config_manager->map().load_radius) {
                     tile->async_unload();
-                    SPDLOG_INFO("Removing tile {} {} from map {}", tile->x(), tile->y(), _directory);
                     std::lock_guard lock(_sync_load_lock);
                     _tiles_to_unload.push_back(tile);
                     continue;
@@ -104,6 +110,8 @@ namespace wow::scene {
                 async_load_tile(x, y, reader);
             }
 
+            update_area_id();
+
             const auto now = std::chrono::steady_clock::now();
             if (const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_update);
                 elapsed.count() < 100) {
@@ -112,6 +120,36 @@ namespace wow::scene {
 
             last_update = now;
         }
+    }
+
+    void map_manager::update_area_id() {
+        if (const auto cnk = chunk_at(_position.x, _position.y)) {
+            const auto area_id = cnk->area_id();
+            const auto do_update = area_id != _last_area_id;
+            std::string area_name{"Unknown"};
+
+            if (const auto area_dbc = _dbc_manager->area_table_dbc();
+                area_dbc->has_record(area_id)) {
+                area_name = area_dbc->record(area_id).name.text;
+            }
+
+            if (do_update) {
+                web::proto::JsEvent ev{};
+                ev.mutable_area_update_event()->set_area_name(area_name);
+                ev.mutable_area_update_event()->set_area_id(area_id);
+                utils::app_module->ui_event_system()->event_manager()->submit(ev);
+                _last_area_id = area_id;
+            }
+        }
+
+        web::proto::JsEvent ev{};
+        const auto pos_ev = ev.mutable_world_position_update_event();
+        pos_ev->set_map_id(_map_id);
+        pos_ev->set_map_name(_map_name);
+        pos_ev->set_x(_position.x);
+        pos_ev->set_y(_position.y);
+        pos_ev->set_z(_position.z);
+        utils::app_module->ui_event_system()->event_manager()->submit(ev);
     }
 
     map_manager::map_manager(io::dbc::dbc_manager_ptr dbc_manager, config::config_manager_ptr config_manager,
@@ -126,15 +164,22 @@ namespace wow::scene {
 
     void map_manager::update(const glm::vec3 position) {
         _position = position;
+        _position_changed = true;
     }
 
     void map_manager::enter_world(uint32_t map_id, const glm::vec2 &position) {
+        _map_id = -1;
+        _map_name.clear();
+
         const auto rec = _dbc_manager->map_dbc()->record(static_cast<int32_t>(map_id));
         _directory = rec.directory;
         if (_directory.empty()) {
             SPDLOG_ERROR("Invalid map id {}", map_id);
             return;
         }
+
+        _map_id = map_id;
+        _map_name = rec.name.text;
 
         _position = glm::vec3(position, 0.0f);
 
@@ -214,5 +259,34 @@ namespace wow::scene {
         }
 
         return 0.0f;
+    }
+
+    io::terrain::adt_chunk_ptr map_manager::chunk_at(uint32_t x, uint32_t y) {
+        const auto tx = static_cast<int32_t>(x / utils::TILE_SIZE);
+        const auto ty = static_cast<int32_t>(y / utils::TILE_SIZE);
+        if (tx < 0 || ty < 0 || tx >= 64 || ty >= 64) {
+            return nullptr;
+        }
+
+        const auto cx = static_cast<int32_t>((x - static_cast<float>(tx) * utils::TILE_SIZE) / utils::CHUNK_SIZE);
+        const auto cy = static_cast<int32_t>((y - static_cast<float>(ty) * utils::TILE_SIZE) / utils::CHUNK_SIZE);
+
+        if (cx < 0 || cy < 0 || cx >= 16 || cy >= 16) {
+            return nullptr;
+        }
+
+        std::list<io::terrain::adt_tile_ptr> tiles{};
+        {
+            std::lock_guard lock(_sync_load_lock);
+            tiles = _loaded_tiles;
+        }
+
+        for (const auto &tile: tiles) {
+            if (tile->x() == tx && tile->y() == ty) {
+                return tile->chunk(cx + cy * 16);
+            }
+        }
+
+        return nullptr;
     }
 }

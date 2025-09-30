@@ -22,6 +22,8 @@ message JsEvent {
     LoadingScreenShowEvent loading_screen_show_event = 12;
     LoadingScreenProgressEvent loading_screen_progress_event = 13;
     LoadingScreenCompleteEvent loading_screen_complete_event = 14;
+    AreaUpdateEvent area_update_event = 15;
+    WorldPositionUpdateEvent world_position_update_event = 16;
   }
 }
 
@@ -101,4 +103,17 @@ message LoadingScreenProgressEvent {
 
 message LoadingScreenCompleteEvent {
 
+}
+
+message AreaUpdateEvent {
+  string area_name = 1;
+  int32 area_id = 2;
+}
+
+message WorldPositionUpdateEvent {
+  string map_name = 1;
+  int32 map_id = 2;
+  float x = 3;
+  float y = 4;
+  float z = 5;
 }
