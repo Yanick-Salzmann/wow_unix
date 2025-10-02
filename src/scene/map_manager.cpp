@@ -50,6 +50,15 @@ namespace wow::scene {
             utils::app_module->ui_event_system()->event_manager()->submit(ev);
             _initial_total_load = 0;
             _is_initial_load_complete = true;
+            _position.z = height(_position.x, _position.y);
+            if (_position.z == -std::numeric_limits<float>::infinity()) {
+                _position.z = 200.0f;
+            } else {
+                _position.z += 200.0f;
+            }
+
+            _camera->update_position(_position);
+            SPDLOG_INFO("Entered world {} ({}) at ({}, {}, {})", _map_id, _directory, _position.x, _position.y,_position.z);
         }
     }
 
@@ -68,10 +77,6 @@ namespace wow::scene {
             const auto ty = static_cast<int32_t>(_position.y / utils::TILE_SIZE);
 
             const auto tmp = _loaded_tiles;
-            {
-                std::lock_guard lock(_sync_load_lock);
-                _loaded_tiles.clear();
-            }
 
             std::unordered_set<int32_t> wanted_indices{};
             for (auto x = tx - _config_manager->map().load_radius; x <= tx + _config_manager->map().load_radius; ++x) {
@@ -81,6 +86,7 @@ namespace wow::scene {
                 }
             }
 
+            std::list<io::terrain::adt_tile_ptr> new_tiles{};
             for (const auto &tile: tmp) {
                 const auto dx = tx - static_cast<int32_t>(tile->x());
                 const auto dy = ty - static_cast<int32_t>(tile->y());
@@ -93,7 +99,12 @@ namespace wow::scene {
 
                 wanted_indices.erase(tile->y() * 64 + tile->x());
                 std::lock_guard lock(_sync_load_lock);
-                _loaded_tiles.push_back(tile);
+                new_tiles.push_back(tile);
+            }
+
+            {
+                std::lock_guard lock(_sync_load_lock);
+                _loaded_tiles = new_tiles;
             }
 
             for (const auto &index: wanted_indices) {
@@ -178,13 +189,13 @@ namespace wow::scene {
             return;
         }
 
-        _map_id = map_id;
+        _map_id = static_cast<int32_t>(map_id);
         _map_name = rec.name.text;
 
         _position = glm::vec3(position, 0.0f);
 
-        int32_t start_adt = position.x / utils::TILE_SIZE;
-        int32_t end_adt = position.y / utils::TILE_SIZE;
+        const auto start_adt = static_cast<int32_t>(position.x / utils::TILE_SIZE);
+        const auto end_adt = static_cast<int32_t>(position.y / utils::TILE_SIZE);
 
         SPDLOG_INFO("Entering map {} ({}) at {},{} (adt {} {})", map_id, _directory, position.x, position.y, start_adt,
                     end_adt);
@@ -245,23 +256,33 @@ namespace wow::scene {
     }
 
     float map_manager::height(const float x, const float y) {
+        auto ox = x;
+        auto oy = y;
+
         const auto tx = static_cast<int32_t>(x / utils::TILE_SIZE);
         const auto ty = static_cast<int32_t>(y / utils::TILE_SIZE);
         if (tx < 0 || ty < 0 || tx >= 64 || ty >= 64) {
-            return 0.0f;
+            return -std::numeric_limits<float>::infinity();
         }
 
-        const auto cx = static_cast<int32_t>((x - static_cast<float>(tx) * utils::TILE_SIZE) / utils::CHUNK_SIZE);
-        const auto cy = static_cast<int32_t>((y - static_cast<float>(ty) * utils::TILE_SIZE) / utils::CHUNK_SIZE);
+        ox -= static_cast<float>(tx) * utils::TILE_SIZE;
+        oy -= static_cast<float>(ty) * utils::TILE_SIZE;
 
-        if (cx < 0 || cy < 0 || cx >= 16 || cy >= 16) {
-            return 0.0f;
+        const auto cx = static_cast<int32_t>(ox / utils::CHUNK_SIZE);
+        const auto cy = static_cast<int32_t>(oy / utils::CHUNK_SIZE);
+
+        const auto cnk = chunk_at(x, y);
+        if (!cnk) {
+            return -std::numeric_limits<float>::infinity();
         }
 
-        return 0.0f;
+        ox -= static_cast<float>(cx) * utils::CHUNK_SIZE;
+        oy -= static_cast<float>(cy) * utils::CHUNK_SIZE;
+
+        return cnk->height(ox, oy);
     }
 
-    io::terrain::adt_chunk_ptr map_manager::chunk_at(uint32_t x, uint32_t y) {
+    io::terrain::adt_chunk_ptr map_manager::chunk_at(const float x, const float y) {
         const auto tx = static_cast<int32_t>(x / utils::TILE_SIZE);
         const auto ty = static_cast<int32_t>(y / utils::TILE_SIZE);
         if (tx < 0 || ty < 0 || tx >= 64 || ty >= 64) {

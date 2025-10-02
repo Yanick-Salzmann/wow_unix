@@ -57,9 +57,11 @@ namespace wow::scene {
             return _frustum;
         }
 
-        glm::vec3 position() const {
+        [[nodiscard]] glm::vec3 position() const {
             return _position;
         }
+
+        void update_position(const glm::vec3 &position);
     };
 
     using camera_ptr = std::shared_ptr<camera>;

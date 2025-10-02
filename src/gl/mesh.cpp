@@ -238,13 +238,15 @@ namespace wow::gl {
                     .link();
 
             mesh->set_index_count(768)
-                    .add_vertex_attribute("position", 0, 3, GL_FLOAT, false, 10 * sizeof(float), nullptr)
-                    .add_vertex_attribute("normal", 0, 3, GL_FLOAT, false, 10 * sizeof(float),
+                    .add_vertex_attribute("position", 0, 3, GL_FLOAT, false, 13 * sizeof(float))
+                    .add_vertex_attribute("normal", 0, 3, GL_FLOAT, false, 13 * sizeof(float),
                                           (void *) (3 * sizeof(float)))
-                    .add_vertex_attribute("tex_coord", 0, 2, GL_FLOAT, false, 10 * sizeof(float),
+                    .add_vertex_attribute("tex_coord", 0, 2, GL_FLOAT, false, 13 * sizeof(float),
                                           (void *) (6 * sizeof(float)))
-                    .add_vertex_attribute("alpha_coord", 0, 2, GL_FLOAT, false, 10 * sizeof(float),
+                    .add_vertex_attribute("alpha_coord", 0, 2, GL_FLOAT, false, 13 * sizeof(float),
                                           (void *) (8 * sizeof(float)))
+                    .add_vertex_attribute("vertex_color", 0, 3, GL_FLOAT, false, 13 * sizeof(float),
+                                          (void *) (10 * sizeof(float)))
                     .program(program);
         });
 

@@ -66,6 +66,7 @@ namespace wow::io::terrain {
             glm::vec3 normal{};
             glm::vec2 tex_coord{};
             glm::vec2 alpha_coord{};
+            glm::vec3 vertex_color{};
         };
 
 #pragma pack(pop)
@@ -87,6 +88,8 @@ namespace wow::io::terrain {
 
         void load_normals(const utils::binary_reader_ptr &reader);
 
+        void load_colors(const utils::binary_reader_ptr &reader);
+
         void sync_load();
 
     public:
@@ -105,6 +108,8 @@ namespace wow::io::terrain {
         int32_t area_id() const {
             return _header.area_id;
         }
+
+        float height(float x, float y) const;
     };
 
     using adt_chunk_ptr = std::shared_ptr<adt_chunk>;

@@ -77,7 +77,7 @@ namespace wow::scene {
 
         float height(float x, float y);
 
-        io::terrain::adt_chunk_ptr chunk_at(uint32_t x, uint32_t y);
+        io::terrain::adt_chunk_ptr chunk_at(float x, float y);
     };
 
     using map_manager_ptr = std::shared_ptr<map_manager>;

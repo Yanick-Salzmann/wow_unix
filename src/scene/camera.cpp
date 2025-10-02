@@ -127,4 +127,9 @@ namespace wow::scene {
         _position = position;
         _updated = true;
     }
+
+    void camera::update_position(const glm::vec3 &position) {
+        _position = position;
+        _updated = true;
+    }
 }

@@ -64,6 +64,31 @@ namespace wow::io::terrain {
         }
     }
 
+    void adt_chunk::load_colors(const utils::binary_reader_ptr &reader) {
+        for (auto &vec: _vectors) {
+            vec.vertex_color = glm::vec3(0.5f, 0.5f, 0.5f);
+        }
+
+        if (reader) {
+            if (reader->read<uint32_t>() != 'MCCV') {
+                SPDLOG_ERROR("Chunk has invalid MCCV chunk, signature mismatch");
+                return;
+            }
+
+            if (reader->read<uint32_t>() < 145 * 4 * sizeof(uint8_t)) {
+                SPDLOG_ERROR("Chunk has invalid MCCV chunk, size too small");
+                return;
+            }
+
+            std::array<glm::i8vec4, 145> colors{};
+            reader->read(colors);
+            for (auto i = 0; i < 145; ++i) {
+                auto &vec = _vectors[i];
+                vec.vertex_color = glm::vec3(colors[i].r / 255.0f, colors[i].g / 255.0f, colors[i].b / 255.0f);
+            }
+        }
+    }
+
     void adt_chunk::sync_load() {
         static std::once_flag flag{};
         std::call_once(flag, [] {
@@ -119,6 +144,13 @@ namespace wow::io::terrain {
         reader->seek(_header.ofs_normals);
         load_normals(reader);
 
+        if (_header.ofs_mccv > 0) {
+            reader->seek(_header.ofs_mccv);
+            load_colors(reader);
+        } else {
+            load_colors(nullptr);
+        }
+
         _bounds = utils::bounding_box(_vectors[0].position, _vectors[0].position);
         for (const auto &v: _vectors) {
             _bounds.take_min_max(v.position);
@@ -155,5 +187,28 @@ namespace wow::io::terrain {
                 .index_buffer(_index_buffer);
 
         mesh->draw();
+    }
+
+    uint32_t vector_index(const uint32_t row, const uint32_t column) {
+        auto index = 0;
+        for (auto y = 0; y < row; ++y) {
+            index += (y % 2) ? 8 : 9;
+        }
+
+        index += column;
+        return index;
+    }
+
+    float adt_chunk::height(float x, float y) const {
+        const auto row = static_cast<int32_t>(y / 17);
+        x -= std::max(0.0f, (row % 2) ? (0.5f * utils::VERTEX_SIZE) : 0.0f);
+        const auto column = static_cast<int32_t>(x / utils::VERTEX_SIZE);
+
+        const auto index = vector_index(row, column);
+        if (index >= _vectors.size()) {
+            return -std::numeric_limits<float>::infinity();
+        }
+
+        return _vectors[index].position.z;
     }
 }
