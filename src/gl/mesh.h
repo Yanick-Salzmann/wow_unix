@@ -12,6 +12,7 @@
 
 namespace wow::gl {
     struct vertex_attribute {
+        int32_t location = -1;
         std::string name;
         GLuint index;
         GLint size;
@@ -81,6 +82,8 @@ namespace wow::gl {
         mesh &set_primitive_type(GLenum type);
 
         mesh &texture(const std::string &name, const bindable_texture_ptr &texture);
+
+        mesh &texture(int32_t location, const bindable_texture_ptr &texture);
 
         void bind() const;
 

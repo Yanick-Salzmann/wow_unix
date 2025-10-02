@@ -16,12 +16,12 @@ namespace wow::scene {
             _up
         );
 
-        _projection = glm::perspectiveLH(glm::radians(45.0f), 1.0f, 0.1f, 1000.0f);
+        _projection = glm::perspectiveLH(glm::radians(45.0f), 1.0f, 0.1f, 2000.0f);
         _matrix_changed = true;
     }
 
     void camera::update_aspect_ratio(const float aspect) {
-        _projection = glm::perspectiveLH(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
+        _projection = glm::perspectiveLH(glm::radians(45.0f), aspect, 0.1f, 2000.0f);
         _matrix_changed = true;
     }
 

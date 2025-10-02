@@ -149,6 +149,7 @@ namespace wow::io::terrain {
             }
 
             _index_buffer->set_data(indices);
+            gl::mesh::terrain_mesh()->index_buffer(_index_buffer);
         });
 
         _vertex_buffer = std::make_shared<gl::vertex_buffer>();
@@ -159,6 +160,8 @@ namespace wow::io::terrain {
         _shadow_texture->filtering(GL_LINEAR, GL_LINEAR);
         _shadow_texture->wrap(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
         _texture_data.clear();
+
+        _texture_uniform = gl::mesh::terrain_mesh()->program()->uniform_location("shadow_texture");
 
         _is_sync_loaded = true;
         utils::app_module->map_manager()->add_load_progress();
@@ -229,8 +232,7 @@ namespace wow::io::terrain {
 
         const auto mesh = gl::mesh::terrain_mesh();
         mesh->vertex_buffer(_vertex_buffer)
-                .index_buffer(_index_buffer)
-                .texture("shadow_texture", _shadow_texture);
+                .texture(_texture_uniform, _shadow_texture);
 
         mesh->draw();
     }

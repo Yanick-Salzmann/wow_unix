@@ -75,6 +75,7 @@ namespace wow::io::terrain {
         static gl::index_buffer_ptr _index_buffer;
         gl::vertex_buffer_ptr _vertex_buffer{};
         gl::texture_ptr _shadow_texture{};
+        uint32_t _texture_uniform{};
 
         std::atomic_bool _is_async_loaded = false;
         bool _is_sync_loaded = false;

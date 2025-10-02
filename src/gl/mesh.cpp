@@ -62,7 +62,7 @@ namespace wow::gl {
 
     mesh &mesh::add_vertex_attribute(std::string name, GLuint index, GLint size, GLenum type,
                                      GLboolean normalized, GLsizei stride, const void *offset) {
-        _vertex_attributes.push_back({std::move(name), index, size, type, normalized, stride, offset});
+        _vertex_attributes.push_back({-1, std::move(name), index, size, type, normalized, stride, offset});
         if (_vertex_buffer) {
             setup_vertex_attributes();
         }
@@ -80,13 +80,17 @@ namespace wow::gl {
     }
 
     mesh &mesh::texture(const std::string &name, const bindable_texture_ptr &texture) {
-        auto loc = program()->uniform_location(name.c_str());
+        const auto loc = program()->uniform_location(name.c_str());
         if (loc < 0) {
             SPDLOG_ERROR("Texture {} not found in program", name);
             throw std::runtime_error("Texture not found in program");
         }
 
-        _textures[loc] = texture;
+        return this->texture(loc, texture);
+    }
+
+    mesh &mesh::texture(int32_t location, const bindable_texture_ptr &texture) {
+        _textures[location] = texture;
         return *this;
     }
 
@@ -167,7 +171,8 @@ namespace wow::gl {
         glBindVertexArray(_vao);
         _vertex_buffer->bind();
 
-        for (const auto &[
+        for (auto &[
+                 location,
                  name,
                  index,
                  size,
@@ -176,9 +181,11 @@ namespace wow::gl {
                  stride,
                  offset
              ]: _vertex_attributes) {
-            const auto loc = _program->attribute_location(fmt::format("{}{}", name, index).c_str());
-            glEnableVertexAttribArray(loc);
-            glVertexAttribPointer(loc, size, type, normalized, stride, offset);
+            if (location < 0) {
+                location = _program->attribute_location(fmt::format("{}{}", name, index).c_str());
+            }
+            glEnableVertexAttribArray(location);
+            glVertexAttribPointer(location, size, type, normalized, stride, offset);
         }
 
         glBindVertexArray(0);
