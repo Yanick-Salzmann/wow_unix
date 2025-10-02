@@ -13,6 +13,9 @@ namespace wow::scene {
         gpu_dispatcher_ptr _dispatcher{};
         camera_ptr _camera{};
 
+        uint32_t _frame_count = 0;
+        std::chrono::steady_clock::time_point _last_fps_update = std::chrono::steady_clock::now();
+
     public:
         explicit world_frame(
             map_manager_ptr map_manager,
@@ -27,7 +30,7 @@ namespace wow::scene {
 
         void enter_world(uint32_t map_id, const glm::vec2 &position) const;
 
-        void on_frame() const;
+        void on_frame();
     };
 
     using world_frame_ptr = std::shared_ptr<world_frame>;

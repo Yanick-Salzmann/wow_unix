@@ -64,6 +64,49 @@ namespace wow::gl {
         unbind();
     }
 
+    void texture::image(const uint32_t width, const uint32_t height, const GLint format, const void *data) {
+        if (_texture == default_texture) {
+            glGenTextures(1, &_texture);
+        }
+        bind();
+        glTexImage2D(
+            GL_TEXTURE_2D,
+            0,
+            format,
+            static_cast<GLsizei>(width),
+            static_cast<GLsizei>(height),
+            0,
+            format,
+            GL_UNSIGNED_BYTE,
+            data
+        );
+
+        glGenerateMipmap(GL_TEXTURE_2D);
+        unbind();
+    }
+
+    void texture::filtering(GLint min_filter, GLint mag_filter) {
+        if (_texture == default_texture) {
+            return;
+        }
+
+        bind();
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, min_filter);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mag_filter);
+        unbind();
+    }
+
+    void texture::wrap(GLint wrap_s, GLint wrap_t) {
+        if (_texture == default_texture) {
+            return;
+        }
+
+        bind();
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_s);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_t);
+        unbind();
+    }
+
     struct stb_deleter {
         void operator()(void *ptr) const {
             stbi_image_free(ptr);

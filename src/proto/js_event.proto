@@ -24,6 +24,7 @@ message JsEvent {
     LoadingScreenCompleteEvent loading_screen_complete_event = 14;
     AreaUpdateEvent area_update_event = 15;
     WorldPositionUpdateEvent world_position_update_event = 16;
+    FpsUpdateEvent fps_update_event = 17;
   }
 }
 
@@ -116,4 +117,8 @@ message WorldPositionUpdateEvent {
   float x = 3;
   float y = 4;
   float z = 5;
+}
+
+message FpsUpdateEvent {
+  int32 fps = 1;
 }

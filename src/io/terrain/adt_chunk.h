@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "gl/index_buffer.h"
+#include "gl/texture.h"
 #include "gl/vertex_buffer.h"
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
@@ -73,6 +74,7 @@ namespace wow::io::terrain {
 
         static gl::index_buffer_ptr _index_buffer;
         gl::vertex_buffer_ptr _vertex_buffer{};
+        gl::texture_ptr _shadow_texture{};
 
         std::atomic_bool _is_async_loaded = false;
         bool _is_sync_loaded = false;
@@ -84,11 +86,15 @@ namespace wow::io::terrain {
 
         std::array<adt_vector, 145> _vectors{};
 
+        std::vector<uint32_t> _texture_data{};
+
         void load_heights(const utils::binary_reader_ptr &reader);
 
         void load_normals(const utils::binary_reader_ptr &reader);
 
         void load_colors(const utils::binary_reader_ptr &reader);
+
+        void load_shadows(const utils::binary_reader_ptr &reader);
 
         void sync_load();
 

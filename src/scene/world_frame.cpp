@@ -1,5 +1,7 @@
 #include "world_frame.h"
 
+#include "utils/di.h"
+
 namespace wow::scene {
     void world_frame::shutdown() const {
         _map_manager->shutdown();
@@ -9,12 +11,23 @@ namespace wow::scene {
         _map_manager->enter_world(map_id, position);
     }
 
-    void world_frame::on_frame() const {
+    void world_frame::on_frame() {
         if (_camera->update()) {
             _map_manager->update(_camera->position());
         }
 
         _dispatcher->process_one_frame();
         _map_manager->on_frame();
+
+        ++_frame_count;
+        if (const auto now = std::chrono::steady_clock::now();
+            (now - _last_fps_update) > std::chrono::seconds(1)) {
+            const auto fps = _frame_count;
+            _frame_count = 0;
+            _last_fps_update = now;
+            web::proto::JsEvent ev = {};
+            ev.mutable_fps_update_event()->set_fps(fps);
+            utils::app_module->ui_event_system()->event_manager()->submit(ev);
+        }
     }
 }

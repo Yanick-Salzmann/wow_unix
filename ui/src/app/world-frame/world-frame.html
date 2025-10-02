@@ -1,4 +1,10 @@
 <div class="world-frame-container">
+  <div class="fps-counter">
+    @if (fps$ | async; as fps) {
+      <span class="fps-value">{{ fps }}</span>
+      <span class="fps-label">FPS</span>
+    }
+  </div>
   <div class="world-content">
   </div>
   <footer class="footer-bar">

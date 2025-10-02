@@ -23,6 +23,11 @@ namespace wow::gl {
 
         void bgra_image(uint32_t width, uint32_t height, const void *data);
 
+        void image(uint32_t width, uint32_t height, GLint format, const void *data);
+
+        void filtering(GLint min_filter, GLint mag_filter);
+        void wrap(GLint wrap_s, GLint wrap_t);
+
         void png_image(const std::string &path);
 
         GLuint native() const;

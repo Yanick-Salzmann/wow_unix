@@ -34,6 +34,14 @@ namespace wow::io::terrain {
                 vec.position.x = base_x + static_cast<float>(x) * utils::VERTEX_SIZE;
                 vec.position.y = base_y + static_cast<float>(y) * utils::VERTEX_SIZE / 2.0f;
 
+                const auto ax = x / 8.0f + ((y % 2 != 0) ? 0.5f / 8.0f : 0.0f);
+                const auto ay = y / 16.0f;
+                const auto tx = x + (y % 2 != 0 ? 0.5f : 0.0f);
+                const auto ty = y * 0.5f;
+
+                vec.tex_coord = glm::vec2(tx, ty);
+                vec.alpha_coord = glm::vec2(ax, ay);
+
                 if (columns == 8) {
                     vec.position.x += utils::VERTEX_SIZE / 2.0f;
                 }
@@ -89,6 +97,30 @@ namespace wow::io::terrain {
         }
     }
 
+    void adt_chunk::load_shadows(const utils::binary_reader_ptr &reader) {
+        _texture_data.assign(4096, 0xFFFFFFFF);
+        if (!reader) {
+            return;
+        }
+
+        if (reader->read<uint32_t>() != 'MCSH') {
+            SPDLOG_ERROR("Chunk has invalid MCSH chunk, signature mismatch");
+        }
+
+        if (reader->read<uint32_t>() < (4096 / 8) * sizeof(uint8_t)) {
+            SPDLOG_ERROR("Chunk has invalid MCSH chunk, size too small");
+            return;
+        }
+
+        for (auto i = 0; i < 64; ++i) {
+            auto val = reader->read<uint64_t>();
+            for (auto j = 0; j < 64; ++j) {
+                _texture_data[i * 64 + j] &= (((val & 0x1) ? 0xFF : 0x00) << 24) | 0x00FFFFFF;
+                val >>= 1;
+            }
+        }
+    }
+
     void adt_chunk::sync_load() {
         static std::once_flag flag{};
         std::call_once(flag, [] {
@@ -122,6 +154,12 @@ namespace wow::io::terrain {
         _vertex_buffer = std::make_shared<gl::vertex_buffer>();
         _vertex_buffer->set_data(_vectors);
 
+        _shadow_texture = gl::make_texture();
+        _shadow_texture->bgra_image(64, 64, _texture_data.data());
+        _shadow_texture->filtering(GL_LINEAR, GL_LINEAR);
+        _shadow_texture->wrap(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+        _texture_data.clear();
+
         _is_sync_loaded = true;
         utils::app_module->map_manager()->add_load_progress();
     }
@@ -149,6 +187,13 @@ namespace wow::io::terrain {
             load_colors(reader);
         } else {
             load_colors(nullptr);
+        }
+
+        if (_header.ofs_shadow > 0) {
+            reader->seek(_header.ofs_shadow);
+            load_shadows(reader);
+        } else {
+            load_shadows(nullptr);
         }
 
         _bounds = utils::bounding_box(_vectors[0].position, _vectors[0].position);
@@ -184,7 +229,8 @@ namespace wow::io::terrain {
 
         const auto mesh = gl::mesh::terrain_mesh();
         mesh->vertex_buffer(_vertex_buffer)
-                .index_buffer(_index_buffer);
+                .index_buffer(_index_buffer)
+                .texture("shadow_texture", _shadow_texture);
 
         mesh->draw();
     }

@@ -27,6 +27,7 @@ interface WorldPosition {
 export class WorldFrame implements OnInit {
   protected areaInfo$ = new BehaviorSubject<AreaInfo | null>(null);
   protected worldPosition$ = new BehaviorSubject<WorldPosition | null>(null);
+  protected fps$ = new BehaviorSubject<number>(0);
 
   constructor(private eventService: EventService) {}
 
@@ -49,6 +50,12 @@ export class WorldFrame implements OnInit {
           y: event.event.worldPositionUpdateEvent.y,
           z: event.event.worldPositionUpdateEvent.z
         });
+      }
+    });
+
+    this.eventService.listenForEvent('fpsUpdateEvent', (event: JsEvent) => {
+      if (event.event.oneofKind === 'fpsUpdateEvent') {
+        this.fps$.next(event.event.fpsUpdateEvent.fps);
       }
     });
   }

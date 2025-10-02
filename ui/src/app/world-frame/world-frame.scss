@@ -19,7 +19,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: #1a1a1a;
+  background-color: rgba(26, 26, 26, 0.7);
   color: #fff;
   padding: 8px 12px;
   font-family: sans-serif;
@@ -54,4 +54,49 @@
   background-color: #333;
   padding: 2px 6px;
   border-radius: 3px;
+}
+
+.fps-counter {
+  position: absolute;
+  top: 18px;
+  right: 32px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 16px;
+  background: linear-gradient(90deg, rgba(34, 34, 34, 0.7) 60%, rgba(42, 42, 42, 0.7) 100%);
+  box-shadow: 0 0 8px 2px #00ffea55;
+  animation: fps-glow 2s infinite alternate;
+  min-width: 80px;
+  justify-content: center;
+}
+
+.fps-value {
+  font-size: 1.5em;
+  font-weight: 700;
+  color: #00fff7;
+  text-shadow: 0 0 8px #00fff7, 0 0 16px #00fff788;
+  transition: color 0.2s;
+  width: 2.5em;
+  text-align: center;
+  display: inline-block;
+}
+
+.fps-label {
+  font-size: 1em;
+  font-weight: 400;
+  color: #fff;
+  opacity: 0.7;
+  letter-spacing: 1px;
+}
+
+@keyframes fps-glow {
+  from {
+    box-shadow: 0 0 8px 2px #00ffea55;
+  }
+  to {
+    box-shadow: 0 0 16px 4px #00fff7aa;
+  }
 }

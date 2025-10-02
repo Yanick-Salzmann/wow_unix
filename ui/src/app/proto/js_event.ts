@@ -123,6 +123,12 @@ export interface JsEvent {
          */
         worldPositionUpdateEvent: WorldPositionUpdateEvent;
     } | {
+        oneofKind: "fpsUpdateEvent";
+        /**
+         * @generated from protobuf field: wow.web.proto.FpsUpdateEvent fps_update_event = 17
+         */
+        fpsUpdateEvent: FpsUpdateEvent;
+    } | {
         oneofKind: undefined;
     };
 }
@@ -348,6 +354,15 @@ export interface WorldPositionUpdateEvent {
      */
     z: number;
 }
+/**
+ * @generated from protobuf message wow.web.proto.FpsUpdateEvent
+ */
+export interface FpsUpdateEvent {
+    /**
+     * @generated from protobuf field: int32 fps = 1
+     */
+    fps: number;
+}
 // @generated message type with reflection information, may provide speed optimized methods
 class Wrapper$Type extends MessageType<Wrapper> {
     constructor() {
@@ -413,7 +428,8 @@ class JsEvent$Type extends MessageType<JsEvent> {
             { no: 13, name: "loading_screen_progress_event", kind: "message", oneof: "event", T: () => LoadingScreenProgressEvent },
             { no: 14, name: "loading_screen_complete_event", kind: "message", oneof: "event", T: () => LoadingScreenCompleteEvent },
             { no: 15, name: "area_update_event", kind: "message", oneof: "event", T: () => AreaUpdateEvent },
-            { no: 16, name: "world_position_update_event", kind: "message", oneof: "event", T: () => WorldPositionUpdateEvent }
+            { no: 16, name: "world_position_update_event", kind: "message", oneof: "event", T: () => WorldPositionUpdateEvent },
+            { no: 17, name: "fps_update_event", kind: "message", oneof: "event", T: () => FpsUpdateEvent }
         ]);
     }
     create(value?: PartialMessage<JsEvent>): JsEvent {
@@ -524,6 +540,12 @@ class JsEvent$Type extends MessageType<JsEvent> {
                         worldPositionUpdateEvent: WorldPositionUpdateEvent.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).worldPositionUpdateEvent)
                     };
                     break;
+                case /* wow.web.proto.FpsUpdateEvent fps_update_event */ 17:
+                    message.event = {
+                        oneofKind: "fpsUpdateEvent",
+                        fpsUpdateEvent: FpsUpdateEvent.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).fpsUpdateEvent)
+                    };
+                    break;
                 default:
                     let u = options.readUnknownField;
                     if (u === "throw")
@@ -584,6 +606,9 @@ class JsEvent$Type extends MessageType<JsEvent> {
         /* wow.web.proto.WorldPositionUpdateEvent world_position_update_event = 16; */
         if (message.event.oneofKind === "worldPositionUpdateEvent")
             WorldPositionUpdateEvent.internalBinaryWrite(message.event.worldPositionUpdateEvent, writer.tag(16, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.FpsUpdateEvent fps_update_event = 17; */
+        if (message.event.oneofKind === "fpsUpdateEvent")
+            FpsUpdateEvent.internalBinaryWrite(message.event.fpsUpdateEvent, writer.tag(17, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1556,3 +1581,50 @@ class WorldPositionUpdateEvent$Type extends MessageType<WorldPositionUpdateEvent
  * @generated MessageType for protobuf message wow.web.proto.WorldPositionUpdateEvent
  */
 export const WorldPositionUpdateEvent = new WorldPositionUpdateEvent$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class FpsUpdateEvent$Type extends MessageType<FpsUpdateEvent> {
+    constructor() {
+        super("wow.web.proto.FpsUpdateEvent", [
+            { no: 1, name: "fps", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+        ]);
+    }
+    create(value?: PartialMessage<FpsUpdateEvent>): FpsUpdateEvent {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.fps = 0;
+        if (value !== undefined)
+            reflectionMergePartial<FpsUpdateEvent>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: FpsUpdateEvent): FpsUpdateEvent {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* int32 fps */ 1:
+                    message.fps = reader.int32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: FpsUpdateEvent, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* int32 fps = 1; */
+        if (message.fps !== 0)
+            writer.tag(1, WireType.Varint).int32(message.fps);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message wow.web.proto.FpsUpdateEvent
+ */
+export const FpsUpdateEvent = new FpsUpdateEvent$Type();
