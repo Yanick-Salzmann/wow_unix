@@ -98,7 +98,7 @@ namespace wow::io::terrain {
     }
 
     void adt_chunk::load_shadows(const utils::binary_reader_ptr &reader) {
-        _texture_data.assign(4096, 0xFFFFFFFF);
+        _texture_data.assign(4096, 0x000000000);
         if (!reader) {
             return;
         }
@@ -192,7 +192,7 @@ namespace wow::io::terrain {
             load_colors(nullptr);
         }
 
-        if (_header.ofs_shadow > 0) {
+        if (_header.size_shadow > 8) {
             reader->seek(_header.ofs_shadow);
             load_shadows(reader);
         } else {
