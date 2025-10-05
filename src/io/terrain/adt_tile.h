@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "adt_chunk.h"
+#include "wdt_file.h"
 #include "scene/texture_manager.h"
 #include "utils/io.h"
 #include "utils/math.h"
@@ -49,10 +50,11 @@ namespace wow::io::terrain {
 
         void load_textures();
 
-        void load_chunks(const utils::binary_reader_ptr &reader);
+        void load_chunks(wdt_file_ptr wdt, const utils::binary_reader_ptr &reader);
 
     public:
         adt_tile(
+            wdt_file_ptr wdt,
             uint32_t x,
             uint32_t y,
             const utils::binary_reader_ptr &reader,

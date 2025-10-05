@@ -121,6 +121,30 @@ namespace wow::io::terrain {
         }
     }
 
+    void adt_chunk::load_layers(const utils::binary_reader_ptr &reader) {
+        if (_header.num_layers < 1) {
+            return;
+        }
+
+        if (reader->read<uint32_t>() != 'MCLY') {
+            SPDLOG_ERROR("Chunk has invalid MCLY chunk, signature mismatch");
+            return;
+        }
+
+        if (reader->read<uint32_t>() < _header.num_layers * sizeof(mcly)) {
+            SPDLOG_ERROR("Chunk has invalid MCLY chunk, size too small");
+            return;
+        }
+
+        _layers.resize(_header.num_layers);
+        reader->read(_layers);
+    }
+
+    void adt_chunk::load_alpha(const utils::binary_reader_ptr &reader) {
+        for (auto i = 0; i < _header.num_layers; ++i) {
+        }
+    }
+
     void adt_chunk::sync_load() {
         static std::once_flag flag{};
         std::call_once(flag, [] {
@@ -167,7 +191,7 @@ namespace wow::io::terrain {
         utils::app_module->map_manager()->add_load_progress();
     }
 
-    adt_chunk::adt_chunk(const utils::binary_reader_ptr &reader) {
+    adt_chunk::adt_chunk(const wdt_file_ptr &wdt, const utils::binary_reader_ptr &reader) {
         if (reader->read<uint32_t>() != 'MCNK') {
             SPDLOG_ERROR("Chunk has invalid MCNK chunk, signature mismatch");
             return;
@@ -179,6 +203,8 @@ namespace wow::io::terrain {
         if (!_header.ofs_heights) {
             return;
         }
+
+        _use_big_alpha = wdt->has_large_alpha();
 
         reader->seek(_header.ofs_heights);
         load_heights(reader);

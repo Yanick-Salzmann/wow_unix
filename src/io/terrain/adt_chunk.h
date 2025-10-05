@@ -4,6 +4,7 @@
 #include <atomic>
 #include <memory>
 
+#include "wdt_file.h"
 #include "gl/index_buffer.h"
 #include "gl/texture.h"
 #include "gl/vertex_buffer.h"
@@ -70,6 +71,26 @@ namespace wow::io::terrain {
             glm::vec3 vertex_color{};
         };
 
+        struct mcly_flags {
+            uint32_t animation_rotation: 3;
+            uint32_t animation_speed: 3;
+            uint32_t animation_enabled: 1;
+            uint32_t overbright: 1;
+            uint32_t use_alpha_map: 1;
+            uint32_t alpha_map_compressed: 1;
+            uint32_t use_cube_map_reflection: 1;
+            uint32_t unknown_0x800: 1;
+            uint32_t unknown_0x1000: 1;
+            uint32_t : 19;
+        };
+
+        struct mcly {
+            uint32_t texture_id;
+            mcly_flags flags;
+            uint32_t offset_mcal;
+            uint32_t ground_effect_id;
+        };
+
 #pragma pack(pop)
 
         static gl::index_buffer_ptr _index_buffer;
@@ -81,6 +102,8 @@ namespace wow::io::terrain {
         bool _is_sync_loaded = false;
         bool _sync_load_requested = false;
 
+        bool _use_big_alpha = false;
+
         utils::bounding_box _bounds{};
 
         map_chunk_header _header{};
@@ -88,6 +111,7 @@ namespace wow::io::terrain {
         std::array<adt_vector, 145> _vectors{};
 
         std::vector<uint32_t> _texture_data{};
+        std::vector<mcly> _layers{};
 
         void load_heights(const utils::binary_reader_ptr &reader);
 
@@ -97,10 +121,14 @@ namespace wow::io::terrain {
 
         void load_shadows(const utils::binary_reader_ptr &reader);
 
+        void load_layers(const utils::binary_reader_ptr &reader);
+
+        void load_alpha(const utils::binary_reader_ptr &reader);
+
         void sync_load();
 
     public:
-        explicit adt_chunk(const utils::binary_reader_ptr &reader);
+        explicit adt_chunk(const wdt_file_ptr &wdt, const utils::binary_reader_ptr &reader);
 
         [[nodiscard]] std::pair<uint32_t, uint32_t> index() const {
             return {_header.index_x, _header.index_y};

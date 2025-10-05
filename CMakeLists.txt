@@ -192,7 +192,9 @@ add_executable(wow_unix src/main.cpp
         src/utils/math.h
         src/utils/math.cpp
         src/scene/frustum.h
-        src/scene/frustum.cpp)
+        src/scene/frustum.cpp
+        src/io/terrain/wdt_file.h
+        src/io/terrain/wdt_file.cpp)
 
 target_compile_options(wow_unix PRIVATE -Wno-multichar -DGLM_ENABLE_EXPERIMENTAL -rdynamic)
 

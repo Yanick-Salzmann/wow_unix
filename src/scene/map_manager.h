@@ -19,6 +19,8 @@ namespace wow::scene {
         texture_manager_ptr _texture_manager;
         camera_ptr _camera;
 
+        io::terrain::wdt_file_ptr _active_wdt{};
+
         std::string _directory{};
         int32_t _map_id = -1;
         std::string _map_name{};

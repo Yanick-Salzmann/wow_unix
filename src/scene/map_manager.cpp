@@ -5,13 +5,22 @@
 
 namespace wow::scene {
     void map_manager::async_load_tile(uint32_t x, uint32_t y, utils::binary_reader_ptr data) {
-        const auto adt = std::make_shared<io::terrain::adt_tile>(x, y, data, _texture_manager);
+        const auto adt = std::make_shared<io::terrain::adt_tile>(_active_wdt, x, y, data, _texture_manager);
         std::lock_guard lock(_async_load_lock);
         _async_loaded_tiles.push_back(adt);
         add_load_progress();
     }
 
     void map_manager::initial_load_thread(const int32_t adt_x, const int32_t adt_y) {
+        const auto wdt_name = fmt::format(R"(World\Maps\{}\{}.wdt)", _directory, _directory);
+        const auto file = _mpq_manager->open(wdt_name);
+        if (!file) {
+            SPDLOG_ERROR("Failed to open WDT file {}", wdt_name);
+            return;
+        }
+
+        _active_wdt = io::terrain::make_wdt(file->to_binary_reader());
+
         const auto radius = _config_manager->map().load_radius;
         std::vector<std::shared_future<void> > futures{};
 

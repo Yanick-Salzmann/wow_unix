@@ -58,6 +58,10 @@ namespace wow::utils {
         [[nodiscard]] bool eof() const {
             return _offset >= _data.size();
         }
+
+        std::size_t size() const {
+            return _data.size();
+        }
     };
 
     using binary_reader_ptr = std::shared_ptr<binary_reader>;

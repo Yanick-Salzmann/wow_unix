@@ -49,12 +49,12 @@ namespace wow::io::terrain {
         }
     }
 
-    void adt_tile::load_chunks(const utils::binary_reader_ptr &reader) {
+    void adt_tile::load_chunks(wdt_file_ptr wdt, const utils::binary_reader_ptr &reader) {
         for (const auto &mcin: _chunk_indices) {
             reader->seek(mcin.offset);
             std::vector<uint8_t> data(mcin.size);
             reader->read(data.data(), mcin.size);
-            const auto chunk = std::make_shared<adt_chunk>(utils::make_binary_reader(data));
+            const auto chunk = std::make_shared<adt_chunk>(wdt, utils::make_binary_reader(data));
             auto [x, y] = chunk->index();
             if (x >= 16 || y >= 16) {
                 SPDLOG_WARN("Invalid chunk index {},{} in ADT tile {},{}", x, y, _x, _y);
@@ -66,6 +66,7 @@ namespace wow::io::terrain {
     }
 
     adt_tile::adt_tile(
+        wdt_file_ptr wdt,
         const uint32_t x,
         const uint32_t y,
         const utils::binary_reader_ptr &reader,
@@ -85,7 +86,7 @@ namespace wow::io::terrain {
         }
 
         load_textures();
-        load_chunks(reader);
+        load_chunks(wdt, reader);
 
         _data_chunks.clear();
 

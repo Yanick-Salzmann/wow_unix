@@ -189,6 +189,7 @@ namespace wow::io {
         for (const auto &[handle, name]: _archives) {
             HANDLE file_handle{};
             if (SFileOpenFileEx(handle, path.c_str(), 0, &file_handle)) {
+                SPDLOG_INFO("Opening file: {} in MPQ: {}", path, name);
                 return std::make_shared<mpq_file>(file_handle);
             }
         }
