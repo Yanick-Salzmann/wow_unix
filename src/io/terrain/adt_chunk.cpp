@@ -42,14 +42,14 @@ namespace wow::io::terrain {
         for (auto k = 0; k < (full_alpha ? 64 : 63); ++k) {
             for (auto j = 0; j < 32; ++j) {
                 const auto val = reader->read<uint8_t>();
-                auto val1 = val & 0x0F;
-                auto val2 = (j == 31 && !full_alpha) ? val1 : ((val >> 4) & 0xFF);
+                auto val1 = static_cast<uint8_t>(val & 0x0F);
+                auto val2 = static_cast<uint8_t>((j == 31 && !full_alpha) ? val1 : (val >> 4));
 
-                val1 = static_cast<uint8_t>((val1 / 15.0f) * 255.0f);
-                val2 = static_cast<uint8_t>((val2 / 15.0f) * 255.0f);
+                val1 = static_cast<uint8_t>(val1 * 17);
+                val2 = static_cast<uint8_t>(val2 * 17);
 
-                *out_ptr++ |= val1 << (layer * 8);
-                *out_ptr++ |= val2 << (layer * 8);
+                *out_ptr++ |= static_cast<uint32_t>(val1) << (layer * 8);
+                *out_ptr++ |= static_cast<uint32_t>(val2) << (layer * 8);
             }
         }
 
@@ -310,7 +310,7 @@ namespace wow::io::terrain {
             return;
         }
 
-        reader->seek_mod(4); // MCNK size
+        reader->seek_mod(4);
         _header = reader->read<map_chunk_header>();
 
         if (!_header.ofs_heights) {
@@ -383,7 +383,6 @@ namespace wow::io::terrain {
             return;
         }
 
-
         const auto mesh = gl::mesh::terrain_mesh();
         for (auto i = 0; i < _header.num_layers; ++i) {
             mesh->texture(_color_uniforms[i], _textures[i]);
@@ -396,16 +395,11 @@ namespace wow::io::terrain {
     }
 
     uint32_t vector_index(const uint32_t row, const uint32_t column) {
-        auto index = 0;
-        for (auto y = 0; y < row; ++y) {
-            index += (y % 2) ? 8 : 9;
-        }
-
-        index += column;
-        return index;
+        const uint32_t prev_rows = 17u * (row / 2u) + ((row % 2u) ? 9u : 0u);
+        return prev_rows + column;
     }
 
-    float adt_chunk::height(float x, float y) const {
+    float adt_chunk::height(float x, const float y) const {
         const auto row = static_cast<int32_t>(y / 17);
         x -= std::max(0.0f, (row % 2) ? (0.5f * utils::VERTEX_SIZE) : 0.0f);
         const auto column = static_cast<int32_t>(x / utils::VERTEX_SIZE);
