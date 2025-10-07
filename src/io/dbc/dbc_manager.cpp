@@ -11,5 +11,11 @@ namespace wow::io::dbc {
         _area_poi_dbc = make_dbc<area_poi_record>(mpq_manager->open("DBFilesClient\\AreaPoi.dbc"));
         callback(95, "Loading AreaTable.dbc");
         _area_table_dbc = make_dbc<area_table_record>(mpq_manager->open("DBFilesClient\\AreaTable.dbc"));
+        callback(95, "Loading Light.dbc");
+        _light_dbc = make_dbc<light_record>(mpq_manager->open("DBFilesClient\\Light.dbc"));
+        callback(95, "Loading LightParams.dbc");
+        _light_params_dbc = make_dbc<light_params_record>(mpq_manager->open("DBFilesClient\\LightParams.dbc"));
+        callback(95, "Loading LightSkybox.dbc");
+        _light_skybox_dbc = make_dbc<light_skybox_record>(mpq_manager->open("DBFilesClient\\LightSkybox.dbc"));
     }
 }

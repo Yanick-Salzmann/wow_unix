@@ -90,6 +90,42 @@ namespace wow::io::dbc {
         int32_t light;
     };
 
+    struct light_record {
+        int32_t id;
+        int32_t map_id;
+        float x;
+        float y;
+        float z;
+        float falloff_start;
+        float falloff_end;
+        int32_t params_clear;
+        int32_t params_clear_wat;
+        int32_t params_storm;
+        int32_t params_storm_wat;
+        int32_t params_death;
+        int32_t params_unk1;
+        int32_t params_unk2;
+        int32_t params_unk3;
+    };
+
+    struct light_params_record {
+        int32_t id;
+        int32_t highlight_sky;
+        int32_t light_skybox_id;
+        float glow;
+        float water_shallow_alpha;
+        float water_deep_alpha;
+        float ocean_shallow_alpha;
+        float ocean_deep_alpha;
+        int32_t flags;
+    };
+
+    struct light_skybox_record {
+        int32_t id;
+        std::string name;
+        int32_t flags;
+    };
+
 #pragma pack(pop)
 }
 
