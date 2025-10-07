@@ -25,6 +25,7 @@ message JsEvent {
     AreaUpdateEvent area_update_event = 15;
     WorldPositionUpdateEvent world_position_update_event = 16;
     FpsUpdateEvent fps_update_event = 17;
+    SystemUpdateEvent system_update_event = 18;
   }
 }
 
@@ -121,4 +122,11 @@ message WorldPositionUpdateEvent {
 
 message FpsUpdateEvent {
   int32 fps = 1;
+}
+
+message SystemUpdateEvent {
+  int64 memory_usage = 1;
+  int32 cpu_usage = 2;
+  int32 gpu_usage = 3;
+  int64 total_memory = 4;
 }

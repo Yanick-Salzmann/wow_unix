@@ -21,8 +21,6 @@ export class EventService {
                 const listener = this.eventMap.get(ev.event.oneofKind as string);
                 if (listener) {
                     listener(ev);
-                } else {
-                    console.warn("No listener for event type: ", ev.event.oneofKind);
                 }
             },
             onFailure: (error_code, error_message) => {

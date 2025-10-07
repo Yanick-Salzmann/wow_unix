@@ -129,6 +129,12 @@ export interface JsEvent {
          */
         fpsUpdateEvent: FpsUpdateEvent;
     } | {
+        oneofKind: "systemUpdateEvent";
+        /**
+         * @generated from protobuf field: wow.web.proto.SystemUpdateEvent system_update_event = 18
+         */
+        systemUpdateEvent: SystemUpdateEvent;
+    } | {
         oneofKind: undefined;
     };
 }
@@ -363,6 +369,27 @@ export interface FpsUpdateEvent {
      */
     fps: number;
 }
+/**
+ * @generated from protobuf message wow.web.proto.SystemUpdateEvent
+ */
+export interface SystemUpdateEvent {
+    /**
+     * @generated from protobuf field: int64 memory_usage = 1
+     */
+    memoryUsage: bigint;
+    /**
+     * @generated from protobuf field: int32 cpu_usage = 2
+     */
+    cpuUsage: number;
+    /**
+     * @generated from protobuf field: int32 gpu_usage = 3
+     */
+    gpuUsage: number;
+    /**
+     * @generated from protobuf field: int64 total_memory = 4
+     */
+    totalMemory: bigint;
+}
 // @generated message type with reflection information, may provide speed optimized methods
 class Wrapper$Type extends MessageType<Wrapper> {
     constructor() {
@@ -429,7 +456,8 @@ class JsEvent$Type extends MessageType<JsEvent> {
             { no: 14, name: "loading_screen_complete_event", kind: "message", oneof: "event", T: () => LoadingScreenCompleteEvent },
             { no: 15, name: "area_update_event", kind: "message", oneof: "event", T: () => AreaUpdateEvent },
             { no: 16, name: "world_position_update_event", kind: "message", oneof: "event", T: () => WorldPositionUpdateEvent },
-            { no: 17, name: "fps_update_event", kind: "message", oneof: "event", T: () => FpsUpdateEvent }
+            { no: 17, name: "fps_update_event", kind: "message", oneof: "event", T: () => FpsUpdateEvent },
+            { no: 18, name: "system_update_event", kind: "message", oneof: "event", T: () => SystemUpdateEvent }
         ]);
     }
     create(value?: PartialMessage<JsEvent>): JsEvent {
@@ -546,6 +574,12 @@ class JsEvent$Type extends MessageType<JsEvent> {
                         fpsUpdateEvent: FpsUpdateEvent.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).fpsUpdateEvent)
                     };
                     break;
+                case /* wow.web.proto.SystemUpdateEvent system_update_event */ 18:
+                    message.event = {
+                        oneofKind: "systemUpdateEvent",
+                        systemUpdateEvent: SystemUpdateEvent.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).systemUpdateEvent)
+                    };
+                    break;
                 default:
                     let u = options.readUnknownField;
                     if (u === "throw")
@@ -609,6 +643,9 @@ class JsEvent$Type extends MessageType<JsEvent> {
         /* wow.web.proto.FpsUpdateEvent fps_update_event = 17; */
         if (message.event.oneofKind === "fpsUpdateEvent")
             FpsUpdateEvent.internalBinaryWrite(message.event.fpsUpdateEvent, writer.tag(17, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.SystemUpdateEvent system_update_event = 18; */
+        if (message.event.oneofKind === "systemUpdateEvent")
+            SystemUpdateEvent.internalBinaryWrite(message.event.systemUpdateEvent, writer.tag(18, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1628,3 +1665,74 @@ class FpsUpdateEvent$Type extends MessageType<FpsUpdateEvent> {
  * @generated MessageType for protobuf message wow.web.proto.FpsUpdateEvent
  */
 export const FpsUpdateEvent = new FpsUpdateEvent$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class SystemUpdateEvent$Type extends MessageType<SystemUpdateEvent> {
+    constructor() {
+        super("wow.web.proto.SystemUpdateEvent", [
+            { no: 1, name: "memory_usage", kind: "scalar", T: 3 /*ScalarType.INT64*/, L: 0 /*LongType.BIGINT*/ },
+            { no: 2, name: "cpu_usage", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 3, name: "gpu_usage", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 4, name: "total_memory", kind: "scalar", T: 3 /*ScalarType.INT64*/, L: 0 /*LongType.BIGINT*/ }
+        ]);
+    }
+    create(value?: PartialMessage<SystemUpdateEvent>): SystemUpdateEvent {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.memoryUsage = 0n;
+        message.cpuUsage = 0;
+        message.gpuUsage = 0;
+        message.totalMemory = 0n;
+        if (value !== undefined)
+            reflectionMergePartial<SystemUpdateEvent>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SystemUpdateEvent): SystemUpdateEvent {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* int64 memory_usage */ 1:
+                    message.memoryUsage = reader.int64().toBigInt();
+                    break;
+                case /* int32 cpu_usage */ 2:
+                    message.cpuUsage = reader.int32();
+                    break;
+                case /* int32 gpu_usage */ 3:
+                    message.gpuUsage = reader.int32();
+                    break;
+                case /* int64 total_memory */ 4:
+                    message.totalMemory = reader.int64().toBigInt();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: SystemUpdateEvent, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* int64 memory_usage = 1; */
+        if (message.memoryUsage !== 0n)
+            writer.tag(1, WireType.Varint).int64(message.memoryUsage);
+        /* int32 cpu_usage = 2; */
+        if (message.cpuUsage !== 0)
+            writer.tag(2, WireType.Varint).int32(message.cpuUsage);
+        /* int32 gpu_usage = 3; */
+        if (message.gpuUsage !== 0)
+            writer.tag(3, WireType.Varint).int32(message.gpuUsage);
+        /* int64 total_memory = 4; */
+        if (message.totalMemory !== 0n)
+            writer.tag(4, WireType.Varint).int64(message.totalMemory);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message wow.web.proto.SystemUpdateEvent
+ */
+export const SystemUpdateEvent = new SystemUpdateEvent$Type();

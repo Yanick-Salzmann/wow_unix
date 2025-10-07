@@ -194,7 +194,9 @@ add_executable(wow_unix src/main.cpp
         src/scene/frustum.cpp
         src/io/terrain/wdt_file.h
         src/io/terrain/wdt_file.cpp
-        src/scene/scene_info.h)
+        src/scene/scene_info.h
+        src/utils/system_stats.h
+        src/utils/system_stats.cpp)
 
 target_compile_options(wow_unix PRIVATE -Wno-multichar -DGLM_ENABLE_EXPERIMENTAL -rdynamic)
 

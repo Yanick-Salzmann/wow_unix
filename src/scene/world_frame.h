@@ -18,6 +18,7 @@ namespace wow::scene {
 
         uint32_t _frame_count = 0;
         std::chrono::steady_clock::time_point _last_fps_update = std::chrono::steady_clock::now();
+        std::chrono::steady_clock::time_point _last_system_update = std::chrono::steady_clock::now();
 
     public:
         explicit world_frame(

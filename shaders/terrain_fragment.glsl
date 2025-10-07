@@ -14,7 +14,7 @@ uniform sampler2D color_texture1;
 uniform sampler2D color_texture2;
 uniform sampler2D color_texture3;
 
-uniform vec3 camera_position;
+uniform vec4 camera_position;
 
 out vec4 target_color;
 
@@ -41,7 +41,9 @@ void main() {
     float shadow = alphas.a;
     final_color *= 1.0f - shadow * 0.5f;
 
-    float distance = length(camera_position - world_position);
+    float distance = length(camera_position.xyz - world_position);
+    float factor = 1.0f - clamp((camera_position.w - distance) / 150.0f, 0.0f, 1.0f);
+    final_color = mix(final_color, vec3(0.5, 0.7, 1.0), factor);
 
     target_color = vec4(final_color * frag_vertex_color * 2.0, 1.0);
 }
