@@ -16,8 +16,11 @@ namespace wow::scene {
             _map_manager->update(_camera->position());
         }
 
+        _scene_info.camera_position = _camera->position();
+        _scene_info.view_distance = 1.5f * utils::TILE_SIZE;
+
         _dispatcher->process_one_frame();
-        _map_manager->on_frame();
+        _map_manager->on_frame(_scene_info);
 
         ++_frame_count;
         if (const auto now = std::chrono::steady_clock::now();

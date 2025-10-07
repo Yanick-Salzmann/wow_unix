@@ -108,9 +108,19 @@ namespace wow::io::blp {
             return _format;
         }
 
+        std::vector<uint8_t> get_layer(uint32_t layer) const {
+            return _mipmaps[layer];
+        }
+
+        size_t layer_count() const {
+            return _mipmaps.size();
+        }
+
+        std::vector<uint8_t> palette_layer_to_rgba(uint32_t layer) const;
+
         [[nodiscard]] std::vector<uint8_t> convert_to_rgba() const;
 
-        [[nodiscard]] std::vector<uint8_t> convert_to_rgba(uint32_t dimension, uint32_t& w, uint32_t& h) const;
+        [[nodiscard]] std::vector<uint8_t> convert_to_rgba(uint32_t dimension, uint32_t &w, uint32_t &h) const;
 
         [[nodiscard]] std::vector<uint8_t> convert_to_png() const;
     };

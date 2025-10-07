@@ -10,10 +10,14 @@
 #include "gl/vertex_buffer.h"
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
+#include "scene/scene_info.h"
 #include "utils/io.h"
 #include "utils/math.h"
 
 namespace wow::io::terrain {
+    class adt_tile;
+    using adt_tile_ptr = std::shared_ptr<adt_tile>;
+
     class adt_chunk {
 #pragma pack(push, 1)
         struct map_chunk_flags {
@@ -94,9 +98,13 @@ namespace wow::io::terrain {
 #pragma pack(pop)
 
         static gl::index_buffer_ptr _index_buffer;
+        static uint32_t _alpha_uniform;
+        static uint32_t _color_uniforms[4];
+
         gl::vertex_buffer_ptr _vertex_buffer{};
         gl::texture_ptr _shadow_texture{};
-        uint32_t _texture_uniform{};
+
+        std::weak_ptr<adt_tile> _parent_tile{};
 
         std::atomic_bool _is_async_loaded = false;
         bool _is_sync_loaded = false;
@@ -110,8 +118,15 @@ namespace wow::io::terrain {
 
         std::array<adt_vector, 145> _vectors{};
 
+        std::vector<gl::texture_ptr> _textures{};
         std::vector<uint32_t> _texture_data{};
         std::vector<mcly> _layers{};
+
+        void load_alpha_rle(uint32_t layer, const utils::binary_reader_ptr &reader);
+
+        void load_alpha_uncompressed(uint32_t layer, const utils::binary_reader_ptr &reader);
+
+        void load_alpha_compressed(uint32_t layer, const utils::binary_reader_ptr &reader);
 
         void load_heights(const utils::binary_reader_ptr &reader);
 
@@ -128,13 +143,17 @@ namespace wow::io::terrain {
         void sync_load();
 
     public:
-        explicit adt_chunk(const wdt_file_ptr &wdt, const utils::binary_reader_ptr &reader);
+        explicit adt_chunk(
+            const wdt_file_ptr &wdt,
+            const adt_tile_ptr &tile,
+            const utils::binary_reader_ptr &reader
+        );
 
         [[nodiscard]] std::pair<uint32_t, uint32_t> index() const {
             return {_header.index_x, _header.index_y};
         }
 
-        void on_frame();
+        void on_frame(const scene::scene_info& scene_info);
 
         [[nodiscard]] const utils::bounding_box &bounds() const {
             return _bounds;

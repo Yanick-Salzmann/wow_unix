@@ -2,9 +2,10 @@
 #define WOW_UNIX_TEXTURE_H
 
 #include <memory>
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 #include "bindable_texture.h"
+#include "io/blp/blp_file.h"
 
 namespace wow::gl {
     class texture : public bindable_texture {
@@ -24,6 +25,8 @@ namespace wow::gl {
         void bgra_image(uint32_t width, uint32_t height, const void *data);
 
         void image(uint32_t width, uint32_t height, GLint format, const void *data);
+
+        void load_blp(io::blp::blp_file_ptr blp);
 
         void filtering(GLint min_filter, GLint mag_filter);
         void wrap(GLint wrap_s, GLint wrap_t);

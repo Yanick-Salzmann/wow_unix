@@ -1,6 +1,8 @@
 #include "texture.h"
 #include <stb_image.h>
 
+#include "spdlog/fmt/bundled/args.h"
+
 namespace wow::gl {
     static GLuint default_texture = 0;
 
@@ -82,6 +84,70 @@ namespace wow::gl {
         );
 
         glGenerateMipmap(GL_TEXTURE_2D);
+        unbind();
+    }
+
+    void texture::load_blp(io::blp::blp_file_ptr blp) {
+        if (_texture == default_texture) {
+            glGenTextures(1, &_texture);
+        }
+
+        bind();
+        auto w = blp->width();
+        auto h = blp->height();
+
+        for (auto i = 0; i < blp->layer_count(); ++i) {
+            w = std::max(w, 1u);
+            h = std::max(h, 1u);
+
+            auto data_size = ((w + 3) / 4) * ((h + 3) / 4);
+
+            auto data = blp->get_layer(i);
+
+            switch (blp->format()) {
+                case io::blp::blp_format::bc1: {
+                    glCompressedTexImage2D(
+                        GL_TEXTURE_2D,
+                        i,
+                        GL_COMPRESSED_RGBA_S3TC_DXT1_EXT,
+                        w,
+                        h,
+                        0,
+                        data_size * 8,
+                        data.data()
+                    );
+                    break;
+                }
+
+                case io::blp::blp_format::bc2:
+                    glCompressedTexImage2D(GL_TEXTURE_2D, i, GL_COMPRESSED_RGBA_S3TC_DXT3_EXT, w, h, 0,
+                                           data_size * 16, data.data());
+                    break;
+
+                case io::blp::blp_format::bc3:
+                    glCompressedTexImage2D(GL_TEXTURE_2D, i, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, w, h, 0,
+                                           data_size * 16, data.data());
+                    break;
+
+                case io::blp::blp_format::rgb:
+                    glTexImage2D(GL_TEXTURE_2D, i, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data.data());
+                    break;
+
+                case io::blp::blp_format::rgb_palette: {
+                    auto unwrapped = blp->palette_layer_to_rgba(i);
+                    glTexImage2D(GL_TEXTURE_2D, i, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, unwrapped.data());
+                    break;
+                }
+
+                default:
+                    throw std::runtime_error("Unsupported BLP format");
+            }
+
+
+            w >>= 1;
+            h >>= 1;
+        }
+
         unbind();
     }
 

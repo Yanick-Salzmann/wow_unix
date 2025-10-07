@@ -29,32 +29,33 @@ namespace wow::gl {
         glUseProgram(0);
     }
 
-    const program &program::compile_vertex_shader_from_file(const char *file_path) const {
+    const program &program::compile_vertex_shader_from_file(const std::string &file_path) const {
         std::ifstream file(file_path, std::ios::in | std::ios::binary);
         if (!file) {
             SPDLOG_ERROR("Failed to open vertex shader file: {}", file_path);
             return *this;
         }
 
-        const std::string source((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+        const std::string source((std::istreambuf_iterator(file)), std::istreambuf_iterator<char>());
         compile_shader(_vertex_shader, source.c_str(), "Vertex");
         return *this;
     }
 
-    const program &program::compile_fragment_shader_from_file(const char *file_path) const {
+    const program &program::compile_fragment_shader_from_file(const std::string &file_path) const {
         std::ifstream file(file_path, std::ios::in | std::ios::binary);
         if (!file) {
             SPDLOG_ERROR("Failed to open fragment shader file: {}", file_path);
             return *this;
         }
 
-        const std::string source((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+        const std::string source((std::istreambuf_iterator(file)), std::istreambuf_iterator<char>());
         compile_shader(_fragment_shader, source.c_str(), "Fragment");
         return *this;
     }
 
-    void program::compile_shader(const GLuint shader, const char *source, const char *shader_type) {
-        glShaderSource(shader, 1, &source, nullptr);
+    void program::compile_shader(const GLuint shader, const std::string &source, const std::string &shader_type) {
+        const auto src_ptr = source.c_str();
+        glShaderSource(shader, 1, &src_ptr, nullptr);
         glCompileShader(shader);
 
         GLint status;
@@ -69,12 +70,12 @@ namespace wow::gl {
         }
     }
 
-    const program &program::compile_vertex_shader(const char *source) const {
+    const program &program::compile_vertex_shader(const std::string &source) const {
         compile_shader(_vertex_shader, source, "Vertex");
         return *this;
     }
 
-    const program &program::compile_fragment_shader(const char *source) const {
+    const program &program::compile_fragment_shader(const std::string &source) const {
         compile_shader(_fragment_shader, source, "Fragment");
         return *this;
     }
@@ -97,58 +98,58 @@ namespace wow::gl {
         }
     }
 
-    int32_t program::uniform_location(const char *name) const {
-        return glGetUniformLocation(_program, name);
+    int32_t program::uniform_location(const std::string &name) const {
+        return glGetUniformLocation(_program, name.c_str());
     }
 
-    int32_t program::attribute_location(const char *name) const {
-        return glGetAttribLocation(_program, name);
+    int32_t program::attribute_location(const std::string &name) const {
+        return glGetAttribLocation(_program, name.c_str());
     }
 
-    program &program::mat3(const glm::mat3 &matrix, const char *name) {
-        const auto location = glGetUniformLocation(_program, name);
+    program &program::mat3(const glm::mat3 &matrix, const std::string &name) {
+        const auto location = glGetUniformLocation(_program, name.c_str());
         glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
         return *this;
     }
 
-    program &program::mat4(const glm::mat4 &matrix, const char *name) {
-        const auto location = glGetUniformLocation(_program, name);
+    program &program::mat4(const glm::mat4 &matrix, const std::string &name) {
+        const auto location = glGetUniformLocation(_program, name.c_str());
         glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
         return *this;
     }
 
-    program &program::vec3(const glm::vec3 &vector, const char *name) {
-        const auto location = glGetUniformLocation(_program, name);
+    program &program::vec3(const glm::vec3 &vector, const std::string &name) {
+        const auto location = glGetUniformLocation(_program, name.c_str());
         glUniform3fv(location, 1, glm::value_ptr(vector));
         return *this;
     }
 
-    program &program::vec4(const glm::vec4 &vector, const char *name) {
-        const auto location = glGetUniformLocation(_program, name);
+    program &program::vec4(const glm::vec4 &vector, const std::string &name) {
+        const auto location = glGetUniformLocation(_program, name.c_str());
         glUniform4fv(location, 1, glm::value_ptr(vector));
         return *this;
     }
 
-    program &program::float_(const float value, const char *name) {
-        const auto location = glGetUniformLocation(_program, name);
+    program &program::float_(const float value, const std::string &name) {
+        const auto location = glGetUniformLocation(_program, name.c_str());
         glUniform1f(location, value);
         return *this;
     }
 
-    program &program::int_(const int value, const char *name) {
-        const auto location = glGetUniformLocation(_program, name);
+    program &program::int_(const int value, const std::string &name) {
+        const auto location = glGetUniformLocation(_program, name.c_str());
         glUniform1i(location, value);
         return *this;
     }
 
-    program &program::bool_(const bool value, const char *name) {
-        const auto location = glGetUniformLocation(_program, name);
+    program &program::bool_(const bool value, const std::string &name) {
+        const auto location = glGetUniformLocation(_program, name.c_str());
         glUniform1i(location, value);
         return *this;
     }
 
-    program &program::sampler2d(const int index, const char *name) {
-        const auto location = glGetUniformLocation(_program, name);
+    program &program::sampler2d(const int index, const std::string &name) {
+        const auto location = glGetUniformLocation(_program, name.c_str());
         glUniform1i(location, index);
         return *this;
     }

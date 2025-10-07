@@ -10,6 +10,7 @@
 #include "io/terrain/adt_tile.h"
 #include "utils/constants.h"
 #include "utils/work_pool.h"
+#include "scene_info.h"
 
 namespace wow::scene {
     class map_manager {
@@ -71,7 +72,7 @@ namespace wow::scene {
 
         void enter_world(uint32_t map_id, const glm::vec2 &position);
 
-        void on_frame();
+        void on_frame(const scene_info& scene_info);
 
         void shutdown();
 

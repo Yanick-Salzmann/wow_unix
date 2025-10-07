@@ -27,11 +27,6 @@ FetchContent_Declare(
         GIT_TAG master
 )
 
-FetchContent_Declare(
-        glad
-        GIT_REPOSITORY https://github.com/Dav1dde/glad.git
-        GIT_TAG v0.1.36
-)
 
 FetchContent_Declare(
         glm
@@ -68,7 +63,11 @@ set(CMAKE_BUILD_TYPE Release)
 FetchContent_MakeAvailable(StormLib)
 set(CMAKE_BUILD_TYPE ${STORMLIB_BUILD_TYPE_BACKUP})
 
-FetchContent_MakeAvailable(spdlog glfw glad glm stb boost_di tomlplusplus)
+FetchContent_MakeAvailable(spdlog glfw glm stb boost_di tomlplusplus)
+
+execute_process(COMMAND python3 -m venv .venv COMMAND .venv/bin/pip3 install -r requirements.txt WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/glad)
+include(glad/cmake/CMakeLists.txt)
+glad_add_library(glad_s3tc SHARED API gl:core=4.6 EXTENSIONS GL_EXT_texture_compression_s3tc)
 
 set(PROTO_FILES
         ${CMAKE_SOURCE_DIR}/src/proto/js_event.proto
@@ -194,11 +193,12 @@ add_executable(wow_unix src/main.cpp
         src/scene/frustum.h
         src/scene/frustum.cpp
         src/io/terrain/wdt_file.h
-        src/io/terrain/wdt_file.cpp)
+        src/io/terrain/wdt_file.cpp
+        src/scene/scene_info.h)
 
 target_compile_options(wow_unix PRIVATE -Wno-multichar -DGLM_ENABLE_EXPERIMENTAL -rdynamic)
 
-add_dependencies(wow_unix fetch_mime_types proto_typescript)
+add_dependencies(wow_unix fetch_mime_types proto_typescript glad_s3tc)
 
 add_executable(wow_unix_browser src/main_browser.cpp)
 
@@ -214,13 +214,14 @@ target_include_directories(wow_unix PRIVATE
         ${boost_di_SOURCE_DIR}/include
         ${Boost_INCLUDE_DIRS}
         ${tomlplusplus_SOURCE_DIR}/include
+        ${CMAKE_BINARY_DIR}/gladsources/glad_s3tc/include
 )
 
 target_include_directories(wow_unix_browser PRIVATE src cef)
 
 target_link_libraries(wow_unix PRIVATE
+        ${CMAKE_BINARY_DIR}/libglad_s3tc.so
         glm
-        glad
         spdlog::spdlog
         glfw
         OpenGL::GL

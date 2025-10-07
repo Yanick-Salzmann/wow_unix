@@ -19,7 +19,7 @@ namespace wow::io::terrain {
         explicit wdt_file(const utils::binary_reader_ptr &reader);
 
         bool has_large_alpha() const {
-            return (_header.flags & 0x04) != 0;
+            return (_header.flags & 0x84) != 0;
         }
     };
 

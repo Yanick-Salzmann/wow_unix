@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <vector>
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 namespace wow::gl {
     class index_buffer {

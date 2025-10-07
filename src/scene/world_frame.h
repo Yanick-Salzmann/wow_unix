@@ -6,12 +6,15 @@
 #include "gpu_dispatcher.h"
 #include "map_manager.h"
 #include "glm/vec2.hpp"
+#include "scene_info.h"
 
 namespace wow::scene {
     class world_frame {
         map_manager_ptr _map_manager{};
         gpu_dispatcher_ptr _dispatcher{};
         camera_ptr _camera{};
+
+        scene_info _scene_info{};
 
         uint32_t _frame_count = 0;
         std::chrono::steady_clock::time_point _last_fps_update = std::chrono::steady_clock::now();

@@ -7,7 +7,7 @@
 #include "program.h"
 #include "vertex_buffer.h"
 #include "texture.h"
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <vector>
 
 namespace wow::gl {

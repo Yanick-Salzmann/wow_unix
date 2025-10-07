@@ -4,7 +4,7 @@
 #include <vector>
 #include <EGL/egl.h>
 
-#include "glad/glad.h"
+#include "glad/gl.h"
 #include "include/internal/cef_types_color.h"
 #include "include/internal/cef_types_linux.h"
 

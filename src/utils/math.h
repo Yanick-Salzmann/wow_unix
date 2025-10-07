@@ -49,6 +49,8 @@ namespace wow::utils {
         bounding_box &take_min_max(const glm::vec3 p) {
             return take_min(p).take_max(p);
         }
+
+        bool intersects_sphere(const glm::vec3 &center, const float radius) const;
     };
 
     class plane {

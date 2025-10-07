@@ -4,8 +4,61 @@
 #include "utils/constants.h"
 #include "utils/di.h"
 
+#include "adt_tile.h"
+
 namespace wow::io::terrain {
     gl::index_buffer_ptr adt_chunk::_index_buffer;
+    uint32_t adt_chunk::_alpha_uniform{};
+    uint32_t adt_chunk::_color_uniforms[4]{};
+
+    void adt_chunk::load_alpha_rle(const uint32_t layer, const utils::binary_reader_ptr &reader) {
+        auto num_read = 0;
+        while (num_read < 4096) {
+            const auto indicator = reader->read<uint8_t>();
+            const auto repeat = indicator & 0x7F;
+            if ((indicator & 0x80) != 0) {
+                const auto value = static_cast<uint32_t>(reader->read<uint8_t>());
+                for (auto i = 0; i < repeat; ++i) {
+                    _texture_data[num_read++] |= static_cast<uint32_t>(value) << (layer * 8);
+                }
+            } else {
+                for (auto i = 0; i < repeat; ++i) {
+                    _texture_data[num_read++] |= static_cast<uint32_t>(reader->read<uint8_t>()) << (layer * 8);
+                }
+            }
+        }
+    }
+
+    void adt_chunk::load_alpha_uncompressed(const uint32_t layer, const utils::binary_reader_ptr &reader) {
+        for (auto i = 0; i < 4096; ++i) {
+            _texture_data[i] |= static_cast<uint32_t>(reader->read<uint8_t>()) << (layer * 8);
+        }
+    }
+
+    void adt_chunk::load_alpha_compressed(const uint32_t layer, const utils::binary_reader_ptr &reader) {
+        auto out_ptr = _texture_data.data();
+
+        const auto full_alpha = _header.flags.unfixed_alpha_map != 0;
+        for (auto k = 0; k < (full_alpha ? 64 : 63); ++k) {
+            for (auto j = 0; j < 32; ++j) {
+                const auto val = reader->read<uint8_t>();
+                auto val1 = val & 0x0F;
+                auto val2 = (j == 31 && !full_alpha) ? val1 : ((val >> 4) & 0xFF);
+
+                val1 = static_cast<uint8_t>((val1 / 15.0f) * 255.0f);
+                val2 = static_cast<uint8_t>((val2 / 15.0f) * 255.0f);
+
+                *out_ptr++ |= val1 << (layer * 8);
+                *out_ptr++ |= val2 << (layer * 8);
+            }
+        }
+
+        if (!full_alpha) {
+            for (auto j = 0; j < 64; ++j) {
+                _texture_data[63 * 64 + j] |= ((_texture_data[62 * 64 + j] >> (layer * 8)) & 0xFF) << (layer * 8);
+            }
+        }
+    }
 
     void adt_chunk::load_heights(const utils::binary_reader_ptr &reader) {
         if (reader->read<uint32_t>() != 'MCVT') {
@@ -98,13 +151,21 @@ namespace wow::io::terrain {
     }
 
     void adt_chunk::load_shadows(const utils::binary_reader_ptr &reader) {
-        _texture_data.assign(4096, 0x000000000);
+        if (_texture_data.empty()) {
+            _texture_data.assign(4096, 0x000000000);
+        }
+
+        for (auto i = 0; i < 4096; ++i) {
+            _texture_data[i] &= 0x00FFFFFF;
+        }
+
         if (!reader) {
             return;
         }
 
         if (reader->read<uint32_t>() != 'MCSH') {
             SPDLOG_ERROR("Chunk has invalid MCSH chunk, signature mismatch");
+            return;
         }
 
         if (reader->read<uint32_t>() < (4096 / 8) * sizeof(uint8_t)) {
@@ -115,7 +176,7 @@ namespace wow::io::terrain {
         for (auto i = 0; i < 64; ++i) {
             auto val = reader->read<uint64_t>();
             for (auto j = 0; j < 64; ++j) {
-                _texture_data[i * 64 + j] &= (((val & 0x1) ? 0xFF : 0x00) << 24) | 0x00FFFFFF;
+                _texture_data[i * 64 + j] |= (((val & 0x1) ? 0xFF : 0x00) << 24);
                 val >>= 1;
             }
         }
@@ -138,10 +199,52 @@ namespace wow::io::terrain {
 
         _layers.resize(_header.num_layers);
         reader->read(_layers);
+
+        for (auto i = 0; i < _header.num_layers; ++i) {
+            const auto layer = _layers[i];
+            auto tex = _parent_tile.lock()->find_texture(layer.texture_id);
+            if (!tex) {
+                SPDLOG_ERROR("Chunk has invalid MCLY chunk, texture not found");
+                return;
+            }
+
+            _textures.push_back(tex);
+        }
     }
 
     void adt_chunk::load_alpha(const utils::binary_reader_ptr &reader) {
-        for (auto i = 0; i < _header.num_layers; ++i) {
+        if (reader->read<uint32_t>() != 'MCAL') {
+            SPDLOG_ERROR("Chunk has invalid MCAL chunk, signature mismatch");
+            return;
+        }
+
+        _texture_data.assign(4096, 0x000000000);
+
+        for (auto i = 1; i < _header.num_layers; ++i) {
+            const auto layer = _layers[i];
+            if (!layer.flags.use_alpha_map && !layer.flags.alpha_map_compressed) {
+                for (auto k = 0; k < 4096; ++k) {
+                    _texture_data[k] |= (0xFF << ((i - 1) * 8));
+                }
+                continue;
+            }
+
+            if (layer.offset_mcal + _header.ofs_alpha + 8 >= reader->size()) {
+                SPDLOG_WARN("Invalid MCAL chunk, offset too large");
+                continue;
+            }
+
+            reader->seek(_header.ofs_alpha + layer.offset_mcal + 8);
+
+            if (layer.flags.alpha_map_compressed) {
+                load_alpha_rle(i - 1, reader);
+            } else if (_use_big_alpha) {
+                load_alpha_uncompressed(i - 1, reader);
+            } else {
+                load_alpha_compressed(i - 1, reader);
+            }
+
+            reader->seek(layer.offset_mcal);
         }
     }
 
@@ -174,6 +277,13 @@ namespace wow::io::terrain {
 
             _index_buffer->set_data(indices);
             gl::mesh::terrain_mesh()->index_buffer(_index_buffer);
+
+
+            _alpha_uniform = gl::mesh::terrain_mesh()->program()->uniform_location("shadow_texture");
+            for (auto i = 0; i < 4; ++i) {
+                _color_uniforms[i] = gl::mesh::terrain_mesh()->program()->uniform_location(
+                    fmt::format("color_texture{}", i));
+            }
         });
 
         _vertex_buffer = std::make_shared<gl::vertex_buffer>();
@@ -185,13 +295,16 @@ namespace wow::io::terrain {
         _shadow_texture->wrap(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
         _texture_data.clear();
 
-        _texture_uniform = gl::mesh::terrain_mesh()->program()->uniform_location("shadow_texture");
 
         _is_sync_loaded = true;
         utils::app_module->map_manager()->add_load_progress();
     }
 
-    adt_chunk::adt_chunk(const wdt_file_ptr &wdt, const utils::binary_reader_ptr &reader) {
+    adt_chunk::adt_chunk(
+        const wdt_file_ptr &wdt,
+        const adt_tile_ptr &tile,
+        const utils::binary_reader_ptr &reader
+    ) : _parent_tile(tile) {
         if (reader->read<uint32_t>() != 'MCNK') {
             SPDLOG_ERROR("Chunk has invalid MCNK chunk, signature mismatch");
             return;
@@ -218,6 +331,16 @@ namespace wow::io::terrain {
             load_colors(nullptr);
         }
 
+        if (_header.num_layers > 0) {
+            reader->seek(_header.ofs_layer);
+            load_layers(reader);
+        }
+
+        if (_header.num_layers > 1 && _header.size_alpha > 8 && _header.ofs_alpha > 0) {
+            reader->seek(_header.ofs_alpha);
+            load_alpha(reader);
+        }
+
         if (_header.size_shadow > 8) {
             reader->seek(_header.ofs_shadow);
             load_shadows(reader);
@@ -237,7 +360,7 @@ namespace wow::io::terrain {
         _is_async_loaded = true;
     }
 
-    void adt_chunk::on_frame() {
+    void adt_chunk::on_frame(const scene::scene_info& scene_info) {
         if (!_is_async_loaded) {
             return;
         }
@@ -252,13 +375,22 @@ namespace wow::io::terrain {
             return;
         }
 
+        if (!_bounds.intersects_sphere(scene_info.camera_position, scene_info.view_distance)) {
+            return;
+        }
+
         if (!utils::app_module->camera()->view_frustum().intersects_aabb(_bounds)) {
             return;
         }
 
+
         const auto mesh = gl::mesh::terrain_mesh();
+        for (auto i = 0; i < _header.num_layers; ++i) {
+            mesh->texture(_color_uniforms[i], _textures[i]);
+        }
+
         mesh->vertex_buffer(_vertex_buffer)
-                .texture(_texture_uniform, _shadow_texture);
+                .texture(_alpha_uniform, _shadow_texture);
 
         mesh->draw();
     }

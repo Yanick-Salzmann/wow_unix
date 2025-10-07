@@ -1,4 +1,4 @@
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <execinfo.h>
 #include "window.h"
 
@@ -124,7 +124,7 @@ namespace wow::gl {
             }
         });
 
-        if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
+        if (!gladLoadGL(glfwGetProcAddress)) {
             SPDLOG_ERROR("Cannot initialize GLAD");
             throw std::runtime_error("Cannot initialize GLAD");
         }

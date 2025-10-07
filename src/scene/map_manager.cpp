@@ -6,6 +6,8 @@
 namespace wow::scene {
     void map_manager::async_load_tile(uint32_t x, uint32_t y, utils::binary_reader_ptr data) {
         const auto adt = std::make_shared<io::terrain::adt_tile>(_active_wdt, x, y, data, _texture_manager);
+        adt->async_load();
+
         std::lock_guard lock(_async_load_lock);
         _async_loaded_tiles.push_back(adt);
         add_load_progress();
@@ -67,7 +69,8 @@ namespace wow::scene {
             }
 
             _camera->update_position(_position);
-            SPDLOG_INFO("Entered world {} ({}) at ({}, {}, {})", _map_id, _directory, _position.x, _position.y,_position.z);
+            SPDLOG_INFO("Entered world {} ({}) at ({}, {}, {})", _map_id, _directory, _position.x, _position.y,
+                        _position.z);
         }
     }
 
@@ -224,7 +227,7 @@ namespace wow::scene {
         std::thread{&map_manager::initial_load_thread, this, start_adt, end_adt}.detach();
     }
 
-    void map_manager::on_frame() {
+    void map_manager::on_frame(const scene_info& scene_info) {
         handle_load_tick();
 
         glEnable(GL_DEPTH_TEST);
@@ -241,7 +244,7 @@ namespace wow::scene {
         }
 
         for (const auto &tile: to_render) {
-            tile->on_frame();
+            tile->on_frame(scene_info);
         }
 
         glDisable(GL_CULL_FACE);

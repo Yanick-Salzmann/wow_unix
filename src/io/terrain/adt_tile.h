@@ -6,12 +6,13 @@
 
 #include "adt_chunk.h"
 #include "wdt_file.h"
+#include "scene/scene_info.h"
 #include "scene/texture_manager.h"
 #include "utils/io.h"
 #include "utils/math.h"
 
 namespace wow::io::terrain {
-    class adt_tile {
+    class adt_tile : public std::enable_shared_from_this<adt_tile> {
         struct data_chunk {
             uint32_t signature;
             uint32_t size;
@@ -30,6 +31,9 @@ namespace wow::io::terrain {
         uint32_t _x{};
         uint32_t _y{};
 
+        utils::binary_reader_ptr _reader{};
+        wdt_file_ptr _wdt{};
+
         utils::bounding_box _bounds{};
 
         std::atomic_bool _async_load_successful = false;
@@ -38,7 +42,7 @@ namespace wow::io::terrain {
 
         scene::texture_manager_ptr _texture_manager;
 
-        std::map<uint32_t, gl::texture_ptr> _texture_map{};
+        std::vector<gl::texture_ptr> _texture_map{};
 
         std::array<chunk_info, 256> _chunk_indices{};
 
@@ -57,7 +61,7 @@ namespace wow::io::terrain {
             wdt_file_ptr wdt,
             uint32_t x,
             uint32_t y,
-            const utils::binary_reader_ptr &reader,
+            utils::binary_reader_ptr reader,
             scene::texture_manager_ptr texture_manager
         );
 
@@ -67,8 +71,10 @@ namespace wow::io::terrain {
             }
         }
 
-        void on_frame() const;
+        void on_frame(const scene::scene_info& scene_info) const;
 
+        // this is because shared_from_this is not available in the constructor
+        void async_load();
         void async_unload();
 
         uint32_t x() const {
@@ -86,6 +92,8 @@ namespace wow::io::terrain {
 
             return _chunks[index];
         }
+
+        gl::texture_ptr find_texture(int32_t index);
     };
 
     using adt_tile_ptr = std::shared_ptr<adt_tile>;

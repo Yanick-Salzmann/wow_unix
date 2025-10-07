@@ -344,6 +344,18 @@ namespace wow::io::blp {
         }
     }
 
+    std::vector<uint8_t> blp_file::palette_layer_to_rgba(uint32_t layer) const {
+        if (_format != blp_format::rgb_palette) {
+            throw std::runtime_error("Invalid BLP format: Layer is not paletted");
+        }
+
+        std::vector<uint8_t> rgba_data{};
+        this->unwrap_blp_layer_with_palette(rgba_data, std::max(1u, _header.width >> layer),
+                                            std::max(1u, _header.height >> layer), _mipmaps[layer]);
+
+        return rgba_data;
+    }
+
     std::vector<uint8_t> blp_file::convert_to_rgba() const {
         if (_format == blp_format::unknown) {
             throw std::runtime_error("Unsupported BLP format for conversion");

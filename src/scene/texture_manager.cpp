@@ -1,5 +1,6 @@
 #include "texture_manager.h"
 
+#include "io/blp/blp_file.h"
 #include "spdlog/spdlog.h"
 
 #include "utils/string_utils.h"
@@ -17,10 +18,14 @@ namespace wow::scene {
         }
     }
 
-    texture_manager::texture_manager(gpu_dispatcher_ptr dispatcher) : _dispatcher(std::move(dispatcher)) {
+    texture_manager::texture_manager(
+        io::mpq_manager_ptr mpq_manager,
+        gpu_dispatcher_ptr dispatcher
+    ) : _dispatcher(std::move(dispatcher)), _mpq_manager(std::move(mpq_manager)) {
     }
 
     gl::texture_ptr texture_manager::load(const std::string &path) {
+        std::shared_ptr<gl::texture> texture;
         {
             std::lock_guard lock(_texture_lock);
 
@@ -31,7 +36,7 @@ namespace wow::scene {
                 }
             }
 
-            const auto texture = std::shared_ptr<gl::texture>(new gl::texture(), [this, name](const gl::texture *ptr) {
+            texture = std::shared_ptr<gl::texture>(new gl::texture(), [this, name](const gl::texture *ptr) {
                 {
                     std::lock_guard inner_lock(_texture_lock);
                     _texture_map.erase(name);
@@ -41,7 +46,17 @@ namespace wow::scene {
             });
 
             _texture_map[name] = texture;
-            return texture;
         }
+
+        if (auto file = _mpq_manager->open(path)) {
+            auto blp = std::make_shared<io::blp::blp_file>(file);
+            _dispatcher->dispatch([blp, texture] {
+                texture->load_blp(blp);
+                texture->filtering(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+                texture->wrap(GL_REPEAT, GL_REPEAT);
+            });
+        }
+
+        return texture;
     }
 }

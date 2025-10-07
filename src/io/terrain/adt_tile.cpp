@@ -1,5 +1,7 @@
 #include "adt_tile.h"
 
+#include <utility>
+
 #include "spdlog/spdlog.h"
 #include "utils/di.h"
 
@@ -42,10 +44,9 @@ namespace wow::io::terrain {
         auto cur_offset = str_ptr;
 
         while (cur_offset < str_end) {
-            const auto offset = std::distance(str_ptr, cur_offset);
             const auto texture_name = std::string{cur_offset};
             cur_offset += texture_name.size() + 1;
-            _texture_map[offset] = _texture_manager->load(texture_name);
+            _texture_map.emplace_back(_texture_manager->load(texture_name));
         }
     }
 
@@ -54,7 +55,11 @@ namespace wow::io::terrain {
             reader->seek(mcin.offset);
             std::vector<uint8_t> data(mcin.size);
             reader->read(data.data(), mcin.size);
-            const auto chunk = std::make_shared<adt_chunk>(wdt, utils::make_binary_reader(data));
+            const auto chunk = std::make_shared<adt_chunk>(
+                wdt,
+                shared_from_this(),
+                utils::make_binary_reader(data)
+            );
             auto [x, y] = chunk->index();
             if (x >= 16 || y >= 16) {
                 SPDLOG_WARN("Invalid chunk index {},{} in ADT tile {},{}", x, y, _x, _y);
@@ -69,24 +74,46 @@ namespace wow::io::terrain {
         wdt_file_ptr wdt,
         const uint32_t x,
         const uint32_t y,
-        const utils::binary_reader_ptr &reader,
+        utils::binary_reader_ptr reader,
         scene::texture_manager_ptr texture_manager) : _x(x),
                                                       _y(y),
+                                                      _reader(std::move(reader)),
+                                                      _wdt(std::move(wdt)),
                                                       _texture_manager(std::move(texture_manager)) {
-        read_chunks(reader);
+    }
+
+    void adt_tile::on_frame(const scene::scene_info& scene_info) const {
+        if (!_async_load_successful || _async_unloaded) {
+            return;
+        }
+
+        if (utils::app_module->map_manager()->is_initial_load_complete() &&
+            !utils::app_module->camera()->view_frustum().intersects_aabb(_bounds)) {
+            return;
+        }
+
+        for (const auto &chunk: _chunks) {
+            if (chunk) {
+                chunk->on_frame(scene_info);
+            }
+        }
+    }
+
+    void adt_tile::async_load() {
+        read_chunks(_reader);
         if (!_data_chunks.contains('MVER') || *reinterpret_cast<uint32_t *>(_data_chunks['MVER'].data.data()) != 0x12) {
-            SPDLOG_WARN("Cannot load ADT tile {},{} - invalid version ({})", x, y,
+            SPDLOG_WARN("Cannot load ADT tile {},{} - invalid version ({})", _x, _y,
                         *reinterpret_cast<uint32_t *>(_data_chunks['MVER'].data.data()));
             return;
         }
 
         if (!load_chunk_indices()) {
-            SPDLOG_WARN("Cannot load ADT tile {},{} - missing/invalid MCIN chunk", x, y);
+            SPDLOG_WARN("Cannot load ADT tile {},{} - missing/invalid MCIN chunk", _x, _y);
             return;
         }
 
         load_textures();
-        load_chunks(wdt, reader);
+        load_chunks(_wdt, _reader);
 
         _data_chunks.clear();
 
@@ -107,25 +134,17 @@ namespace wow::io::terrain {
         _async_load_successful = true;
     }
 
-    void adt_tile::on_frame() const {
-        if (!_async_load_successful || _async_unloaded) {
-            return;
-        }
-
-        if (utils::app_module->map_manager()->is_initial_load_complete() &&
-            !utils::app_module->camera()->view_frustum().intersects_aabb(_bounds)) {
-            return;
-        }
-
-        for (const auto &chunk: _chunks) {
-            if (chunk) {
-                chunk->on_frame();
-            }
-        }
-    }
-
     void adt_tile::async_unload() {
         _async_unloaded = true;
         _texture_map.clear();
+    }
+
+    gl::texture_ptr adt_tile::find_texture(int32_t index) {
+        if (index < 0 || index >= _texture_map.size()) {
+            SPDLOG_INFO("Invalid texture index {}", index);
+            return nullptr;
+        }
+
+        return _texture_map[index];
     }
 }
