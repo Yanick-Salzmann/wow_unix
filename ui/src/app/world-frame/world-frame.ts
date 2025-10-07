@@ -3,6 +3,7 @@ import { EventService } from '../service/event.service';
 import { CommonModule } from '@angular/common';
 import { JsEvent } from '../proto/js_event';
 import { BehaviorSubject } from 'rxjs';
+import { LocaleNumberPipe } from '../pipes/locale-number.pipe';
 
 interface AreaInfo {
   name: string;
@@ -27,7 +28,7 @@ interface SystemStats {
 
 @Component({
   selector: 'app-world-frame',
-  imports: [CommonModule],
+  imports: [CommonModule, LocaleNumberPipe],
   templateUrl: './world-frame.html',
   styleUrl: './world-frame.scss',
   standalone: true

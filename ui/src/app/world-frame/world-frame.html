@@ -19,7 +19,7 @@
         @if (worldPosition$ | async; as pos) {
           <span class="map-name">{{ pos.mapName }} ({{pos.mapId}})</span>
           <span class="coords">
-            X: {{ pos.x | number:'1.0-0' }} | Y: {{ pos.y | number:'1.0-0' }} | Z: {{ pos.z | number:'1.0-0' }}
+            X: {{ pos.x | localeNumber }} | Y: {{ pos.y | localeNumber }} | Z: {{ pos.z | localeNumber }}
           </span>
         }
       </div>

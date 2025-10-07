@@ -294,6 +294,8 @@ namespace wow::web {
             settings.no_sandbox = true;
             settings.windowless_rendering_enabled = true;
             settings.remote_debugging_port = 9222;
+            CefString(&settings.locale) = "de_CH";
+            CefString(&settings.accept_language_list) = "de-CH";
 
             _application = new web_application();
             _client = new web_client(_window, shared_from_this());
