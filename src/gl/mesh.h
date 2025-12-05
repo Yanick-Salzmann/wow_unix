@@ -85,11 +85,19 @@ namespace wow::gl {
 
         mesh &texture(int32_t location, const bindable_texture_ptr &texture);
 
-        void bind() const;
+        const mesh& bind() const;
+        const mesh& bind_textures() const;
+        const mesh& bind_vb() const;
+        const mesh& bind_ib() const;
+        const mesh& bind_program() const;
+
+        const mesh& bind_vertex_attributes() const;
+
+        const mesh& apply_blend_mode() const;
 
         void unbind() const;
 
-        void draw() const;
+        void draw(bool skip_bind = false, uint32_t offset = 0) const;
 
         void draw_instanced(GLsizei instance_count) const;
 
@@ -103,6 +111,8 @@ namespace wow::gl {
         static mesh_ptr create_ui_quad();
 
         static mesh_ptr terrain_mesh();
+
+        static mesh_ptr sky_sphere_mesh();
 
     private:
         void setup_vertex_attributes();

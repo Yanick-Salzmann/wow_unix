@@ -12,7 +12,12 @@
 #include "utils/math.h"
 
 namespace wow::io::terrain {
+    inline constexpr uint32_t ADT_CHUNK_COUNT = 256;
+    inline constexpr uint32_t ADT_CHUNK_VECTOR_COUNT = 145;
+
     class adt_tile : public std::enable_shared_from_this<adt_tile> {
+        friend class adt_chunk;
+
         struct data_chunk {
             uint32_t signature;
             uint32_t size;
@@ -40,6 +45,8 @@ namespace wow::io::terrain {
         std::atomic_bool _async_unloaded = false;
         std::map<uint32_t, data_chunk> _data_chunks{};
 
+        bool _sync_loaded = false;
+
         scene::texture_manager_ptr _texture_manager;
 
         std::vector<gl::texture_ptr> _texture_map{};
@@ -48,6 +55,9 @@ namespace wow::io::terrain {
 
         std::array<adt_chunk_ptr, 256> _chunks{};
 
+        std::array<adt_vector, ADT_CHUNK_COUNT * ADT_CHUNK_VECTOR_COUNT> _vectors{};
+        gl::vertex_buffer_ptr _vertex_buffer{};
+
         void read_chunks(const utils::binary_reader_ptr &reader);
 
         bool load_chunk_indices();
@@ -55,6 +65,10 @@ namespace wow::io::terrain {
         void load_textures();
 
         void load_chunks(wdt_file_ptr wdt, const utils::binary_reader_ptr &reader);
+
+        void sync_load();
+
+        void update_vectors(const std::array<adt_vector, ADT_CHUNK_VECTOR_COUNT>& vectors, uint32_t offset);
 
     public:
         adt_tile(
@@ -71,10 +85,11 @@ namespace wow::io::terrain {
             }
         }
 
-        void on_frame(const scene::scene_info& scene_info) const;
+        void on_frame(const scene::scene_info &scene_info);
 
         // this is because shared_from_this is not available in the constructor
         void async_load();
+
         void async_unload();
 
         uint32_t x() const {

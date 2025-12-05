@@ -2,6 +2,11 @@
 
 #include "utils/di.h"
 #include "utils/string_utils.h"
+#include "gl/mesh.h"
+#include <glm/gtc/constants.hpp>
+#include <ctime>
+#include <chrono>
+#include <cmath>
 
 namespace wow::scene {
     void map_manager::async_load_tile(uint32_t x, uint32_t y, utils::binary_reader_ptr data) {
@@ -227,7 +232,11 @@ namespace wow::scene {
         std::thread{&map_manager::initial_load_thread, this, start_adt, end_adt}.detach();
     }
 
-    void map_manager::on_frame(const scene_info& scene_info) {
+    void map_manager::on_frame(const scene_info &scene_info) {
+        if (_position_changed) {
+            _sky_sphere.update_position(_position);
+        }
+
         handle_load_tick();
 
         glEnable(GL_DEPTH_TEST);
@@ -249,6 +258,8 @@ namespace wow::scene {
 
         glDisable(GL_CULL_FACE);
         glDisable(GL_DEPTH_TEST);
+
+        _sky_sphere.on_frame();
     }
 
     void map_manager::shutdown() {
@@ -321,5 +332,9 @@ namespace wow::scene {
         }
 
         return nullptr;
+    }
+
+    void map_manager::initialize() {
+        _sky_sphere.initialize();
     }
 }

@@ -38,6 +38,10 @@ namespace wow::gl {
     };
 
     using vertex_buffer_ptr = std::shared_ptr<vertex_buffer>;
+
+    inline vertex_buffer_ptr make_vertex_buffer() {
+        return std::make_shared<vertex_buffer>();
+    }
 }
 
 #endif //WOW_UNIX_VERTEX_BUFFER_H

@@ -70,6 +70,15 @@ namespace wow::gl {
             throw std::runtime_error("Cannot create GLFW window");
         }
 
+        size_t icon_w{}, icon_h{};
+        auto data = utils::read_png_image_to_bitmap("app_icon.png", icon_w, icon_h);
+        GLFWimage icon_image{};
+        icon_image.width = static_cast<int32_t>(icon_w);
+        icon_image.height = static_cast<int32_t>(icon_h);
+        icon_image.pixels = data.data();
+
+        glfwSetWindowIcon(_window, 1, &icon_image);
+
         glfwMakeContextCurrent(_window);
         glfwSwapInterval(1);
         glfwSetWindowUserPointer(_window, this);

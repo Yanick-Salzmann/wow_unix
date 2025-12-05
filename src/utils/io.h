@@ -71,6 +71,8 @@ namespace wow::utils {
     inline binary_reader_ptr make_binary_reader(const std::vector<uint8_t> &data) {
         return std::make_shared<binary_reader>(data);
     }
+
+    std::vector<uint8_t> read_png_image_to_bitmap(const std::string& path, size_t& width, size_t& height);
 }
 
 #endif //WOW_UNIX_IO_H

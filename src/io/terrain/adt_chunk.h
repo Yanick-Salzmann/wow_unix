@@ -18,6 +18,19 @@ namespace wow::io::terrain {
     class adt_tile;
     using adt_tile_ptr = std::shared_ptr<adt_tile>;
 
+
+#pragma pack(push, 1)
+
+    struct adt_vector {
+        glm::vec3 position{};
+        glm::vec3 normal{};
+        glm::vec2 tex_coord{};
+        glm::vec2 alpha_coord{};
+        glm::vec3 vertex_color{};
+    };
+
+#pragma pack(pop)
+
     class adt_chunk {
 #pragma pack(push, 1)
         struct map_chunk_flags {
@@ -67,14 +80,6 @@ namespace wow::io::terrain {
             uint32_t padding{};
         };
 
-        struct adt_vector {
-            glm::vec3 position{};
-            glm::vec3 normal{};
-            glm::vec2 tex_coord{};
-            glm::vec2 alpha_coord{};
-            glm::vec3 vertex_color{};
-        };
-
         struct mcly_flags {
             uint32_t animation_rotation: 3;
             uint32_t animation_speed: 3;
@@ -101,7 +106,6 @@ namespace wow::io::terrain {
         static uint32_t _alpha_uniform;
         static uint32_t _color_uniforms[4];
 
-        gl::vertex_buffer_ptr _vertex_buffer{};
         gl::texture_ptr _shadow_texture{};
 
         std::weak_ptr<adt_tile> _parent_tile{};
@@ -153,7 +157,7 @@ namespace wow::io::terrain {
             return {_header.index_x, _header.index_y};
         }
 
-        void on_frame(const scene::scene_info& scene_info);
+        void on_frame(const scene::scene_info &scene_info);
 
         [[nodiscard]] const utils::bounding_box &bounds() const {
             return _bounds;
@@ -164,6 +168,10 @@ namespace wow::io::terrain {
         }
 
         float height(float x, float y) const;
+
+        static const gl::index_buffer_ptr &index_buffer() {
+            return _index_buffer;
+        }
     };
 
     using adt_chunk_ptr = std::shared_ptr<adt_chunk>;

@@ -70,6 +70,25 @@ namespace wow::io::terrain {
         }
     }
 
+    void adt_tile::sync_load() {
+        if (_sync_loaded) {
+            return;
+        }
+
+        _sync_loaded = true;
+        _vertex_buffer = gl::make_vertex_buffer();
+        _vertex_buffer->set_data(_vectors);
+    }
+
+    void adt_tile::update_vectors(const std::array<adt_vector, ADT_CHUNK_VECTOR_COUNT> &vectors, uint32_t offset) {
+        if ((offset % ADT_CHUNK_VECTOR_COUNT) != 0 || offset + vectors.size() > _vectors.size()) {
+            SPDLOG_WARN("Skipping vector update, offset is invalid {}", offset);
+            return;
+        }
+
+        std::ranges::copy(vectors, _vectors.begin() + offset);
+    }
+
     adt_tile::adt_tile(
         wdt_file_ptr wdt,
         const uint32_t x,
@@ -82,7 +101,7 @@ namespace wow::io::terrain {
                                                       _texture_manager(std::move(texture_manager)) {
     }
 
-    void adt_tile::on_frame(const scene::scene_info& scene_info) const {
+    void adt_tile::on_frame(const scene::scene_info &scene_info) {
         if (!_async_load_successful || _async_unloaded) {
             return;
         }
@@ -91,6 +110,13 @@ namespace wow::io::terrain {
             !utils::app_module->camera()->view_frustum().intersects_aabb(_bounds)) {
             return;
         }
+
+        sync_load();
+        const auto mesh = gl::mesh::terrain_mesh();
+        mesh->vertex_buffer(_vertex_buffer)
+                .bind_vb()
+                .bind_ib()
+                .bind_vertex_attributes();
 
         for (const auto &chunk: _chunks) {
             if (chunk) {

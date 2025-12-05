@@ -1,8 +1,8 @@
 #include "index_buffer.h"
 
 namespace wow::gl {
-    index_buffer::index_buffer(GLenum type) {
-        _type = type;
+    index_buffer::index_buffer(index_type type) {
+        _type = static_cast<GLenum>(type);
         glGenBuffers(1, &_buffer);
     }
 

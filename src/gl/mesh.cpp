@@ -2,6 +2,8 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
+#include <cmath>
 
 #include "spdlog/spdlog.h"
 
@@ -60,8 +62,8 @@ namespace wow::gl {
         return *this;
     }
 
-    mesh &mesh::add_vertex_attribute(std::string name, GLuint index, GLint size, GLenum type,
-                                     GLboolean normalized, GLsizei stride, const void *offset) {
+    mesh &mesh::add_vertex_attribute(std::string name, const GLuint index, const GLint size, const GLenum type,
+                                     const GLboolean normalized, const GLsizei stride, const void *offset) {
         _vertex_attributes.push_back({-1, std::move(name), index, size, type, normalized, stride, offset});
         if (_vertex_buffer) {
             setup_vertex_attributes();
@@ -80,7 +82,7 @@ namespace wow::gl {
     }
 
     mesh &mesh::texture(const std::string &name, const bindable_texture_ptr &texture) {
-        const auto loc = program()->uniform_location(name.c_str());
+        const auto loc = program()->uniform_location(name);
         if (loc < 0) {
             SPDLOG_ERROR("Texture {} not found in program", name);
             throw std::runtime_error("Texture not found in program");
@@ -89,23 +91,23 @@ namespace wow::gl {
         return this->texture(loc, texture);
     }
 
-    mesh &mesh::texture(int32_t location, const bindable_texture_ptr &texture) {
+    mesh &mesh::texture(const int32_t location, const bindable_texture_ptr &texture) {
         _textures[location] = texture;
         return *this;
     }
 
-    void mesh::bind() const {
-        glBindVertexArray(_vao);
-        if (_vertex_buffer) {
-            _vertex_buffer->bind();
-        }
-        if (_index_buffer) {
-            _index_buffer->bind();
-        }
-        if (_program) {
-            _program->use();
-        }
+    const mesh &mesh::bind() const {
+        bind_vertex_attributes();
+        bind_vb();
+        bind_ib();
+        bind_program();
+        bind_textures();
+        apply_blend_mode();
 
+        return *this;
+    }
+
+    const mesh &mesh::bind_textures() const {
         int index = 0;
         for (const auto &[uniform, texture]: _textures) {
             glActiveTexture(GL_TEXTURE0 + index);
@@ -114,6 +116,39 @@ namespace wow::gl {
             index++;
         }
 
+        return *this;
+    }
+
+    const mesh &mesh::bind_vb() const {
+        if (_vertex_buffer) {
+            _vertex_buffer->bind();
+        }
+
+        return *this;
+    }
+
+    const mesh &mesh::bind_ib() const {
+        if (_index_buffer) {
+            _index_buffer->bind();
+        }
+
+        return *this;
+    }
+
+    const mesh &mesh::bind_program() const {
+        if (_program) {
+            _program->use();
+        }
+
+        return *this;
+    }
+
+    const mesh &mesh::bind_vertex_attributes() const {
+        glBindVertexArray(_vao);
+        return *this;
+    }
+
+    const mesh &mesh::apply_blend_mode() const {
         switch (_blend_mode) {
             case blend_mode::none:
                 glDisable(GL_BLEND);
@@ -129,6 +164,8 @@ namespace wow::gl {
                 glBlendFunc(GL_ONE, GL_ONE);
                 break;
         }
+
+        return *this;
     }
 
     void mesh::unbind() const {
@@ -142,17 +179,24 @@ namespace wow::gl {
         program::unuse();
     }
 
-    void mesh::draw() const {
-        bind();
+    void mesh::draw(bool skip_bind, uint32_t offset) const {
+        if (!skip_bind) {
+            bind();
+        }
 
         if (_index_buffer && _index_count > 0) {
-            glDrawElements(_primitive_type, static_cast<GLsizei>(_index_count), _index_buffer->type(), nullptr);
+            if (offset <= 0) {
+                glDrawElements(_primitive_type, static_cast<GLsizei>(_index_count), _index_buffer->type(), nullptr);
+            } else {
+                glDrawElementsBaseVertex(_primitive_type, static_cast<GLsizei>(_index_count), _index_buffer->type(),
+                                         nullptr, offset);
+            }
         } else {
-            glDrawArrays(_primitive_type, 0, static_cast<GLsizei>(_index_count));
+            glDrawArrays(_primitive_type, offset, static_cast<GLsizei>(_index_count));
         }
     }
 
-    void mesh::draw_instanced(GLsizei instance_count) const {
+    void mesh::draw_instanced(const GLsizei instance_count) const {
         bind();
 
         if (_index_buffer && _index_count > 0) {
@@ -182,7 +226,8 @@ namespace wow::gl {
                  offset
              ]: _vertex_attributes) {
             if (location < 0) {
-                location = _program->attribute_location(fmt::format("{}{}", name, index).c_str());
+                _program->use();
+                location = _program->attribute_location(fmt::format("{}{}", name, index));
             }
             glEnableVertexAttribArray(location);
             glVertexAttribPointer(location, size, type, normalized, stride, offset);
@@ -216,7 +261,7 @@ namespace wow::gl {
         const auto vb = std::make_shared<gl::vertex_buffer>();
         vb->set_data(vertices, sizeof(vertices));
 
-        const auto ib = std::make_shared<gl::index_buffer>(GL_UNSIGNED_INT);
+        const auto ib = std::make_shared<gl::index_buffer>(index_type::uint32);
         ib->set_data(indices, sizeof(indices));
 
         const auto program = std::make_shared<gl::program>();
@@ -224,13 +269,15 @@ namespace wow::gl {
                 .compile_fragment_shader_from_file("shaders/ui_fragment.glsl")
                 .link();
 
-        quad_mesh->vertex_buffer(vb)
-                .program(program)
-                .index_buffer(ib)
-                .set_index_count(6)
-                .add_vertex_attribute("vertex_position", 0, 2,GL_FLOAT, false, 4 * sizeof(float), nullptr)
+        quad_mesh->
+                add_vertex_attribute("vertex_position", 0, 2,GL_FLOAT, false, 4 * sizeof(float), nullptr)
                 .add_vertex_attribute("vertex_texcoord", 0, 2,GL_FLOAT, false, 4 * sizeof(float),
-                                      (void *) (2 * sizeof(float)));
+                                      reinterpret_cast<void *>(2 * sizeof(float)))
+
+                .program(program)
+                .vertex_buffer(vb)
+                .index_buffer(ib)
+                .set_index_count(6);
 
         return quad_mesh;
     }
@@ -247,14 +294,81 @@ namespace wow::gl {
             mesh->set_index_count(768)
                     .add_vertex_attribute("position", 0, 3, GL_FLOAT, false, 13 * sizeof(float))
                     .add_vertex_attribute("normal", 0, 3, GL_FLOAT, false, 13 * sizeof(float),
-                                          (void *) (3 * sizeof(float)))
+                                          reinterpret_cast<void *>(3 * sizeof(float)))
                     .add_vertex_attribute("tex_coord", 0, 2, GL_FLOAT, false, 13 * sizeof(float),
-                                          (void *) (6 * sizeof(float)))
+                                          reinterpret_cast<void *>(6 * sizeof(float)))
                     .add_vertex_attribute("alpha_coord", 0, 2, GL_FLOAT, false, 13 * sizeof(float),
-                                          (void *) (8 * sizeof(float)))
+                                          reinterpret_cast<void *>(8 * sizeof(float)))
                     .add_vertex_attribute("vertex_color", 0, 3, GL_FLOAT, false, 13 * sizeof(float),
-                                          (void *) (10 * sizeof(float)))
+                                          reinterpret_cast<void *>(10 * sizeof(float)))
                     .program(program);
+        });
+
+        return mesh;
+    }
+
+    mesh_ptr mesh::sky_sphere_mesh() {
+        static auto mesh = std::make_shared<gl::mesh>();
+        static std::once_flag flag{};
+        std::call_once(flag, [] {
+            constexpr int stacks = 16;
+            constexpr int slices = 32;
+            std::vector<float> vertices;
+            vertices.reserve((stacks + 1) * (slices + 1) * 3);
+
+            for (int i = 0; i <= stacks; ++i) {
+                const float v = static_cast<float>(i) / static_cast<float>(stacks);
+                const float phi = v * static_cast<float>(M_PI);
+                const float z = std::cos(phi);
+                const float r = std::sin(phi);
+                for (int j = 0; j <= slices; ++j) {
+                    const float u = static_cast<float>(j) / static_cast<float>(slices);
+                    const float theta = u * static_cast<float>(M_PI) * 2.0f;
+                    const float x = r * std::cos(theta);
+                    const float y = r * std::sin(theta);
+                    vertices.push_back(x);
+                    vertices.push_back(y);
+                    vertices.push_back(z);
+                }
+            }
+
+            std::vector<uint32_t> indices;
+            indices.reserve(stacks * slices * 6);
+            constexpr int stride = slices + 1;
+            for (int i = 0; i < stacks; ++i) {
+                for (int j = 0; j < slices; ++j) {
+                    const uint32_t i0 = i * stride + j;
+                    const uint32_t i1 = i0 + 1;
+                    const uint32_t i2 = (i + 1) * stride + j;
+                    const uint32_t i3 = i2 + 1;
+
+                    indices.push_back(i0);
+                    indices.push_back(i2);
+                    indices.push_back(i1);
+
+                    indices.push_back(i1);
+                    indices.push_back(i2);
+                    indices.push_back(i3);
+                }
+            }
+
+            const auto vb = std::make_shared<gl::vertex_buffer>();
+            vb->set_data(vertices.data(), vertices.size() * sizeof(float));
+
+            const auto ib = std::make_shared<gl::index_buffer>(index_type::uint32);
+            ib->set_data(indices.data(), indices.size() * sizeof(uint32_t));
+
+            const auto program = std::make_shared<gl::program>();
+            program->compile_vertex_shader_from_file("shaders/sky_vertex.glsl")
+                    .compile_fragment_shader_from_file("shaders/sky_fragment.glsl")
+                    .link();
+
+            mesh->vertex_buffer(vb)
+                    .index_buffer(ib)
+                    .set_index_count(indices.size())
+                    .program(program);
+
+            mesh->add_vertex_attribute("position", 0, 3, GL_FLOAT, false, 3 * sizeof(float), nullptr);
         });
 
         return mesh;

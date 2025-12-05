@@ -5,7 +5,6 @@
 #include "camera.h"
 #include "gpu_dispatcher.h"
 #include "map_manager.h"
-#include "glm/vec2.hpp"
 #include "scene_info.h"
 
 namespace wow::scene {
@@ -20,6 +19,11 @@ namespace wow::scene {
         std::chrono::steady_clock::time_point _last_fps_update = std::chrono::steady_clock::now();
         std::chrono::steady_clock::time_point _last_system_update = std::chrono::steady_clock::now();
 
+        void handle_metrics();
+        void handle_fps_update();
+
+        void initialize();
+
     public:
         explicit world_frame(
             map_manager_ptr map_manager,
@@ -28,6 +32,7 @@ namespace wow::scene {
         ) : _map_manager(std::move(map_manager)),
             _dispatcher(std::move(dispatcher)),
             _camera(std::move(camera)) {
+            initialize();
         }
 
         void shutdown() const;

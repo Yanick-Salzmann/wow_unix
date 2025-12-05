@@ -6,12 +6,18 @@
 #include <glad/gl.h>
 
 namespace wow::gl {
+    enum class index_type {
+        uint8 = GL_UNSIGNED_BYTE,
+        uint16 = GL_UNSIGNED_SHORT,
+        uint32 = GL_UNSIGNED_INT
+    };
+
     class index_buffer {
         GLuint _buffer{};
         GLenum _type{};
 
     public:
-        explicit index_buffer(GLenum type);
+        explicit index_buffer(index_type type);
 
         ~index_buffer();
 
@@ -45,6 +51,10 @@ namespace wow::gl {
     };
 
     using index_buffer_ptr = std::shared_ptr<index_buffer>;
+
+    inline index_buffer_ptr make_index_buffer(index_type type) {
+        return std::make_shared<index_buffer>(type);
+    }
 }
 
 #endif //WOW_UNIX_INDEX_BUFFER_H

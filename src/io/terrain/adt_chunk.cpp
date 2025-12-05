@@ -251,7 +251,7 @@ namespace wow::io::terrain {
     void adt_chunk::sync_load() {
         static std::once_flag flag{};
         std::call_once(flag, [] {
-            _index_buffer = std::make_shared<gl::index_buffer>(GL_UNSIGNED_SHORT);
+            _index_buffer = std::make_shared<gl::index_buffer>(gl::index_type::uint16);
 
             std::array<uint16_t, 768> indices{};
             for (auto y = 0u; y < 8; ++y) {
@@ -285,9 +285,6 @@ namespace wow::io::terrain {
                     fmt::format("color_texture{}", i));
             }
         });
-
-        _vertex_buffer = std::make_shared<gl::vertex_buffer>();
-        _vertex_buffer->set_data(_vectors);
 
         _shadow_texture = gl::make_texture();
         _shadow_texture->bgra_image(64, 64, _texture_data.data());
@@ -331,6 +328,8 @@ namespace wow::io::terrain {
             load_colors(nullptr);
         }
 
+        _parent_tile.lock()->update_vectors(_vectors, (_header.index_y * 16 + _header.index_x) * 145);
+
         if (_header.num_layers > 0) {
             reader->seek(_header.ofs_layer);
             load_layers(reader);
@@ -360,7 +359,7 @@ namespace wow::io::terrain {
         _is_async_loaded = true;
     }
 
-    void adt_chunk::on_frame(const scene::scene_info& scene_info) {
+    void adt_chunk::on_frame(const scene::scene_info &scene_info) {
         if (!_is_async_loaded) {
             return;
         }
@@ -388,10 +387,10 @@ namespace wow::io::terrain {
             mesh->texture(_color_uniforms[i], _textures[i]);
         }
 
-        mesh->vertex_buffer(_vertex_buffer)
-                .texture(_alpha_uniform, _shadow_texture);
+        mesh->texture(_alpha_uniform, _shadow_texture);
+        mesh->bind_textures();
 
-        mesh->draw();
+        mesh->draw(true, (_header.index_y * 16 + _header.index_x) * 145);
     }
 
     uint32_t vector_index(const uint32_t row, const uint32_t column) {

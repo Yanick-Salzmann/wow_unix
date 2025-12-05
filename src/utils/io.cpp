@@ -1,6 +1,7 @@
 #include "io.h"
 
 #include <cstring>
+#include <stb_image.h>
 #include <stb_image_write.h>
 #include <stdexcept>
 
@@ -27,5 +28,19 @@ namespace wow::utils {
         stbi_write_png_to_func(write_to_vector, &png_data, w, h, 4,
                                data.data(), w * 4);
         return png_data;
+    }
+
+    std::vector<uint8_t> read_png_image_to_bitmap(const std::string &path, size_t &width, size_t &height) {
+        int32_t w, h, c;
+        const auto data = stbi_load(path.c_str(), &w, &h, &c, 4);
+        if (!data) {
+            throw std::runtime_error("failed to load image");
+        }
+
+        width = w;
+        height = h;
+        auto ret = std::vector(data, data + w * h * 4);
+        stbi_image_free(data);
+        return ret;
     }
 }

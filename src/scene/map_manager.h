@@ -11,6 +11,7 @@
 #include "utils/constants.h"
 #include "utils/work_pool.h"
 #include "scene_info.h"
+#include "sky_sphere.h"
 
 namespace wow::scene {
     class map_manager {
@@ -33,6 +34,8 @@ namespace wow::scene {
         int32_t _last_area_id = -1;
 
         utils::work_pool _tile_load_pool{};
+
+        sky_sphere _sky_sphere{};
 
         std::thread _load_thread{};
         std::mutex _async_load_lock{};
@@ -81,6 +84,8 @@ namespace wow::scene {
         float height(float x, float y);
 
         io::terrain::adt_chunk_ptr chunk_at(float x, float y);
+
+        void initialize();
     };
 
     using map_manager_ptr = std::shared_ptr<map_manager>;

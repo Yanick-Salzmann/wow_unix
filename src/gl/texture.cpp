@@ -21,7 +21,7 @@ namespace wow::gl {
     }
 
     void texture::unbind() {
-        glBindTexture(GL_TEXTURE_2D, 0);
+
     }
 
     void texture::rgba_image(uint32_t width, uint32_t height, const void *data) {
@@ -70,6 +70,7 @@ namespace wow::gl {
         if (_texture == default_texture) {
             glGenTextures(1, &_texture);
         }
+
         bind();
         glTexImage2D(
             GL_TEXTURE_2D,
@@ -200,6 +201,5 @@ namespace wow::gl {
         );
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glBindTexture(GL_TEXTURE_2D, 0);
     }
 }
