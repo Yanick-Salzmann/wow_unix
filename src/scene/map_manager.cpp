@@ -76,7 +76,11 @@ namespace wow::scene {
             _camera->update_position(_position);
             SPDLOG_INFO("Entered world {} ({}) at ({}, {}, {})", _map_id, _directory, _position.x, _position.y,
                         _position.z);
+
+            _light_manager->enter_world(_map_id);
         }
+
+        _light_manager->on_update();
     }
 
     void map_manager::position_update_thread() {
@@ -180,13 +184,17 @@ namespace wow::scene {
         utils::app_module->ui_event_system()->event_manager()->submit(ev);
     }
 
-    map_manager::map_manager(io::dbc::dbc_manager_ptr dbc_manager, config::config_manager_ptr config_manager,
-                             io::mpq_manager_ptr mpq_manager, texture_manager_ptr texture_manager,
-                             camera_ptr camera) : _config_manager(std::move(config_manager)),
-                                                  _dbc_manager(std::move(dbc_manager)),
-                                                  _mpq_manager(std::move(mpq_manager)),
-                                                  _texture_manager(std::move(texture_manager)),
-                                                  _camera(std::move(camera)) {
+    map_manager::map_manager(io::dbc::dbc_manager_ptr dbc_manager,
+                             config::config_manager_ptr config_manager,
+                             io::mpq_manager_ptr mpq_manager,
+                             texture_manager_ptr texture_manager,
+                             camera_ptr camera,
+                             sky::light_manager_ptr light_manager) : _config_manager(std::move(config_manager)),
+                                                                     _dbc_manager(std::move(dbc_manager)),
+                                                                     _mpq_manager(std::move(mpq_manager)),
+                                                                     _texture_manager(std::move(texture_manager)),
+                                                                     _camera(std::move(camera)),
+                                                                     _light_manager(std::move(light_manager)) {
         _load_thread = std::thread{&map_manager::position_update_thread, this};
     }
 
@@ -235,6 +243,7 @@ namespace wow::scene {
     void map_manager::on_frame(const scene_info &scene_info) {
         if (_position_changed) {
             _sky_sphere.update_position(_position);
+            _light_manager->update_position(_position);
         }
 
         handle_load_tick();

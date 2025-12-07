@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <string>
+#include <array>
 
 namespace wow::io::dbc {
 #pragma pack(push, 1)
@@ -124,6 +125,13 @@ namespace wow::io::dbc {
         int32_t id;
         std::string name;
         int32_t flags;
+    };
+
+    struct light_int_band_record {
+        int32_t id;
+        int32_t num_entries;
+        std::array<int32_t, 16> times;
+        std::array<int32_t, 16> colors;
     };
 
 #pragma pack(pop)

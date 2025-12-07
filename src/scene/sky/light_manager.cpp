@@ -1,6 +1,7 @@
 #include "light_manager.hpp"
 
 #include "gl/mesh.h"
+#include "glm/gtx/norm.hpp"
 
 namespace wow::scene::sky {
     void light_manager::enter_world(const int32_t map_id) {
@@ -25,6 +26,22 @@ namespace wow::scene::sky {
 
         _position_changed = false;
 
+        for (const auto &light: _map_lights) {
+            const auto max_distance = light.falloff_end * light.falloff_end;
+            if (const auto distance = glm::distance2(_position, glm::vec3(light.x, light.y, light.z));
+                distance > max_distance) {
+                continue;
+            }
+
+            const auto fog_record = _dbc_manager->light_int_band_dbc()->record(light.params_clear * 18 - 17 + 7);
+            SPDLOG_INFO("Fog color: {}", fog_record.id);
+        }
+
         gl::mesh::terrain_mesh().apply_fog_color(_fog_color);
+    }
+
+    void light_manager::update_position(const glm::vec3 position) {
+        _position = position;
+        _position_changed = true;
     }
 }

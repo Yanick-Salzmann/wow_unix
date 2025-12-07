@@ -11,6 +11,7 @@
 #include "utils/constants.h"
 #include "utils/work_pool.h"
 #include "scene_info.h"
+#include "sky/light_manager.hpp"
 #include "sky/sky_sphere.h"
 
 namespace wow::scene {
@@ -36,6 +37,7 @@ namespace wow::scene {
         utils::work_pool _tile_load_pool{};
 
         sky::sky_sphere _sky_sphere{};
+        sky::light_manager_ptr _light_manager{};
 
         std::thread _load_thread{};
         std::mutex _async_load_lock{};
@@ -64,7 +66,8 @@ namespace wow::scene {
             config::config_manager_ptr config_manager,
             io::mpq_manager_ptr mpq_manager,
             texture_manager_ptr texture_manager,
-            camera_ptr camera
+            camera_ptr camera,
+            sky::light_manager_ptr light_manager
         );
 
         void update(glm::vec3 position);

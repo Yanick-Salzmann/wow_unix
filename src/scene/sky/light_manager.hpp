@@ -31,11 +31,10 @@ namespace wow::scene::sky {
 
         void on_update();
 
-        void update_position(glm::vec3 position) {
-            _position = position;
-            _position_changed = true;
-        }
+        void update_position(glm::vec3 position);
     };
+
+    typedef std::shared_ptr<light_manager> light_manager_ptr;
 }
 
 #endif //GLAD_LIGHT_MANAGER_HPP

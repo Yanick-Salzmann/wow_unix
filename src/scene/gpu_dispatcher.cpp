@@ -9,6 +9,7 @@ namespace wow::scene {
 
     void gpu_dispatcher::process_one_frame() {
         const auto start_time = std::chrono::steady_clock::now();
+        int32_t work_count = 0;
         while (_has_work.load(std::memory_order::acquire)) {
             work_item_t item{};
             {
@@ -25,6 +26,11 @@ namespace wow::scene {
 
             if (item) {
                 item();
+                ++work_count;
+            }
+
+            if (work_count > 25) {
+                return;
             }
 
             if (const auto current_time = std::chrono::steady_clock::now();

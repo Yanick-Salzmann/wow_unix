@@ -17,5 +17,7 @@ namespace wow::io::dbc {
         _light_params_dbc = make_dbc<light_params_record>(mpq_manager->open("DBFilesClient\\LightParams.dbc"));
         callback(95, "Loading LightSkybox.dbc");
         _light_skybox_dbc = make_dbc<light_skybox_record>(mpq_manager->open("DBFilesClient\\LightSkybox.dbc"));
+        callback(95, "Loading LightIntBand.dbc");
+        _light_int_band_dbc = make_dbc<light_int_band_record>(mpq_manager->open("DBFilesClient\\LightIntBand.dbc"));
     }
 }
