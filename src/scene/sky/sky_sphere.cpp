@@ -1,6 +1,6 @@
 #include "sky_sphere.h"
 
-namespace wow::scene {
+namespace wow::scene::sky {
     void sky_sphere::initialize() {
         _mesh = gl::make_mesh();
         _vertex_buffer = gl::make_vertex_buffer();

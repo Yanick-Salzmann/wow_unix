@@ -271,10 +271,11 @@ namespace wow::web {
         if (!_window) {
             throw std::runtime_error("Window is null");
         }
-
         _texture = gl::make_texture();
         _mesh = gl::mesh::create_ui_quad();
-        _mesh->texture("ui_texture", _texture)
+        _texture_uniform = _mesh->program()->uniform_location("ui_texture");
+
+        _mesh->texture(_texture_uniform, _texture)
                 .blend(gl::blend_mode::alpha);
     }
 

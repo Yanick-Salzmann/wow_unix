@@ -15,6 +15,7 @@ uniform sampler2D color_texture2;
 uniform sampler2D color_texture3;
 
 uniform vec4 camera_position;
+uniform vec4 fog_color = vec4(0.5, 0.7, 1.0, 1.0);
 
 out vec4 target_color;
 
@@ -43,7 +44,7 @@ void main() {
 
     float distance = length(camera_position.xyz - world_position);
     float factor = 1.0f - clamp((camera_position.w - distance) / 150.0f, 0.0f, 1.0f);
-    final_color = mix(final_color, vec3(0.5, 0.7, 1.0), factor);
+    final_color = mix(final_color, fog_color.rgb, factor);
 
     target_color = vec4(final_color * frag_vertex_color * 2.0, 1.0);
 }

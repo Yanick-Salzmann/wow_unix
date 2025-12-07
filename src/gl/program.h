@@ -38,17 +38,31 @@ namespace wow::gl {
 
         program &mat3(const glm::mat3 &matrix, const std::string &name);
 
+        program &mat3(const glm::mat3 &matrix, int32_t location);
+
         program &mat4(const glm::mat4 &matrix, const std::string &name);
+
+        program &mat4(const glm::mat4 &matrix, int32_t location);
 
         program &vec3(const glm::vec3 &vector, const std::string &name);
 
+        program &vec3(const glm::vec3 &vector, int32_t location);
+
         program &vec4(const glm::vec4 &vector, const std::string &name);
+
+        program &vec4(const glm::vec4 &vector, int32_t location);
 
         program &float_(float value, const std::string &name);
 
+        program &float_(float value, int32_t location);
+
         program &int_(int value, const std::string &name);
 
+        program &int_(int value, int32_t location);
+
         program &bool_(bool value, const std::string &name);
+
+        program &bool_(bool value, int32_t location);
 
         program &sampler2d(int index, const std::string &name);
 

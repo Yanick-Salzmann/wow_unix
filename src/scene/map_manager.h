@@ -11,7 +11,7 @@
 #include "utils/constants.h"
 #include "utils/work_pool.h"
 #include "scene_info.h"
-#include "sky_sphere.h"
+#include "sky/sky_sphere.h"
 
 namespace wow::scene {
     class map_manager {
@@ -35,7 +35,7 @@ namespace wow::scene {
 
         utils::work_pool _tile_load_pool{};
 
-        sky_sphere _sky_sphere{};
+        sky::sky_sphere _sky_sphere{};
 
         std::thread _load_thread{};
         std::mutex _async_load_lock{};

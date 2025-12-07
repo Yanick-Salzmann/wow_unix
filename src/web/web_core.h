@@ -29,6 +29,7 @@ namespace wow::web {
 
         gl::mesh_ptr _mesh{};
         gl::texture_ptr _texture{};
+        int32_t _texture_uniform = -1;
         std::vector<uint8_t> _image_data{};
         int32_t _width = 0, _height = 0;
 

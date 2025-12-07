@@ -112,7 +112,7 @@ namespace wow::io::terrain {
         }
 
         sync_load();
-        const auto mesh = gl::mesh::terrain_mesh();
+        const auto mesh = gl::mesh::terrain_mesh().mesh;
         mesh->vertex_buffer(_vertex_buffer)
                 .bind_vb()
                 .bind_ib()

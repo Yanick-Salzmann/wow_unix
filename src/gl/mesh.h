@@ -26,6 +26,18 @@ namespace wow::gl {
 
     using mesh_ptr = std::shared_ptr<mesh>;
 
+    struct terrain_state {
+        int32_t camera_position{};
+        int32_t fog_color{};
+    };
+
+    struct terrain_mesh {
+        mesh_ptr mesh;
+        terrain_state state;
+
+        void apply_fog_color(const glm::vec4 &fog_color);
+    };
+
     enum class blend_mode {
         none,
         alpha,
@@ -110,7 +122,7 @@ namespace wow::gl {
 
         static mesh_ptr create_ui_quad();
 
-        static mesh_ptr terrain_mesh();
+        static struct terrain_mesh terrain_mesh();
 
         static mesh_ptr sky_sphere_mesh();
 

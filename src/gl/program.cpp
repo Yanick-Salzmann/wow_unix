@@ -107,43 +107,64 @@ namespace wow::gl {
     }
 
     program &program::mat3(const glm::mat3 &matrix, const std::string &name) {
-        const auto location = glGetUniformLocation(_program, name.c_str());
+        return mat3(matrix, uniform_location(name));
+    }
+
+    program &program::mat3(const glm::mat3 &matrix, int32_t location) {
         glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
         return *this;
     }
 
     program &program::mat4(const glm::mat4 &matrix, const std::string &name) {
-        const auto location = glGetUniformLocation(_program, name.c_str());
+        return mat4(matrix, uniform_location(name));
+    }
+
+    program &program::mat4(const glm::mat4 &matrix, int32_t location) {
         glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
         return *this;
     }
 
     program &program::vec3(const glm::vec3 &vector, const std::string &name) {
-        const auto location = glGetUniformLocation(_program, name.c_str());
+        return vec3(vector, uniform_location(name));
+    }
+
+    program &program::vec3(const glm::vec3 &vector, int32_t location) {
         glUniform3fv(location, 1, glm::value_ptr(vector));
         return *this;
     }
 
     program &program::vec4(const glm::vec4 &vector, const std::string &name) {
-        const auto location = glGetUniformLocation(_program, name.c_str());
+        return vec4(vector, uniform_location(name));
+    }
+
+    program &program::vec4(const glm::vec4 &vector, int32_t location) {
         glUniform4fv(location, 1, glm::value_ptr(vector));
         return *this;
     }
 
     program &program::float_(const float value, const std::string &name) {
-        const auto location = glGetUniformLocation(_program, name.c_str());
+        return float_(value, uniform_location(name));
+    }
+
+    program &program::float_(float value, int32_t location) {
         glUniform1f(location, value);
         return *this;
     }
 
     program &program::int_(const int value, const std::string &name) {
-        const auto location = glGetUniformLocation(_program, name.c_str());
+        return int_(value, uniform_location(name));
+    }
+
+    program &program::int_(int value, int32_t location) {
         glUniform1i(location, value);
         return *this;
     }
 
     program &program::bool_(const bool value, const std::string &name) {
-        const auto location = glGetUniformLocation(_program, name.c_str());
+        return bool_(value, uniform_location(name));
+    }
+
+    program &program::bool_(bool value, int32_t location) {
         glUniform1i(location, value);
         return *this;
     }

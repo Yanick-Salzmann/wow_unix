@@ -276,12 +276,12 @@ namespace wow::io::terrain {
             }
 
             _index_buffer->set_data(indices);
-            gl::mesh::terrain_mesh()->index_buffer(_index_buffer);
+            gl::mesh::terrain_mesh().mesh->index_buffer(_index_buffer);
 
 
-            _alpha_uniform = gl::mesh::terrain_mesh()->program()->uniform_location("shadow_texture");
+            _alpha_uniform = gl::mesh::terrain_mesh().mesh->program()->uniform_location("shadow_texture");
             for (auto i = 0; i < 4; ++i) {
-                _color_uniforms[i] = gl::mesh::terrain_mesh()->program()->uniform_location(
+                _color_uniforms[i] = gl::mesh::terrain_mesh().mesh->program()->uniform_location(
                     fmt::format("color_texture{}", i));
             }
         });
@@ -382,7 +382,7 @@ namespace wow::io::terrain {
             return;
         }
 
-        const auto mesh = gl::mesh::terrain_mesh();
+        const auto mesh = gl::mesh::terrain_mesh().mesh;
         for (auto i = 0; i < _header.num_layers; ++i) {
             mesh->texture(_color_uniforms[i], _textures[i]);
         }

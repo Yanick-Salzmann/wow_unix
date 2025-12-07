@@ -6,6 +6,7 @@
 
 #include "adt_chunk.h"
 #include "wdt_file.h"
+#include "gl/uniform_buffer.hpp"
 #include "scene/scene_info.h"
 #include "scene/texture_manager.h"
 #include "utils/io.h"
@@ -30,6 +31,10 @@ namespace wow::io::terrain {
             uint32_t size;
             uint32_t flags;
             uint32_t padding;
+        };
+
+        struct adt_uniform_state {
+            int8_t textures[256][4]{};
         };
 #pragma pack(pop)
 
@@ -57,6 +62,7 @@ namespace wow::io::terrain {
 
         std::array<adt_vector, ADT_CHUNK_COUNT * ADT_CHUNK_VECTOR_COUNT> _vectors{};
         gl::vertex_buffer_ptr _vertex_buffer{};
+        gl::uniform_buffer_ptr _uniform_buffer{};
 
         void read_chunks(const utils::binary_reader_ptr &reader);
 

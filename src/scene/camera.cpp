@@ -111,7 +111,7 @@ namespace wow::scene {
 
         if (_matrix_changed) {
             _frustum.update_view_projection(_projection * _view);
-            const auto mesh = gl::mesh::terrain_mesh();
+            const auto mesh = gl::mesh::terrain_mesh().mesh;
             mesh->program()->use();
             mesh->program()->mat4(_view, "view");
             mesh->program()->mat4(_projection, "projection");

@@ -197,8 +197,12 @@ add_executable(wow_unix src/main.cpp
         src/scene/scene_info.h
         src/utils/system_stats.h
         src/utils/system_stats.cpp
-        src/scene/sky_sphere.h
-        src/scene/sky_sphere.cpp)
+        src/scene/sky/sky_sphere.h
+        src/scene/sky/sky_sphere.cpp
+        src/scene/sky/light_manager.hpp
+        src/scene/sky/light_manager.cpp
+        src/gl/uniform_buffer.hpp
+        src/gl/uniform_buffer.cpp)
 
 target_compile_options(wow_unix PRIVATE -Wno-multichar -DGLM_ENABLE_EXPERIMENTAL -rdynamic)
 
@@ -230,7 +234,7 @@ target_link_libraries(wow_unix PRIVATE
         glfw
         OpenGL::GL
         OpenGL::EGL
-        ${CMAKE_SOURCE_DIR}/libcef_dll_wrapper.a
+        ${CMAKE_BINARY_DIR}/libcef_dll_wrapper.a
         ${CMAKE_BINARY_DIR}/libcef.so
         ${GTK3_LIBRARIES}
         ${Protobuf_LIBRARIES}
@@ -257,4 +261,4 @@ target_link_libraries(wow_unix PRIVATE
         absl::inlined_vector
         StormLib::storm
 )
-target_link_libraries(wow_unix_browser PRIVATE spdlog::spdlog ${CMAKE_SOURCE_DIR}/libcef_dll_wrapper.a ${CMAKE_BINARY_DIR}/libcef.so)
+target_link_libraries(wow_unix_browser PRIVATE spdlog::spdlog ${CMAKE_BINARY_DIR}/libcef_dll_wrapper.a ${CMAKE_BINARY_DIR}/libcef.so)

@@ -8,6 +8,10 @@
 #include "spdlog/spdlog.h"
 
 namespace wow::gl {
+    void terrain_mesh::apply_fog_color(const glm::vec4 &fog_color) {
+        mesh->program()->vec4(fog_color, state.fog_color);
+    }
+
     mesh::mesh() {
         glGenVertexArrays(1, &_vao);
     }
@@ -282,14 +286,16 @@ namespace wow::gl {
         return quad_mesh;
     }
 
-    mesh_ptr mesh::terrain_mesh() {
-        static auto mesh = std::make_shared<gl::mesh>();
+    terrain_mesh mesh::terrain_mesh() {
+        static struct terrain_mesh ret_mesh{};
         static std::once_flag flag{};
         std::call_once(flag, [] {
             const auto program = std::make_shared<gl::program>();
             program->compile_vertex_shader_from_file("shaders/terrain_vertex.glsl")
                     .compile_fragment_shader_from_file("shaders/terrain_fragment.glsl")
                     .link();
+
+            auto mesh = make_mesh();
 
             mesh->set_index_count(768)
                     .add_vertex_attribute("position", 0, 3, GL_FLOAT, false, 13 * sizeof(float))
@@ -302,9 +308,13 @@ namespace wow::gl {
                     .add_vertex_attribute("vertex_color", 0, 3, GL_FLOAT, false, 13 * sizeof(float),
                                           reinterpret_cast<void *>(10 * sizeof(float)))
                     .program(program);
+
+            ret_mesh.mesh = std::move(mesh);
+            ret_mesh.state.camera_position = ret_mesh.mesh->program()->uniform_location("camera_position");
+            ret_mesh.state.fog_color = ret_mesh.mesh->program()->uniform_location("fog_color");
         });
 
-        return mesh;
+        return ret_mesh;
     }
 
     mesh_ptr mesh::sky_sphere_mesh() {

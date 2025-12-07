@@ -4,7 +4,7 @@
 #include "gl/mesh.h"
 #include "glm/vec3.hpp"
 
-namespace wow::scene {
+namespace wow::scene::sky {
     class sky_sphere {
         gl::mesh_ptr _mesh{};
         gl::vertex_buffer_ptr _vertex_buffer{};
