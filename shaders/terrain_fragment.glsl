@@ -44,7 +44,7 @@ void main() {
 
     float distance = length(camera_position.xyz - world_position);
     float factor = 1.0f - clamp((camera_position.w - distance) / 150.0f, 0.0f, 1.0f);
-    final_color = mix(final_color, fog_color.rgb, factor);
+    final_color = mix(final_color, fog_color.bgr, factor);
 
     target_color = vec4(final_color * frag_vertex_color * 2.0, 1.0);
 }

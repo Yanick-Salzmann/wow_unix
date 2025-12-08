@@ -39,6 +39,22 @@ namespace wow::web::event {
             poi->set_x(val.x);
             poi->set_y(val.y);
         }
+
+        for (const auto &light: *_dbc_manager->light_dbc() | std::views::values) {
+            if (light.map_id != map_id) {
+                continue;
+            }
+
+            const auto poi = response.add_pois();
+            const auto x = utils::MAP_MID_POINT - (light.z / 36.0f);
+            const auto y = utils::MAP_MID_POINT - (light.x / 36.0f);
+            poi->set_id(light.id);
+            poi->set_name(fmt::format("Light {} ({}/{}/{}) {} -> {}", light.id, x, y, light.y / 36.0f,
+                                      light.falloff_start / 36.0f, light.falloff_end / 36.0f));
+            poi->set_x(x);
+            poi->set_y(y);
+        }
+
         return response;
     }
 

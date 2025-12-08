@@ -65,14 +65,14 @@ namespace wow::utils {
         );
 
         if (pipe) {
-            std::array<char, 128> buffer;
+            std::array<char, 128> buffer{};
             std::string result;
 
             while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
                 result += buffer.data();
             }
 
-            return std::stoi(result);
+            return !result.empty() ? std::stoi(result) : 0;
         }
 
         return 0;

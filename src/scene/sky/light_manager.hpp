@@ -18,10 +18,16 @@ namespace wow::scene::sky {
 
         io::dbc::dbc_manager_ptr _dbc_manager{};
 
+        std::chrono::steady_clock::time_point _last_update{};
+        uint64_t _time_of_day_ms = 0;
+
         bool _position_changed = false;
         glm::vec3 _position{};
 
         glm::vec4 _fog_color{};
+
+        static glm::vec4 to_vec4(uint32_t color);
+        static glm::vec4 interpolate_color(const io::dbc::light_int_band_record& record, uint64_t time);
 
     public:
         explicit light_manager(io::dbc::dbc_manager_ptr dbc_mgr) : _dbc_manager(std::move(dbc_mgr)) {
