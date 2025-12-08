@@ -15,6 +15,8 @@ namespace wow::scene::sky {
         int32_t _current_map = -1;
 
         std::vector<io::dbc::light_record> _map_lights{};
+        std::vector<int32_t> _global_lights{};
+        std::vector<float> _weights{};
 
         io::dbc::dbc_manager_ptr _dbc_manager{};
 
@@ -28,6 +30,8 @@ namespace wow::scene::sky {
 
         static glm::vec4 to_vec4(uint32_t color);
         static glm::vec4 interpolate_color(const io::dbc::light_int_band_record& record, uint64_t time);
+
+        void update_weights();
 
     public:
         explicit light_manager(io::dbc::dbc_manager_ptr dbc_mgr) : _dbc_manager(std::move(dbc_mgr)) {
