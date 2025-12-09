@@ -15,13 +15,19 @@ uniform sampler2D color_texture2;
 uniform sampler2D color_texture3;
 
 uniform vec4 camera_position;
+uniform vec3 sun_direction;
 uniform vec4 fog_color = vec4(0.5, 0.7, 1.0, 1.0);
+uniform vec4 diffuse_color = vec4(1.0, 1.0, 1.0, 1.0);
+uniform vec4 ambient_color = vec4(0.0);
 
 out vec4 target_color;
 
 void main() {
-    vec3 light_dir = normalize(vec3(1.0, 1.0, 1.0));
-    float diff = max(dot(normalize(frag_normal), light_dir), 0.2);
+    vec3 light_dir = normalize(sun_direction);
+    float light = dot(normalize(frag_normal), light_dir);
+    light = clamp(light, 0.0, 1.0);
+    light = 1.0 - (1.0 - light) * (1.0 - light);
+    light *= 0.6;
 
     vec3 color0 = texture(color_texture0, frag_tex_coord).rgb;
     vec3 color1 = texture(color_texture1, frag_tex_coord).rgb;
@@ -37,7 +43,8 @@ void main() {
     base_color = mix(base_color, color1, alpha);
     base_color = mix(base_color, color2, alpha2);
     base_color = mix(base_color, color3, alpha3);
-    vec3 final_color = base_color * diff;
+    base_color = base_color * frag_vertex_color * 2.0;
+    vec3 final_color = base_color * (light * diffuse_color.bgr + ambient_color.bgr);
 
     float shadow = alphas.a;
     final_color *= 1.0f - shadow * 0.5f;
@@ -46,5 +53,5 @@ void main() {
     float factor = 1.0f - clamp((camera_position.w - distance) / 150.0f, 0.0f, 1.0f);
     final_color = mix(final_color, fog_color.bgr, factor);
 
-    target_color = vec4(final_color * frag_vertex_color * 2.0, 1.0);
+    target_color = vec4(final_color, 1.0);
 }

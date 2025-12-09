@@ -1,11 +1,20 @@
 #include "light_manager.hpp"
 
 #include "gl/mesh.h"
+#include "glm/gtc/constants.hpp"
 #include "glm/gtx/norm.hpp"
 
 namespace wow::scene::sky {
     constexpr uint64_t DAY_LENGTH_MS = 86400000;
     constexpr uint64_t DAY_LENGTH_HALF_MIN = 2880;
+
+    constexpr float SUN_ALPHA = glm::quarter_pi<float>();
+
+    glm::vec3 light_manager::calculate_sun_direction(uint32_t day_half_minutes) {
+        const auto fraction = static_cast<float>(day_half_minutes) / static_cast<float>(DAY_LENGTH_HALF_MIN);
+        const auto angle = fraction * glm::two_pi<float>() - glm::half_pi<float>();
+        return {glm::cos(angle) * glm::cos(SUN_ALPHA), glm::sin(SUN_ALPHA), glm::sin(angle) * glm::cos(SUN_ALPHA)};
+    }
 
     glm::vec4 light_manager::to_vec4(const uint32_t color) {
         return glm::vec4{
@@ -142,18 +151,37 @@ namespace wow::scene::sky {
         _time_of_day_ms %= DAY_LENGTH_MS;
 
         const auto day_half_minutes = (_time_of_day_ms / 1000 / 30) % DAY_LENGTH_HALF_MIN;
+
         auto fog_color = glm::vec4(0.0f);
+        auto diffuse_color = glm::vec4(1.0f);
+        auto ambient_color = glm::vec4(0.0f);
+
         for (auto i = 0; i < _map_lights.size(); ++i) {
             if (_weights[i] > 0.0f) {
                 const auto &light = _map_lights[i];
                 fog_color += interpolate_color(
                     _dbc_manager->light_int_band_dbc()->record(light.params_clear * 18 - 17 + 7),
-                    day_half_minutes) * _weights[i];
+                    day_half_minutes
+                ) * _weights[i];
+
+                diffuse_color += interpolate_color(
+                    _dbc_manager->light_int_band_dbc()->record(light.params_clear * 18 - 17 + 0),
+                    day_half_minutes
+                ) * _weights[i];
+
+                ambient_color += interpolate_color(
+                    _dbc_manager->light_int_band_dbc()->record(light.params_clear * 18 - 17 + 1),
+                    day_half_minutes
+                ) * _weights[i];
             }
         }
 
         _fog_color = fog_color;
-        gl::mesh::terrain_mesh().apply_fog_color(_fog_color);
+        gl::mesh::terrain_mesh()
+                .apply_fog_color(_fog_color)
+                .apply_diffuse_color(diffuse_color)
+                .apply_ambient_color(ambient_color)
+                .apply_sun_direction(calculate_sun_direction(day_half_minutes));
     }
 
     void light_manager::update_position(const glm::vec3 position) {

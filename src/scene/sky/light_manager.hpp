@@ -28,6 +28,8 @@ namespace wow::scene::sky {
 
         glm::vec4 _fog_color{};
 
+        static glm::vec3 calculate_sun_direction(uint32_t day_half_minutes);
+
         static glm::vec4 to_vec4(uint32_t color);
         static glm::vec4 interpolate_color(const io::dbc::light_int_band_record& record, uint64_t time);
 

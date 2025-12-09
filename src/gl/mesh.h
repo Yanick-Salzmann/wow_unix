@@ -29,13 +29,19 @@ namespace wow::gl {
     struct terrain_state {
         int32_t camera_position{};
         int32_t fog_color{};
+        int32_t diffuse_color{};
+        int32_t ambient_color{};
+        int32_t sun_direction{};
     };
 
     struct terrain_mesh {
         mesh_ptr mesh;
         terrain_state state;
 
-        void apply_fog_color(const glm::vec4 &fog_color);
+        terrain_mesh& apply_fog_color(const glm::vec4 &fog_color);
+        terrain_mesh& apply_diffuse_color(const glm::vec4 &diffuse_color);
+        terrain_mesh& apply_ambient_color(const glm::vec4 &ambient_color);
+        terrain_mesh& apply_sun_direction(const glm::vec3 &sun_direction);
     };
 
     enum class blend_mode {

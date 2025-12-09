@@ -8,8 +8,24 @@
 #include "spdlog/spdlog.h"
 
 namespace wow::gl {
-    void terrain_mesh::apply_fog_color(const glm::vec4 &fog_color) {
+    terrain_mesh &terrain_mesh::apply_fog_color(const glm::vec4 &fog_color) {
         mesh->program()->vec4(fog_color, state.fog_color);
+        return *this;
+    }
+
+    terrain_mesh &terrain_mesh::apply_diffuse_color(const glm::vec4 &diffuse_color) {
+        mesh->program()->vec4(diffuse_color, state.diffuse_color);
+        return *this;
+    }
+
+    terrain_mesh &terrain_mesh::apply_ambient_color(const glm::vec4 &ambient_color) {
+        mesh->program()->vec4(ambient_color, state.ambient_color);
+        return *this;
+    }
+
+    terrain_mesh &terrain_mesh::apply_sun_direction(const glm::vec3 &sun_direction) {
+        mesh->program()->vec3(sun_direction, state.sun_direction);
+        return *this;
     }
 
     mesh::mesh() {
@@ -312,6 +328,9 @@ namespace wow::gl {
             ret_mesh.mesh = std::move(mesh);
             ret_mesh.state.camera_position = ret_mesh.mesh->program()->uniform_location("camera_position");
             ret_mesh.state.fog_color = ret_mesh.mesh->program()->uniform_location("fog_color");
+            ret_mesh.state.diffuse_color = ret_mesh.mesh->program()->uniform_location("diffuse_color");
+            ret_mesh.state.ambient_color = ret_mesh.mesh->program()->uniform_location("ambient_color");
+            ret_mesh.state.sun_direction = ret_mesh.mesh->program()->uniform_location("sun_direction");
         });
 
         return ret_mesh;

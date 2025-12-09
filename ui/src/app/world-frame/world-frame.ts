@@ -218,9 +218,9 @@ export class WorldFrame implements OnInit, AfterViewInit {
     ctx.fillStyle = 'blue';
     ctx.fillRect(10, 22, 12, 12);
     ctx.strokeStyle = 'black';
-    ctx.strokeText(`Mem: ${formatBytes(current.memAbsolute)} / ${formatBytes(this.memoryScale)} (${Math.min(current.mem, 100).toFixed(1)}%)`, 26, 33);
+    ctx.strokeText(`Mem: ${formatBytes(current.memAbsolute)} / ${formatBytes(current.totalMem)} (${Math.min(current.mem, 100).toFixed(1)}%)`, 26, 33);
     ctx.fillStyle = 'white';
-    ctx.fillText(`Mem: ${formatBytes(current.memAbsolute)} / ${formatBytes(this.memoryScale)} (${Math.min(current.mem, 100).toFixed(1)}%)`, 26, 33);
+    ctx.fillText(`Mem: ${formatBytes(current.memAbsolute)} / ${formatBytes(current.totalMem)} (${Math.min(current.mem, 100).toFixed(1)}%)`, 26, 33);
 
     ctx.fillStyle = 'green';
     ctx.fillRect(10, 39, 12, 12);
