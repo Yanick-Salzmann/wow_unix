@@ -134,6 +134,13 @@ namespace wow::io::dbc {
         std::array<int32_t, 16> colors;
     };
 
+    struct light_float_band_record {
+        int32_t id;
+        int32_t num_entries;
+        std::array<int32_t, 16> times;
+        std::array<float, 16> values;
+    };
+
 #pragma pack(pop)
 }
 

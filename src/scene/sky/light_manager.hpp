@@ -5,6 +5,8 @@
 #include <utility>
 #include <vector>
 
+#include "light_data.hpp"
+#include "glm/common.hpp"
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
 
@@ -14,7 +16,7 @@ namespace wow::scene::sky {
     class light_manager {
         int32_t _current_map = -1;
 
-        std::vector<io::dbc::light_record> _map_lights{};
+        std::vector<light_data> _map_lights{};
         std::vector<int32_t> _global_lights{};
         std::vector<float> _weights{};
 
@@ -26,12 +28,7 @@ namespace wow::scene::sky {
         bool _position_changed = false;
         glm::vec3 _position{};
 
-        glm::vec4 _fog_color{};
-
         static glm::vec3 calculate_sun_direction(uint32_t day_half_minutes);
-
-        static glm::vec4 to_vec4(uint32_t color);
-        static glm::vec4 interpolate_color(const io::dbc::light_int_band_record& record, uint64_t time);
 
         void update_weights();
 

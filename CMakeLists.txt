@@ -202,7 +202,9 @@ add_executable(wow_unix src/main.cpp
         src/scene/sky/light_manager.hpp
         src/scene/sky/light_manager.cpp
         src/gl/uniform_buffer.hpp
-        src/gl/uniform_buffer.cpp)
+        src/gl/uniform_buffer.cpp
+        src/scene/sky/light_data.hpp
+        src/scene/sky/light_data.cpp)
 
 target_compile_options(wow_unix PRIVATE -Wno-multichar -DGLM_ENABLE_EXPERIMENTAL -rdynamic)
 

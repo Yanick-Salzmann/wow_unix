@@ -16,58 +16,16 @@ namespace wow::scene::sky {
         return {glm::cos(angle) * glm::cos(SUN_ALPHA), glm::sin(SUN_ALPHA), glm::sin(angle) * glm::cos(SUN_ALPHA)};
     }
 
-    glm::vec4 light_manager::to_vec4(const uint32_t color) {
-        return glm::vec4{
-            static_cast<float>(color & 0xFF) / 255.0f,
-            static_cast<float>((color >> 8) & 0xFF) / 255.0f,
-            static_cast<float>((color >> 16) & 0xFF) / 255.0f,
-            static_cast<float>((color >> 24) & 0xFF) / 255.0f
-        };
-    }
-
-    glm::vec4 light_manager::interpolate_color(const io::dbc::light_int_band_record &record, uint64_t time) {
-        if (record.num_entries == 0) {
-            return glm::vec4(0.0f);
-        }
-
-        const auto first = to_vec4(record.colors[0]);
-        const auto first_time = record.times[0] + 2880;
-
-        for (auto i = 0; i < record.num_entries; ++i) {
-            const auto cur_time = record.times[i];
-            if (i == 0 && cur_time >= time) {
-                time = cur_time;
-            }
-
-            if (i == record.num_entries - 1) {
-                const auto t = static_cast<float>(time - cur_time) / static_cast<float>(first_time - cur_time);
-                return glm::mix(to_vec4(record.colors[i]), first, t);
-            }
-
-            if (const auto next_time = record.times[i + 1];
-                time >= cur_time && time <= next_time) {
-                const auto t = static_cast<float>(time - cur_time) / static_cast<float>(next_time - cur_time);
-                return glm::mix(to_vec4(record.colors[i]), to_vec4(record.colors[i + 1]), t);
-            }
-        }
-
-        return to_vec4(record.colors[record.num_entries - 1]);
-    }
-
     void light_manager::update_weights() {
         for (auto i = static_cast<ssize_t>(_map_lights.size()) - 1; i >= 0; --i) {
             const auto &light = _map_lights[i];
-            if (light.x == 0 && light.y == 0 && light.z == 0) {
+            if (light.is_global()) {
                 continue;
             }
 
-            const auto px = light.x / 36.0f;
-            const auto py = light.z / 36.0f;
-            const auto pz = light.y / 36.0f;
-
-            const auto distance = glm::distance2(_position, glm::vec3(px, py, pz));
-            const auto falloff_end = (light.falloff_end / 36.0f) * (light.falloff_end / 36.0f);
-            const auto falloff_start = (light.falloff_start / 36.0f) * (light.falloff_start / 36.0f);
+            const auto distance = glm::distance2(_position, light.position());
+            const auto falloff_end = light.falloff_end() * light.falloff_end();
+            const auto falloff_start = light.falloff_start() * light.falloff_start();
 
             if (distance > falloff_end) {
                 _weights[i] = 0.0f;
@@ -100,14 +58,14 @@ namespace wow::scene::sky {
 
         for (const auto &val: *_dbc_manager->light_dbc() | std::views::values) {
             if (val.map_id == map_id) {
-                _map_lights.push_back(val);
+                _map_lights.push_back(light_data(_dbc_manager, val));
             }
         }
 
         _weights.resize(_map_lights.size());
         std::ranges::sort(_map_lights, [](const auto &a, const auto &b) {
-            const auto a_global = a.x == 0 && a.y == 0 && a.z == 0;
-            const auto b_global = b.x == 0 && b.y == 0 && b.z == 0;
+            const auto a_global = a.is_global();
+            const auto b_global = b.is_global();
 
             if (a_global && !b_global) {
                 return true;
@@ -117,12 +75,12 @@ namespace wow::scene::sky {
                 return false;
             }
 
-            return a.falloff_end < b.falloff_end;
+            return a.falloff_end() < b.falloff_end();
         });
 
         for (auto i = 0; i < _map_lights.size(); ++i) {
             if (const auto &light = _map_lights[i];
-                light.x == 0 && light.y == 0 && light.z == 0) {
+                light.is_global()) {
                 _global_lights.push_back(i);
             }
         }
@@ -159,26 +117,14 @@ namespace wow::scene::sky {
         for (auto i = 0; i < _map_lights.size(); ++i) {
             if (_weights[i] > 0.0f) {
                 const auto &light = _map_lights[i];
-                fog_color += interpolate_color(
-                    _dbc_manager->light_int_band_dbc()->record(light.params_clear * 18 - 17 + 7),
-                    day_half_minutes
-                ) * _weights[i];
-
-                diffuse_color += interpolate_color(
-                    _dbc_manager->light_int_band_dbc()->record(light.params_clear * 18 - 17 + 0),
-                    day_half_minutes
-                ) * _weights[i];
-
-                ambient_color += interpolate_color(
-                    _dbc_manager->light_int_band_dbc()->record(light.params_clear * 18 - 17 + 1),
-                    day_half_minutes
-                ) * _weights[i];
+                fog_color += light.color(light_colors::sky_fog, day_half_minutes) * _weights[i];
+                diffuse_color += light.color(light_colors::diffuse, day_half_minutes) * _weights[i];
+                ambient_color += light.color(light_colors::ambient, day_half_minutes) * _weights[i];
             }
         }
 
-        _fog_color = fog_color;
         gl::mesh::terrain_mesh()
-                .apply_fog_color(_fog_color)
+                .apply_fog_color(fog_color)
                 .apply_diffuse_color(diffuse_color)
                 .apply_ambient_color(ambient_color)
                 .apply_sun_direction(calculate_sun_direction(day_half_minutes));
