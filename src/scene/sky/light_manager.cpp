@@ -5,7 +5,7 @@
 
 namespace wow::scene::sky {
     constexpr uint64_t DAY_LENGTH_MS = 86400000;
-    constexpr uint64_t DAY_LENGTH_MIN = 1440;
+    constexpr uint64_t DAY_LENGTH_HALF_MIN = 2880;
 
     glm::vec4 light_manager::to_vec4(const uint32_t color) {
         return glm::vec4{
@@ -16,30 +16,27 @@ namespace wow::scene::sky {
         };
     }
 
-    glm::vec4 light_manager::interpolate_color(const io::dbc::light_int_band_record &record, const uint64_t time) {
+    glm::vec4 light_manager::interpolate_color(const io::dbc::light_int_band_record &record, uint64_t time) {
         if (record.num_entries == 0) {
             return glm::vec4(0.0f);
         }
 
-        const auto last = to_vec4(record.colors[record.num_entries - 1]);
-        const auto last_time = record.times[record.num_entries - 1] - 1440;
         const auto first = to_vec4(record.colors[0]);
-        const auto first_time = record.times[0] + 1440;
+        const auto first_time = record.times[0] + 2880;
 
         for (auto i = 0; i < record.num_entries; ++i) {
             const auto cur_time = record.times[i];
             if (i == 0 && cur_time >= time) {
-                const auto t = static_cast<float>(time - last_time) / static_cast<float>(cur_time - last_time);
-                return glm::mix(last, to_vec4(record.colors[i]), t);
+                time = cur_time;
             }
 
-            if ((i == record.num_entries - 1) && cur_time <= time) {
+            if (i == record.num_entries - 1) {
                 const auto t = static_cast<float>(time - cur_time) / static_cast<float>(first_time - cur_time);
                 return glm::mix(to_vec4(record.colors[i]), first, t);
             }
 
             if (const auto next_time = record.times[i + 1];
-                time >= cur_time && time < next_time) {
+                time >= cur_time && time <= next_time) {
                 const auto t = static_cast<float>(time - cur_time) / static_cast<float>(next_time - cur_time);
                 return glm::mix(to_vec4(record.colors[i]), to_vec4(record.colors[i + 1]), t);
             }
@@ -144,11 +141,15 @@ namespace wow::scene::sky {
         _time_of_day_ms += diff_ms;
         _time_of_day_ms %= DAY_LENGTH_MS;
 
-        const auto day_minutes = (_time_of_day_ms / 1000 / 60) % DAY_LENGTH_MIN;
+        const auto day_half_minutes = (_time_of_day_ms / 1000 / 30) % DAY_LENGTH_HALF_MIN;
         auto fog_color = glm::vec4(0.0f);
         for (auto i = 0; i < _map_lights.size(); ++i) {
-            const auto &light = _map_lights[i];
-            fog_color += interpolate_color(_dbc_manager->light_int_band_dbc()->record(light.params_clear * 18 - 17 + 7), day_minutes) * _weights[i];
+            if (_weights[i] > 0.0f) {
+                const auto &light = _map_lights[i];
+                fog_color += interpolate_color(
+                    _dbc_manager->light_int_band_dbc()->record(light.params_clear * 18 - 17 + 7),
+                    day_half_minutes) * _weights[i];
+            }
         }
 
         _fog_color = fog_color;
