@@ -15,12 +15,12 @@ namespace wow::scene::sky {
         [[nodiscard]] glm::vec4 value(uint32_t time) const;
     };
 
-    class interpolated_float {
+    class timed_float {
         std::vector<int32_t> _times{};
         std::vector<float> _values{};
 
     public:
-        explicit interpolated_float(const io::dbc::light_float_band_record& record);
+        explicit timed_float(const io::dbc::light_float_band_record& record);
 
         [[nodiscard]] float value(uint32_t time) const;
     };
@@ -45,7 +45,7 @@ namespace wow::scene::sky {
     class light_data {
         io::dbc::light_record _light{};
         std::unordered_map<light_colors, timed_color> _colors{};
-        std::unordered_map<light_float, interpolated_float> _floats{};
+        std::unordered_map<light_float, timed_float> _floats{};
 
         static io::dbc::light_int_band_record int_band(const io::dbc::dbc_manager_ptr& mgr, int32_t id, light_colors color);
         static io::dbc::light_float_band_record float_band(const io::dbc::dbc_manager_ptr& mgr, int32_t id, light_float value);

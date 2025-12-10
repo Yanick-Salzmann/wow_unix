@@ -67,12 +67,12 @@ namespace wow::scene::sky {
         return interpolate(_times, _colors, time);
     }
 
-    interpolated_float::interpolated_float(const io::dbc::light_float_band_record &record) {
+    timed_float::timed_float(const io::dbc::light_float_band_record &record) {
         _times.assign(std::begin(record.times), std::begin(record.times) + record.num_entries);
         _values.assign(std::begin(record.values), std::begin(record.values) + record.num_entries);
     }
 
-    float interpolated_float::value(const uint32_t time) const {
+    float timed_float::value(const uint32_t time) const {
         return interpolate(_times, _values, time);
     }
 
@@ -87,19 +87,18 @@ namespace wow::scene::sky {
     }
 
     light_data::light_data(const io::dbc::dbc_manager_ptr &mgr, const io::dbc::light_record &light) : _light{light} {
-        _colors.emplace(light_colors::diffuse, timed_color(int_band(mgr, light.id, light_colors::diffuse)));
-        _colors.emplace(light_colors::ambient, timed_color(int_band(mgr, light.id, light_colors::ambient)));
-        _colors.emplace(light_colors::sky_top, timed_color(int_band(mgr, light.id, light_colors::sky_top)));
-        _colors.emplace(light_colors::sky_middle, timed_color(int_band(mgr, light.id, light_colors::sky_middle)));
-        _colors.emplace(light_colors::sky_band1, timed_color(int_band(mgr, light.id, light_colors::sky_band1)));
-        _colors.emplace(light_colors::sky_band2, timed_color(int_band(mgr, light.id, light_colors::sky_band2)));
-        _colors.emplace(light_colors::sky_smog, timed_color(int_band(mgr, light.id, light_colors::sky_smog)));
-        _colors.emplace(light_colors::sky_fog, timed_color(int_band(mgr, light.id, light_colors::sky_fog)));
-        _colors.emplace(light_colors::sun_color, timed_color(int_band(mgr, light.id, light_colors::sun_color)));
+        _colors.emplace(light_colors::diffuse, timed_color(int_band(mgr, light.params_clear, light_colors::diffuse)));
+        _colors.emplace(light_colors::ambient, timed_color(int_band(mgr, light.params_clear, light_colors::ambient)));
+        _colors.emplace(light_colors::sky_top, timed_color(int_band(mgr, light.params_clear, light_colors::sky_top)));
+        _colors.emplace(light_colors::sky_middle, timed_color(int_band(mgr, light.params_clear, light_colors::sky_middle)));
+        _colors.emplace(light_colors::sky_band1, timed_color(int_band(mgr, light.params_clear, light_colors::sky_band1)));
+        _colors.emplace(light_colors::sky_band2, timed_color(int_band(mgr, light.params_clear, light_colors::sky_band2)));
+        _colors.emplace(light_colors::sky_smog, timed_color(int_band(mgr, light.params_clear, light_colors::sky_smog)));
+        _colors.emplace(light_colors::sky_fog, timed_color(int_band(mgr, light.params_clear, light_colors::sky_fog)));
+        _colors.emplace(light_colors::sun_color, timed_color(int_band(mgr, light.params_clear, light_colors::sun_color)));
 
-        _floats.emplace(light_float::fog_distance,
-                        interpolated_float(float_band(mgr, light.id, light_float::fog_distance)));
+        _floats.emplace(light_float::fog_distance, timed_float(float_band(mgr, light.params_clear, light_float::fog_distance)));
         _floats.emplace(light_float::fog_multiplier,
-                        interpolated_float(float_band(mgr, light.id, light_float::fog_multiplier)));
+                        timed_float(float_band(mgr, light.params_clear, light_float::fog_multiplier)));
     }
 }
