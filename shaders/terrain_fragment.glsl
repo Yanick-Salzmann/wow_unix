@@ -19,6 +19,7 @@ uniform vec3 sun_direction;
 uniform vec4 fog_color = vec4(0.5, 0.7, 1.0, 1.0);
 uniform vec4 diffuse_color = vec4(1.0, 1.0, 1.0, 1.0);
 uniform vec4 ambient_color = vec4(0.0);
+uniform float fog_distance = 150.0f;
 
 out vec4 target_color;
 
@@ -50,7 +51,7 @@ void main() {
     final_color *= 1.0f - shadow * 0.5f;
 
     float distance = length(camera_position.xyz - world_position);
-    float factor = 1.0f - clamp((camera_position.w - distance) / 150.0f, 0.0f, 1.0f);
+    float factor = 1.0f - clamp((fog_distance - distance) / 150.0f, 0.0f, 1.0f);
     final_color = mix(final_color, fog_color.bgr, factor);
 
     target_color = vec4(final_color, 1.0);

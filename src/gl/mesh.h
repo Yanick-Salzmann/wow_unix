@@ -32,6 +32,7 @@ namespace wow::gl {
         int32_t diffuse_color{};
         int32_t ambient_color{};
         int32_t sun_direction{};
+        int32_t fog_distance{};
     };
 
     struct terrain_mesh {
@@ -42,6 +43,7 @@ namespace wow::gl {
         terrain_mesh& apply_diffuse_color(const glm::vec4 &diffuse_color);
         terrain_mesh& apply_ambient_color(const glm::vec4 &ambient_color);
         terrain_mesh& apply_sun_direction(const glm::vec3 &sun_direction);
+        terrain_mesh& apply_fog_distance(const float& fog_distance);
     };
 
     enum class blend_mode {

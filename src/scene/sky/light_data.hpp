@@ -57,8 +57,12 @@ namespace wow::scene::sky {
             return _light.x == 0 && _light.y == 0 && _light.z == 0;
         }
 
-        glm::vec4 color(light_colors color, uint32_t time) const {
+        glm::vec4 color(const light_colors color, const uint32_t time) const {
             return _colors.at(color).value(time);
+        }
+
+        float float_value(const light_float value, const uint32_t time) const {
+            return _floats.at(value).value(time);
         }
 
         glm::vec3 position() const {

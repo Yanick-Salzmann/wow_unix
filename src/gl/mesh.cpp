@@ -28,6 +28,11 @@ namespace wow::gl {
         return *this;
     }
 
+    terrain_mesh & terrain_mesh::apply_fog_distance(const float &fog_distance) {
+        mesh->program()->float_(fog_distance, state.fog_distance);
+        return *this;
+    }
+
     mesh::mesh() {
         glGenVertexArrays(1, &_vao);
     }
@@ -331,6 +336,7 @@ namespace wow::gl {
             ret_mesh.state.diffuse_color = ret_mesh.mesh->program()->uniform_location("diffuse_color");
             ret_mesh.state.ambient_color = ret_mesh.mesh->program()->uniform_location("ambient_color");
             ret_mesh.state.sun_direction = ret_mesh.mesh->program()->uniform_location("sun_direction");
+            ret_mesh.state.fog_distance = ret_mesh.mesh->program()->uniform_location("fog_distance");
         });
 
         return ret_mesh;

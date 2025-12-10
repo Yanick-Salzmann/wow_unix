@@ -3,6 +3,7 @@
 #include "gl/mesh.h"
 #include "glm/gtc/constants.hpp"
 #include "glm/gtx/norm.hpp"
+#include "utils/constants.h"
 
 namespace wow::scene::sky {
     constexpr uint64_t DAY_LENGTH_MS = 86400000;
@@ -114,19 +115,30 @@ namespace wow::scene::sky {
         auto diffuse_color = glm::vec4(1.0f);
         auto ambient_color = glm::vec4(0.0f);
 
+        float fog_distance = 0.0f;
+
+        auto has_one_light = false;
+
         for (auto i = 0; i < _map_lights.size(); ++i) {
             if (_weights[i] > 0.0f) {
+                has_one_light = true;
                 const auto &light = _map_lights[i];
                 fog_color += light.color(light_colors::sky_fog, day_half_minutes) * _weights[i];
                 diffuse_color += light.color(light_colors::diffuse, day_half_minutes) * _weights[i];
                 ambient_color += light.color(light_colors::ambient, day_half_minutes) * _weights[i];
+                fog_distance += light.float_value(light_float::fog_distance, day_half_minutes) / 36.0f * 2 * _weights[i];
             }
+        }
+
+        if (!has_one_light) {
+            fog_distance = 2.0 * utils::TILE_SIZE;
         }
 
         gl::mesh::terrain_mesh()
                 .apply_fog_color(fog_color)
                 .apply_diffuse_color(diffuse_color)
                 .apply_ambient_color(ambient_color)
+                .apply_fog_distance(fog_distance)
                 .apply_sun_direction(calculate_sun_direction(day_half_minutes));
     }
 
