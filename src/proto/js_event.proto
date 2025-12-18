@@ -26,6 +26,8 @@ message JsEvent {
     WorldPositionUpdateEvent world_position_update_event = 16;
     FpsUpdateEvent fps_update_event = 17;
     SystemUpdateEvent system_update_event = 18;
+    FetchGameTimeRequest fetch_game_time_request = 19;
+    FetchGameTimeResponse fetch_game_time_response = 20;
   }
 }
 
@@ -122,6 +124,7 @@ message WorldPositionUpdateEvent {
 
 message FpsUpdateEvent {
   int32 fps = 1;
+  int64 time_of_day = 5;
 }
 
 message SystemUpdateEvent {
@@ -129,4 +132,14 @@ message SystemUpdateEvent {
   int32 cpu_usage = 2;
   int32 gpu_usage = 3;
   int64 total_memory = 4;
+  int32 cpu_frequency_mhz = 5;
+  int64 gpu_memory_used = 6;
+  int64 gpu_memory_total = 7;
+}
+
+message FetchGameTimeRequest {
+}
+
+message FetchGameTimeResponse {
+  int64 time_of_day = 1;
 }

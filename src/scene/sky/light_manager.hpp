@@ -41,6 +41,8 @@ namespace wow::scene::sky {
         void on_update();
 
         void update_position(glm::vec3 position);
+
+        [[nodiscard]] time_t time_of_day() const;
     };
 
     typedef std::shared_ptr<light_manager> light_manager_ptr;

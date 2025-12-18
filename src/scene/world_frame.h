@@ -22,6 +22,7 @@ namespace wow::scene {
         std::chrono::steady_clock::time_point _last_system_update = std::chrono::steady_clock::now();
 
         void handle_metrics();
+
         void handle_fps_update();
 
         void initialize();
@@ -42,6 +43,10 @@ namespace wow::scene {
         void enter_world(uint32_t map_id, const glm::vec2 &position) const;
 
         void on_frame();
+
+        map_manager_ptr map_manager() const {
+            return _map_manager;
+        }
     };
 
     using world_frame_ptr = std::shared_ptr<world_frame>;

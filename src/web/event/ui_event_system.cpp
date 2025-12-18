@@ -9,7 +9,7 @@ namespace wow::web::event {
         for (const auto &[id, record]: *_dbc_manager->map_dbc()) {
             const auto entry = response.add_maps();
             entry->set_map_id(id);
-            entry->set_name(record.name.text);
+            entry->set_name(fmt::format("{} ({})", record.name.text, record.directory));
             if (_dbc_manager->loading_screen_dbc()->has_record(record.loading_screen)) {
                 entry->set_loading_screen("blp://localhost/" +
                                           utils::replace_all(
@@ -87,6 +87,14 @@ namespace wow::web::event {
 
             _world_frame->enter_world(req.enter_world_request().map_id(), pos);
             return event_manager->empty_response();
+        });
+
+        event_manager->listen(proto::JsEvent::kFetchGameTimeRequest, [this, event_manager, world_frame](const auto &) {
+            const auto time = _world_frame->map_manager()->light_manager()->time_of_day();
+
+            auto response = proto::JsEvent{};
+            response.mutable_fetch_game_time_response()->set_time_of_day(time);
+            return response;
         });
     }
 }

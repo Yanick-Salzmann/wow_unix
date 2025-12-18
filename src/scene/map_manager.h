@@ -78,7 +78,7 @@ namespace wow::scene {
 
         void enter_world(uint32_t map_id, const glm::vec2 &position);
 
-        void on_frame(const scene_info& scene_info);
+        void on_frame(const scene_info &scene_info);
 
         void shutdown();
 
@@ -89,6 +89,14 @@ namespace wow::scene {
         io::terrain::adt_chunk_ptr chunk_at(float x, float y);
 
         void initialize();
+
+        [[nodiscard]] time_t time_of_day() const {
+            return _light_manager->time_of_day();
+        }
+
+        sky::light_manager_ptr &light_manager() {
+            return _light_manager;
+        }
     };
 
     using map_manager_ptr = std::shared_ptr<map_manager>;

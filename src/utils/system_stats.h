@@ -8,6 +8,9 @@ namespace wow::utils {
         int64_t memory_usage; // bytes
         int64_t total_memory; // bytes
         int32_t gpu_usage; // percentage
+        int32_t cpu_frequency_mhz; 
+        int64_t gpu_memory_used; // bytes
+        int64_t gpu_memory_total; // bytes
     };
 
     system_stats get_system_stats();

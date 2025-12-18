@@ -135,6 +135,18 @@ export interface JsEvent {
          */
         systemUpdateEvent: SystemUpdateEvent;
     } | {
+        oneofKind: "fetchGameTimeRequest";
+        /**
+         * @generated from protobuf field: wow.web.proto.FetchGameTimeRequest fetch_game_time_request = 19
+         */
+        fetchGameTimeRequest: FetchGameTimeRequest;
+    } | {
+        oneofKind: "fetchGameTimeResponse";
+        /**
+         * @generated from protobuf field: wow.web.proto.FetchGameTimeResponse fetch_game_time_response = 20
+         */
+        fetchGameTimeResponse: FetchGameTimeResponse;
+    } | {
         oneofKind: undefined;
     };
 }
@@ -368,6 +380,10 @@ export interface FpsUpdateEvent {
      * @generated from protobuf field: int32 fps = 1
      */
     fps: number;
+    /**
+     * @generated from protobuf field: int64 time_of_day = 5
+     */
+    timeOfDay: bigint;
 }
 /**
  * @generated from protobuf message wow.web.proto.SystemUpdateEvent
@@ -389,6 +405,32 @@ export interface SystemUpdateEvent {
      * @generated from protobuf field: int64 total_memory = 4
      */
     totalMemory: bigint;
+    /**
+     * @generated from protobuf field: int32 cpu_frequency_mhz = 5
+     */
+    cpuFrequencyMhz: number;
+    /**
+     * @generated from protobuf field: int64 gpu_memory_used = 6
+     */
+    gpuMemoryUsed: bigint;
+    /**
+     * @generated from protobuf field: int64 gpu_memory_total = 7
+     */
+    gpuMemoryTotal: bigint;
+}
+/**
+ * @generated from protobuf message wow.web.proto.FetchGameTimeRequest
+ */
+export interface FetchGameTimeRequest {
+}
+/**
+ * @generated from protobuf message wow.web.proto.FetchGameTimeResponse
+ */
+export interface FetchGameTimeResponse {
+    /**
+     * @generated from protobuf field: int64 time_of_day = 1
+     */
+    timeOfDay: bigint;
 }
 // @generated message type with reflection information, may provide speed optimized methods
 class Wrapper$Type extends MessageType<Wrapper> {
@@ -457,7 +499,9 @@ class JsEvent$Type extends MessageType<JsEvent> {
             { no: 15, name: "area_update_event", kind: "message", oneof: "event", T: () => AreaUpdateEvent },
             { no: 16, name: "world_position_update_event", kind: "message", oneof: "event", T: () => WorldPositionUpdateEvent },
             { no: 17, name: "fps_update_event", kind: "message", oneof: "event", T: () => FpsUpdateEvent },
-            { no: 18, name: "system_update_event", kind: "message", oneof: "event", T: () => SystemUpdateEvent }
+            { no: 18, name: "system_update_event", kind: "message", oneof: "event", T: () => SystemUpdateEvent },
+            { no: 19, name: "fetch_game_time_request", kind: "message", oneof: "event", T: () => FetchGameTimeRequest },
+            { no: 20, name: "fetch_game_time_response", kind: "message", oneof: "event", T: () => FetchGameTimeResponse }
         ]);
     }
     create(value?: PartialMessage<JsEvent>): JsEvent {
@@ -580,6 +624,18 @@ class JsEvent$Type extends MessageType<JsEvent> {
                         systemUpdateEvent: SystemUpdateEvent.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).systemUpdateEvent)
                     };
                     break;
+                case /* wow.web.proto.FetchGameTimeRequest fetch_game_time_request */ 19:
+                    message.event = {
+                        oneofKind: "fetchGameTimeRequest",
+                        fetchGameTimeRequest: FetchGameTimeRequest.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).fetchGameTimeRequest)
+                    };
+                    break;
+                case /* wow.web.proto.FetchGameTimeResponse fetch_game_time_response */ 20:
+                    message.event = {
+                        oneofKind: "fetchGameTimeResponse",
+                        fetchGameTimeResponse: FetchGameTimeResponse.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).fetchGameTimeResponse)
+                    };
+                    break;
                 default:
                     let u = options.readUnknownField;
                     if (u === "throw")
@@ -646,6 +702,12 @@ class JsEvent$Type extends MessageType<JsEvent> {
         /* wow.web.proto.SystemUpdateEvent system_update_event = 18; */
         if (message.event.oneofKind === "systemUpdateEvent")
             SystemUpdateEvent.internalBinaryWrite(message.event.systemUpdateEvent, writer.tag(18, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.FetchGameTimeRequest fetch_game_time_request = 19; */
+        if (message.event.oneofKind === "fetchGameTimeRequest")
+            FetchGameTimeRequest.internalBinaryWrite(message.event.fetchGameTimeRequest, writer.tag(19, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.FetchGameTimeResponse fetch_game_time_response = 20; */
+        if (message.event.oneofKind === "fetchGameTimeResponse")
+            FetchGameTimeResponse.internalBinaryWrite(message.event.fetchGameTimeResponse, writer.tag(20, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1622,12 +1684,14 @@ export const WorldPositionUpdateEvent = new WorldPositionUpdateEvent$Type();
 class FpsUpdateEvent$Type extends MessageType<FpsUpdateEvent> {
     constructor() {
         super("wow.web.proto.FpsUpdateEvent", [
-            { no: 1, name: "fps", kind: "scalar", T: 5 /*ScalarType.INT32*/ }
+            { no: 1, name: "fps", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 5, name: "time_of_day", kind: "scalar", T: 3 /*ScalarType.INT64*/, L: 0 /*LongType.BIGINT*/ }
         ]);
     }
     create(value?: PartialMessage<FpsUpdateEvent>): FpsUpdateEvent {
         const message = globalThis.Object.create((this.messagePrototype!));
         message.fps = 0;
+        message.timeOfDay = 0n;
         if (value !== undefined)
             reflectionMergePartial<FpsUpdateEvent>(this, message, value);
         return message;
@@ -1639,6 +1703,9 @@ class FpsUpdateEvent$Type extends MessageType<FpsUpdateEvent> {
             switch (fieldNo) {
                 case /* int32 fps */ 1:
                     message.fps = reader.int32();
+                    break;
+                case /* int64 time_of_day */ 5:
+                    message.timeOfDay = reader.int64().toBigInt();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1655,6 +1722,9 @@ class FpsUpdateEvent$Type extends MessageType<FpsUpdateEvent> {
         /* int32 fps = 1; */
         if (message.fps !== 0)
             writer.tag(1, WireType.Varint).int32(message.fps);
+        /* int64 time_of_day = 5; */
+        if (message.timeOfDay !== 0n)
+            writer.tag(5, WireType.Varint).int64(message.timeOfDay);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1672,7 +1742,10 @@ class SystemUpdateEvent$Type extends MessageType<SystemUpdateEvent> {
             { no: 1, name: "memory_usage", kind: "scalar", T: 3 /*ScalarType.INT64*/, L: 0 /*LongType.BIGINT*/ },
             { no: 2, name: "cpu_usage", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
             { no: 3, name: "gpu_usage", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 4, name: "total_memory", kind: "scalar", T: 3 /*ScalarType.INT64*/, L: 0 /*LongType.BIGINT*/ }
+            { no: 4, name: "total_memory", kind: "scalar", T: 3 /*ScalarType.INT64*/, L: 0 /*LongType.BIGINT*/ },
+            { no: 5, name: "cpu_frequency_mhz", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 6, name: "gpu_memory_used", kind: "scalar", T: 3 /*ScalarType.INT64*/, L: 0 /*LongType.BIGINT*/ },
+            { no: 7, name: "gpu_memory_total", kind: "scalar", T: 3 /*ScalarType.INT64*/, L: 0 /*LongType.BIGINT*/ }
         ]);
     }
     create(value?: PartialMessage<SystemUpdateEvent>): SystemUpdateEvent {
@@ -1681,6 +1754,9 @@ class SystemUpdateEvent$Type extends MessageType<SystemUpdateEvent> {
         message.cpuUsage = 0;
         message.gpuUsage = 0;
         message.totalMemory = 0n;
+        message.cpuFrequencyMhz = 0;
+        message.gpuMemoryUsed = 0n;
+        message.gpuMemoryTotal = 0n;
         if (value !== undefined)
             reflectionMergePartial<SystemUpdateEvent>(this, message, value);
         return message;
@@ -1701,6 +1777,15 @@ class SystemUpdateEvent$Type extends MessageType<SystemUpdateEvent> {
                     break;
                 case /* int64 total_memory */ 4:
                     message.totalMemory = reader.int64().toBigInt();
+                    break;
+                case /* int32 cpu_frequency_mhz */ 5:
+                    message.cpuFrequencyMhz = reader.int32();
+                    break;
+                case /* int64 gpu_memory_used */ 6:
+                    message.gpuMemoryUsed = reader.int64().toBigInt();
+                    break;
+                case /* int64 gpu_memory_total */ 7:
+                    message.gpuMemoryTotal = reader.int64().toBigInt();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1726,6 +1811,15 @@ class SystemUpdateEvent$Type extends MessageType<SystemUpdateEvent> {
         /* int64 total_memory = 4; */
         if (message.totalMemory !== 0n)
             writer.tag(4, WireType.Varint).int64(message.totalMemory);
+        /* int32 cpu_frequency_mhz = 5; */
+        if (message.cpuFrequencyMhz !== 0)
+            writer.tag(5, WireType.Varint).int32(message.cpuFrequencyMhz);
+        /* int64 gpu_memory_used = 6; */
+        if (message.gpuMemoryUsed !== 0n)
+            writer.tag(6, WireType.Varint).int64(message.gpuMemoryUsed);
+        /* int64 gpu_memory_total = 7; */
+        if (message.gpuMemoryTotal !== 0n)
+            writer.tag(7, WireType.Varint).int64(message.gpuMemoryTotal);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1736,3 +1830,88 @@ class SystemUpdateEvent$Type extends MessageType<SystemUpdateEvent> {
  * @generated MessageType for protobuf message wow.web.proto.SystemUpdateEvent
  */
 export const SystemUpdateEvent = new SystemUpdateEvent$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class FetchGameTimeRequest$Type extends MessageType<FetchGameTimeRequest> {
+    constructor() {
+        super("wow.web.proto.FetchGameTimeRequest", []);
+    }
+    create(value?: PartialMessage<FetchGameTimeRequest>): FetchGameTimeRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        if (value !== undefined)
+            reflectionMergePartial<FetchGameTimeRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: FetchGameTimeRequest): FetchGameTimeRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: FetchGameTimeRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message wow.web.proto.FetchGameTimeRequest
+ */
+export const FetchGameTimeRequest = new FetchGameTimeRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class FetchGameTimeResponse$Type extends MessageType<FetchGameTimeResponse> {
+    constructor() {
+        super("wow.web.proto.FetchGameTimeResponse", [
+            { no: 1, name: "time_of_day", kind: "scalar", T: 3 /*ScalarType.INT64*/, L: 0 /*LongType.BIGINT*/ }
+        ]);
+    }
+    create(value?: PartialMessage<FetchGameTimeResponse>): FetchGameTimeResponse {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.timeOfDay = 0n;
+        if (value !== undefined)
+            reflectionMergePartial<FetchGameTimeResponse>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: FetchGameTimeResponse): FetchGameTimeResponse {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* int64 time_of_day */ 1:
+                    message.timeOfDay = reader.int64().toBigInt();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: FetchGameTimeResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* int64 time_of_day = 1; */
+        if (message.timeOfDay !== 0n)
+            writer.tag(1, WireType.Varint).int64(message.timeOfDay);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message wow.web.proto.FetchGameTimeResponse
+ */
+export const FetchGameTimeResponse = new FetchGameTimeResponse$Type();

@@ -1,26 +1,98 @@
 <div class="world-frame-container">
-  <div class="fps-counter">
-    @if (fps$ | async; as fps) {
-      <span class="fps-value">{{ fps }}</span>
-      <span class="fps-label">FPS</span>
+  <div class="stats-panel">
+    <div class="header-row">
+      <div class="clock-display">
+        @if (timeOfDay$ | async; as time) {
+        <span class="time-value">{{ time }}</span>
+        }
+      </div>
+      <div class="fps-counter">
+        @if (fps$ | async; as fps) {
+        <span class="fps-value">{{ fps }}</span>
+        <span class="fps-label">FPS</span>
+        }
+      </div>
+    </div>
+
+    @if (currentStats$ | async; as stats) {
+    <div class="stats-grid">
+      <!-- CPU Widget -->
+      <div class="stat-widget cpu">
+        <div class="circle-progress" [style.--progress]="stats.cpu">
+          <svg viewBox="0 0 36 36">
+            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path class="circle-fg" stroke-dasharray="100, 100"
+              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          </svg>
+          <div class="stat-value">
+            {{ (stats.cpuFreq / 1000) | number:'1.1-1' }}<span class="unit">G</span>
+          </div>
+        </div>
+        <div class="stat-label">CPU</div>
+        <div class="stat-detail">{{ stats.cpu | number:'1.0-0' }}%</div>
+      </div>
+
+      <!-- Memory Widget -->
+      <div class="stat-widget mem">
+        <div class="circle-progress" [style.--progress]="(stats.memory / stats.totalMemory) * 100">
+          <svg viewBox="0 0 36 36">
+            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path class="circle-fg" stroke-dasharray="100, 100"
+              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          </svg>
+          <!-- Simplified Display for circle -->
+          <div class="stat-value">
+            {{ (stats.memory / 1024 / 1024 / 1024) | number:'1.1-1' }}<span class="unit">G</span>
+          </div>
+        </div>
+        <div class="stat-label">MEM</div>
+        <div class="stat-detail">{{ (stats.memory / 1024 / 1024 / 1024) | number:'1.2-2' }} GB</div>
+      </div>
+
+      <!-- GPU Widget -->
+      <div class="stat-widget gpu">
+        <div class="circle-progress" [style.--progress]="stats.gpu">
+          <svg viewBox="0 0 36 36">
+            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path class="circle-fg" stroke-dasharray="100, 100"
+              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          </svg>
+          <div class="stat-value">
+            {{ (stats.gpuMemUsed / 1024 / 1024 / 1024) | number:'1.1-1' }}<span class="unit">G</span>
+          </div>
+        </div>
+        <div class="stat-label">GPU</div>
+        <div class="stat-detail">{{ stats.gpu | number:'1.0-0' }}%</div>
+      </div>
+    </div>
     }
+
+    <div class="graph-container">
+      @if (currentStats$ | async; as stats) {
+      <div class="graph-legend">
+        <span class="legend-item cpu">CPU {{ stats.cpu | number:'1.0-0' }}%</span>
+        <span class="legend-item mem">MEM {{ (stats.memory / 1024 / 1024 / 1024) | number:'1.1-1' }}G</span>
+        <span class="legend-item gpu">GPU {{ stats.gpu | number:'1.0-0' }}%</span>
+      </div>
+      }
+      <canvas #canvas class="system-graph"></canvas>
+    </div>
   </div>
-  <canvas #canvas class="system-graph"></canvas>
   <div class="world-content">
   </div>
   <footer class="footer-bar">
     <div class="footer-content">
       <div class="area-info">
         @if (areaInfo$ | async; as areaInfo) {
-          <span>{{ areaInfo.name }} ({{ areaInfo.id }})</span>
+        <span>{{ areaInfo.name }} ({{ areaInfo.id }})</span>
         }
       </div>
       <div class="position-info">
         @if (worldPosition$ | async; as pos) {
-          <span class="map-name">{{ pos.mapName }} ({{pos.mapId}})</span>
-          <span class="coords">
-            X: {{ pos.x | localeNumber }} | Y: {{ pos.y | localeNumber }} | Z: {{ pos.z | localeNumber }}
-          </span>
+        <span class="map-name">{{ pos.mapName }} ({{pos.mapId}})</span>
+        <span class="coords">
+          X: {{ pos.x | localeNumber }} | Y: {{ pos.y | localeNumber }} | Z: {{ pos.z | localeNumber }}
+        </span>
         }
       </div>
     </div>

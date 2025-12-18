@@ -146,4 +146,17 @@ namespace wow::scene::sky {
         _position = position;
         _position_changed = true;
     }
+
+    time_t light_manager::time_of_day() const {
+        const auto hours = (_time_of_day_ms / (1000 * 60 * 60)) % 24;
+        const auto minutes = (_time_of_day_ms / (1000 * 60)) % 60;
+
+        auto now = std::time(nullptr);
+        auto today = *std::localtime(&now);
+        today.tm_hour = static_cast<int>(hours);
+        today.tm_min = static_cast<int>(minutes);
+        today.tm_sec = 0;
+
+        return std::mktime(&today);
+    }
 }

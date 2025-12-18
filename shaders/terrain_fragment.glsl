@@ -25,10 +25,12 @@ out vec4 target_color;
 
 void main() {
     vec3 light_dir = normalize(sun_direction);
+    float sun_factor = clamp(light_dir.z * 2.0, 0.0, 1.0);
+
     float light = dot(normalize(frag_normal), light_dir);
     light = clamp(light, 0.0, 1.0);
     light = 1.0 - (1.0 - light) * (1.0 - light);
-    light *= 0.6;
+    light *= 0.6 * sun_factor;
 
     vec3 color0 = texture(color_texture0, frag_tex_coord).rgb;
     vec3 color1 = texture(color_texture1, frag_tex_coord).rgb;
