@@ -114,6 +114,7 @@ namespace wow::scene::sky {
         auto fog_color = glm::vec4(0.0f);
         auto diffuse_color = glm::vec4(1.0f);
         auto ambient_color = glm::vec4(0.0f);
+        auto sky_color = glm::vec4(0.0f);
 
         float fog_distance = 0.0f;
 
@@ -127,12 +128,15 @@ namespace wow::scene::sky {
                 diffuse_color += light.color(light_colors::diffuse, day_half_minutes) * _weights[i];
                 ambient_color += light.color(light_colors::ambient, day_half_minutes) * _weights[i];
                 fog_distance += light.float_value(light_float::fog_distance, day_half_minutes) / 36.0f * 2 * _weights[i];
+                sky_color += light.color(light_colors::sky_band1, day_half_minutes) * _weights[i];
             }
         }
 
         if (!has_one_light) {
             fog_distance = 2.0 * utils::TILE_SIZE;
         }
+
+        glClearColor(sky_color.r, sky_color.g, sky_color.b, 1.0);
 
         gl::mesh::terrain_mesh()
                 .apply_fog_color(fog_color)

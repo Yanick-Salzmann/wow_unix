@@ -34,7 +34,6 @@ namespace wow::gl {
         std::vector<char_callback> _char_callbacks{};
         std::vector<resize_callback> _resize_callbacks{};
 
-
         static void report_glfw_error(const std::string &msg);
 
         void on_resize(int width, int height) const;
