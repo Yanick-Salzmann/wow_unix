@@ -6,14 +6,14 @@
   z-index: 100;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   background: rgba(18, 18, 24, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  padding: 16px;
+  padding: 12px;
   backdrop-filter: blur(10px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  min-width: 280px;
+  min-width: 240px;
   transition: all 0.3s ease;
 
   &:hover {
@@ -38,7 +38,7 @@
 
   .time-value {
     font-family: 'JetBrains Mono', 'Courier New', monospace;
-    font-size: 1.8rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: #e0e0e0;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
@@ -53,7 +53,7 @@
 
   .fps-value {
     font-family: 'Inter', sans-serif;
-    font-size: 1.4rem;
+    font-size: 1.1rem;
     font-weight: 800;
     color: #00fff7;
     text-shadow: 0 0 10px rgba(0, 255, 247, 0.5);
@@ -76,26 +76,12 @@
   margin-bottom: 8px;
 }
 
-.stat-widget {
+  .stat-widget {
   display: flex;
   flex-direction: column;
   align-items: center;
   flex: 1;
 
-  .stat-label {
-    margin-top: 6px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.7);
-    letter-spacing: 0.5px;
-  }
-
-  .stat-detail {
-    font-size: 0.65rem;
-    color: rgba(255, 255, 255, 0.4);
-    margin-top: 2px;
-    white-space: nowrap;
-  }
 
   &.cpu {
     .circle-fg {
@@ -131,8 +117,8 @@
 /* Circular Progress Bar */
 .circle-progress {
   position: relative;
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -146,12 +132,12 @@
   .circle-bg {
     fill: none;
     stroke: rgba(255, 255, 255, 0.1);
-    stroke-width: 2.5;
+    stroke-width: 2;
   }
 
   .circle-fg {
     fill: none;
-    stroke-width: 2.5;
+    stroke-width: 2;
     stroke-linecap: round;
     transition: stroke-dashoffset 0.5s ease;
     /* Circumference is approx 100 */
@@ -160,15 +146,21 @@
 
   .stat-value {
     position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.9rem;
+    font-size: 0.7rem;
     font-weight: 700;
     display: flex;
-    align-items: baseline;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+    white-space: nowrap;
 
     .unit {
-      font-size: 0.7em;
-      margin-left: 1px;
+      font-size: 0.6em;
+      margin-top: 2px;
       opacity: 0.7;
       font-weight: 500;
     }
@@ -176,7 +168,7 @@
 }
 
 .graph-container {
-  height: 80px;
+  height: 60px;
   /* Match canvas height roughly or constrain it */
   background: rgba(0, 0, 0, 0.2);
   border-radius: 8px;
@@ -196,14 +188,15 @@
   top: 4px;
   left: 8px;
   display: flex;
-  gap: 12px;
+  gap: 8px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   background: rgba(0, 0, 0, 0.4);
   padding: 2px 6px;
   border-radius: 4px;
   pointer-events: none;
   border: 1px solid rgba(255, 255, 255, 0.05);
+  white-space: nowrap;
 }
 
 .legend-item {

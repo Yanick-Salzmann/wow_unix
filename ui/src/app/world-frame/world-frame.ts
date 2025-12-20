@@ -55,7 +55,7 @@ export class WorldFrame implements OnInit, AfterViewInit, OnDestroy {
     constructor(private eventService: EventService) {
     }
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.eventService.listenForEvent('areaUpdateEvent', (event: JsEvent) => {
             if (event.event.oneofKind === 'areaUpdateEvent') {
                 this.areaInfo$.next({
@@ -80,24 +80,22 @@ export class WorldFrame implements OnInit, AfterViewInit, OnDestroy {
         this.eventService.listenForEvent('fpsUpdateEvent', async (event: JsEvent) => {
             if (event.event.oneofKind === 'fpsUpdateEvent') {
                 this.fps$.next(event.event.fpsUpdateEvent.fps);
-
-                if (this.animationFrameId === null) {
-                    await this.updateTime();
-                }
             }
         });
+
+        await this.updateTime();
 
         this.eventService.listenForEvent('systemUpdateEvent', (event: JsEvent) => {
             if (event.event.oneofKind === 'systemUpdateEvent') {
                 const stats: SystemStats = {
-                    cpu: Number(event.event.systemUpdateEvent.cpuUsage),
-                    memory: Number(event.event.systemUpdateEvent.memoryUsage),
-                    totalMemory: Number(event.event.systemUpdateEvent.totalMemory),
-                    gpu: Number(event.event.systemUpdateEvent.gpuUsage),
+                    cpu: Number(event.event.systemUpdateEvent.cpuUsage) || 0,
+                    memory: Number(event.event.systemUpdateEvent.memoryUsage) || 0,
+                    totalMemory: Number(event.event.systemUpdateEvent.totalMemory) || 0,
+                    gpu: Number(event.event.systemUpdateEvent.gpuUsage) || 0,
                     time: Date.now(),
-                    cpuFreq: event.event.systemUpdateEvent.cpuFrequencyMhz,
-                    gpuMemUsed: Number(event.event.systemUpdateEvent.gpuMemoryUsed),
-                    gpuMemTotal: Number(event.event.systemUpdateEvent.gpuMemoryTotal)
+                    cpuFreq: Number(event.event.systemUpdateEvent.cpuFrequencyMhz) || 0,
+                    gpuMemUsed: Number(event.event.systemUpdateEvent.gpuMemoryUsed) || 0,
+                    gpuMemTotal: Number(event.event.systemUpdateEvent.gpuMemoryTotal) || 0
                 };
 
                 this.currentStats$.next(stats);
@@ -135,7 +133,7 @@ export class WorldFrame implements OnInit, AfterViewInit, OnDestroy {
         const dt = new Date(Number(timeOfDay) * 1000);
         this.timeOfDay$.next(dt.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}));
 
-        this.animationFrameId = requestAnimationFrame(() => this.updateTime());
+        setTimeout(() => this.updateTime(), 200);
     }
 
     ngAfterViewInit(): void {

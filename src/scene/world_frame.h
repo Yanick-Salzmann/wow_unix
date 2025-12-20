@@ -1,6 +1,7 @@
 #ifndef WOW_UNIX_WORLD_FRAME_H
 #define WOW_UNIX_WORLD_FRAME_H
 #include <memory>
+#include <chrono>
 
 #include "camera.h"
 #include "gpu_dispatcher.h"
@@ -13,6 +14,8 @@ namespace wow::scene {
         gpu_dispatcher_ptr _dispatcher{};
         camera_ptr _camera{};
 
+        std::thread _metrics_thread{};
+
         scene_info _scene_info{};
 
         int32_t _camera_position_uniform = -1;
@@ -21,11 +24,15 @@ namespace wow::scene {
         std::chrono::steady_clock::time_point _last_fps_update = std::chrono::steady_clock::now();
         std::chrono::steady_clock::time_point _last_system_update = std::chrono::steady_clock::now();
 
+        bool _is_running = true;
+
         void handle_metrics();
 
         void handle_fps_update();
 
         void initialize();
+
+        void update_metrics_thread();
 
     public:
         explicit world_frame(
@@ -38,7 +45,7 @@ namespace wow::scene {
             initialize();
         }
 
-        void shutdown() const;
+        void shutdown();
 
         void enter_world(uint32_t map_id, const glm::vec2 &position) const;
 

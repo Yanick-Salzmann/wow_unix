@@ -9,7 +9,6 @@
       <div class="fps-counter">
         @if (fps$ | async; as fps) {
         <span class="fps-value">{{ fps }}</span>
-        <span class="fps-label">FPS</span>
         }
       </div>
     </div>
@@ -25,11 +24,9 @@
               d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
           </svg>
           <div class="stat-value">
-            {{ (stats.cpuFreq / 1000) | number:'1.1-1' }}<span class="unit">G</span>
+            {{ (stats.cpuFreq / 1000) | localeNumber:1:1 }}<span class="unit">GHz</span>
           </div>
         </div>
-        <div class="stat-label">CPU</div>
-        <div class="stat-detail">{{ stats.cpu | number:'1.0-0' }}%</div>
       </div>
 
       <!-- Memory Widget -->
@@ -42,11 +39,9 @@
           </svg>
           <!-- Simplified Display for circle -->
           <div class="stat-value">
-            {{ (stats.memory / 1024 / 1024 / 1024) | number:'1.1-1' }}<span class="unit">G</span>
+            {{ (stats.memory / 1024 / 1024 / 1024) | localeNumber:1:1 }}<span class="unit">G</span>
           </div>
         </div>
-        <div class="stat-label">MEM</div>
-        <div class="stat-detail">{{ (stats.memory / 1024 / 1024 / 1024) | number:'1.2-2' }} GB</div>
       </div>
 
       <!-- GPU Widget -->
@@ -58,11 +53,9 @@
               d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
           </svg>
           <div class="stat-value">
-            {{ (stats.gpuMemUsed / 1024 / 1024 / 1024) | number:'1.1-1' }}<span class="unit">G</span>
+            {{ (stats.gpuMemUsed / 1024 / 1024 / 1024) | localeNumber:1:1 }}<span class="unit">G</span>
           </div>
         </div>
-        <div class="stat-label">GPU</div>
-        <div class="stat-detail">{{ stats.gpu | number:'1.0-0' }}%</div>
       </div>
     </div>
     }
@@ -70,9 +63,9 @@
     <div class="graph-container">
       @if (currentStats$ | async; as stats) {
       <div class="graph-legend">
-        <span class="legend-item cpu">CPU {{ stats.cpu | number:'1.0-0' }}%</span>
-        <span class="legend-item mem">MEM {{ (stats.memory / 1024 / 1024 / 1024) | number:'1.1-1' }}G</span>
-        <span class="legend-item gpu">GPU {{ stats.gpu | number:'1.0-0' }}%</span>
+        <span class="legend-item cpu">CPU {{ stats.cpu | localeNumber: 1 : 1 }}%</span>
+        <span class="legend-item mem">MEM {{ (stats.memory / 1024 / 1024 / 1024) | localeNumber: 1 : 1}}G</span>
+        <span class="legend-item gpu">GPU {{ stats.gpu | localeNumber: 1 : 1 }}%</span>
       </div>
       }
       <canvas #canvas class="system-graph"></canvas>
