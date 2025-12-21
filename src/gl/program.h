@@ -70,6 +70,10 @@ namespace wow::gl {
     };
 
     using program_ptr = std::shared_ptr<program>;
+
+    inline program_ptr make_program() {
+        return std::make_shared<program>();
+    }
 }
 
 #endif //WOW_UNIX_PROGRAM_H

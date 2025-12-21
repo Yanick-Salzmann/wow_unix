@@ -10,6 +10,11 @@ namespace wow::scene::sky {
         gl::vertex_buffer_ptr _vertex_buffer{};
         gl::index_buffer_ptr _index_buffer{};
 
+        glm::vec3 _position{};
+        float _radius = 1.0f;
+
+        void calculate_buffer();
+
     public:
         void initialize();
 

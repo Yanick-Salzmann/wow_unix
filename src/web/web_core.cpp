@@ -1,5 +1,6 @@
 #include "web_core.h"
 
+#include "include/cef_browser.h"
 #include <filesystem>
 #include <utility>
 #include <gtk/gtk.h>
@@ -360,6 +361,7 @@ namespace wow::web {
                 event.modifiers = calculate_modifiers();
 
                 if (action == GLFW_PRESS) {
+                    browser->GetHost()->SetFocus(true);
                     const auto now = std::chrono::high_resolution_clock::now().time_since_epoch();
                     const auto currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(now).count();
                     const auto cancelPreviousClick =
@@ -405,36 +407,6 @@ namespace wow::web {
             }
         });
 
-        _window->add_key_callback([this](const int key, const int scancode, const int action, const int mods) {
-            if (const auto browser = _client->browser()) {
-                CefKeyEvent event{};
-
-                if (action == GLFW_PRESS) {
-                    event.type = KEYEVENT_KEYDOWN;
-                } else if (action == GLFW_RELEASE) {
-                    event.type = KEYEVENT_KEYUP;
-                } else if (action == GLFW_REPEAT) {
-                    event.type = KEYEVENT_KEYDOWN;
-                    CefKeyEvent charEvent{};
-                    charEvent.type = KEYEVENT_CHAR;
-                    charEvent.windows_key_code = key;
-                    charEvent.native_key_code = scancode;
-                    charEvent.character = key;
-                    charEvent.unmodified_character = key;
-                    charEvent.modifiers = calculate_modifiers();
-                    browser->GetHost()->SendKeyEvent(charEvent);
-                }
-
-                event.windows_key_code = key;
-                event.native_key_code = scancode;
-
-                event.is_system_key = false;
-                event.modifiers = calculate_modifiers();
-
-                browser->GetHost()->SendKeyEvent(event);
-            }
-        });
-
         _window->add_char_callback([this](const unsigned int codepoint) {
             if (const auto browser = _client->browser()) {
                 CefKeyEvent event{};
@@ -460,10 +432,10 @@ namespace wow::web {
         _window->add_scroll_callback([this](const double x, const double y) {
             if (const auto browser = _client->browser()) {
                 CefMouseEvent event{};
-                event.x = static_cast<int>(x);
-                event.y = static_cast<int>(y);
+                event.x = static_cast<int>(_mouse_x);
+                event.y = static_cast<int>(_mouse_y);
                 event.modifiers = calculate_modifiers();
-                browser->GetHost()->SendMouseWheelEvent(event, 0, static_cast<int>(y * 120));
+                browser->GetHost()->SendMouseWheelEvent(event, static_cast<int>(x * 120), static_cast<int>(y * 120));
             }
         });
 
@@ -546,15 +518,15 @@ namespace wow::web {
             modifiers |= EVENTFLAG_NUM_LOCK_ON;
         }
 
-        if (_window->is_key_pressed(GLFW_MOUSE_BUTTON_LEFT)) {
+        if (_window->is_mouse_button_pressed(GLFW_MOUSE_BUTTON_LEFT)) {
             modifiers |= EVENTFLAG_LEFT_MOUSE_BUTTON;
         }
 
-        if (_window->is_key_pressed(GLFW_MOUSE_BUTTON_RIGHT)) {
+        if (_window->is_mouse_button_pressed(GLFW_MOUSE_BUTTON_RIGHT)) {
             modifiers |= EVENTFLAG_RIGHT_MOUSE_BUTTON;
         }
 
-        if (_window->is_key_pressed(GLFW_MOUSE_BUTTON_MIDDLE)) {
+        if (_window->is_mouse_button_pressed(GLFW_MOUSE_BUTTON_MIDDLE)) {
             modifiers |= EVENTFLAG_MIDDLE_MOUSE_BUTTON;
         }
 
