@@ -30,6 +30,9 @@ namespace wow::scene {
 
         glm::vec3 _position{};
         bool _position_changed = false;
+        bool _view_distance_changed = true;
+
+        float _view_distance = 2.0f * utils::TILE_SIZE;
 
         bool _is_running = true;
         int32_t _last_area_id = -1;

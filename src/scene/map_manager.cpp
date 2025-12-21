@@ -246,6 +246,11 @@ namespace wow::scene {
             _light_manager->update_position(_position);
         }
 
+        if (_view_distance_changed) {
+            _view_distance_changed = false;
+            _sky_sphere.update_radius(_view_distance);
+        }
+
         handle_load_tick();
 
         glEnable(GL_DEPTH_TEST);

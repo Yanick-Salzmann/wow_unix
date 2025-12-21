@@ -282,7 +282,7 @@ namespace wow::web {
 
     void web_core::initialize(int argc, char *argv[]) {
         _task = std::packaged_task<bool()>([argc, argv, this] {
-            SPDLOG_INFO("Initializing CEF");
+            SPDLOG_INFO("Initializing CEF"); // NOLINT(bugprone-lambda-function-name)
             CefMainArgs args{};
             args.argc = argc;
             args.argv = argv;
@@ -303,7 +303,7 @@ namespace wow::web {
             _client = new web_client(_window, shared_from_this());
 
             if (!CefInitialize(args, settings, _application, nullptr)) {
-                SPDLOG_ERROR("Could not initialize CEF");
+                SPDLOG_ERROR("Could not initialize CEF"); // NOLINT(bugprone-lambda-function-name)
                 return false;
             }
 
@@ -365,8 +365,8 @@ namespace wow::web {
                     const auto now = std::chrono::high_resolution_clock::now().time_since_epoch();
                     const auto currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(now).count();
                     const auto cancelPreviousClick =
-                            std::abs(_last_click_x - event.x) > 36 / 2 ||
-                            std::abs(_last_click_y - event.y) > 36 / 2 ||
+                            std::abs(_last_click_x - event.x) > 36.0f / 2 ||
+                            std::abs(_last_click_y - event.y) > 36.0f / 2 ||
                             currentTime - _last_click_time > 600;
 
                     if (cancelPreviousClick) {
@@ -467,7 +467,7 @@ namespace wow::web {
         CefPostTask(TID_UI, new ShutdownTask());
         _message_loop.join();
         CefShutdown();
-        SPDLOG_INFO("Shutdown complete");
+        spdlog::info("Shutdown complete");
     }
 
     void web_core::render() {

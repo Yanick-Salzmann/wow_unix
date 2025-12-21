@@ -84,7 +84,7 @@ namespace wow::scene::sky {
     }
 
     void sky_sphere::on_frame() {
-        //_mesh->draw();
+        _mesh->draw();
     }
 
     void sky_sphere::update_position(const glm::vec3 &position) {
