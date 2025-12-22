@@ -291,7 +291,18 @@ namespace wow::web {
             CefString(&settings.browser_subprocess_path) = canonical(std::filesystem::absolute("./wow_unix_browser"));
             CefString(&settings.locales_dir_path) = canonical(std::filesystem::absolute("./locales"));
             CefString(&settings.resources_dir_path) = canonical(std::filesystem::absolute("./"));
-            CefString(&settings.cache_path) = canonical(std::filesystem::absolute("./cache"));
+
+            const auto home_env = std::getenv("HOME");
+            std::filesystem::path home_dir{home_env ? home_env : "."};
+
+            auto cache_path = std::filesystem::absolute(home_dir / ".wow-unix/cache");
+
+            if (!exists(cache_path) && !std::filesystem::create_directories(cache_path)) {
+                SPDLOG_ERROR("Could not create CEF cache directory: {}", cache_path.string());
+                throw std::runtime_error("Could not create CEF cache directory");
+            }
+
+            CefString(&settings.cache_path) = canonical(cache_path);
 
             settings.no_sandbox = true;
             settings.windowless_rendering_enabled = true;
