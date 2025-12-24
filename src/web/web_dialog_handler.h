@@ -4,7 +4,7 @@
 #include "include/cef_dialog_handler.h"
 
 namespace wow::web {
-    class web_dialog_handler : public CefDialogHandler {
+    class web_dialog_handler final : public CefDialogHandler {
         IMPLEMENT_REFCOUNTING(web_dialog_handler);
 
     public:

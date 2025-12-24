@@ -1,5 +1,5 @@
-#ifndef GLAD_LIGHT_MANAGER_HPP
-#define GLAD_LIGHT_MANAGER_HPP
+#ifndef WOW_UNIX_LIGHT_MANAGER_HPP
+#define WOW_UNIX_LIGHT_MANAGER_HPP
 
 #include <utility>
 #include <vector>
@@ -47,4 +47,4 @@ namespace wow::scene::sky {
     typedef std::shared_ptr<light_manager> light_manager_ptr;
 }
 
-#endif //GLAD_LIGHT_MANAGER_HPP
+#endif //WOW_UNIX_LIGHT_MANAGER_HPP

@@ -1,5 +1,6 @@
 #ifndef WOW_UNIX_STRING_UTILS_H
 #define WOW_UNIX_STRING_UTILS_H
+
 #include <algorithm>
 #include <string>
 

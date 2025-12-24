@@ -4,7 +4,6 @@
 #include "io/mpq_file.h"
 #include "utils/io.h"
 #include <vector>
-#include <cstdint>
 #include <functional>
 #include <memory>
 
@@ -108,7 +107,7 @@ namespace wow::io::blp {
             return _format;
         }
 
-        std::vector<uint8_t> get_layer(uint32_t layer) const {
+        std::vector<uint8_t> get_layer(const uint32_t layer) const {
             return _mipmaps[layer];
         }
 

@@ -2,7 +2,6 @@
 #include <google/protobuf/util/json_util.h>
 
 #include "spdlog/spdlog.h"
-#include "utils/dialog_utils.h"
 
 namespace wow::web {
     void ipc_message_handler::submit_js_event(const proto::JsEvent &event) const {
@@ -45,7 +44,7 @@ namespace wow::web {
                             std::string serialized{};
                             if (const auto status = google::protobuf::util::MessageToJsonString(*response, &serialized);
                                 !status.ok()) {
-                                SPDLOG_ERROR("Failed to serialize response: {}", status.message());
+                                SPDLOG_ERROR("Failed to serialize response: {}", status.message()); // NOLINT(*-lambda-function-name)
                                 callback->Failure(0x7F001001, "Failed to serialize response");
                             } else {
                                 callback->Success(serialized);

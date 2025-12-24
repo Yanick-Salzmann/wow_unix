@@ -1,4 +1,5 @@
-#pragma once
+#ifndef WOW_UNIX_SYSTEM_STATS_H
+#define WOW_UNIX_SYSTEM_STATS_H
 
 #include <cstdint>
 
@@ -15,3 +16,5 @@ namespace wow::utils {
 
     system_stats get_system_stats();
 }
+
+#endif // WOW_UNIX_SYSTEM_STATS_H

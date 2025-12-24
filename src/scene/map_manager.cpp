@@ -3,13 +3,11 @@
 #include "utils/di.h"
 #include "utils/string_utils.h"
 #include "gl/mesh.h"
-#include <glm/gtc/constants.hpp>
-#include <ctime>
 #include <chrono>
 #include <cmath>
 
 namespace wow::scene {
-    void map_manager::async_load_tile(uint32_t x, uint32_t y, utils::binary_reader_ptr data) {
+    void map_manager::async_load_tile(uint32_t x, uint32_t y, const utils::binary_reader_ptr &data) {
         const auto adt = std::make_shared<io::terrain::adt_tile>(_active_wdt, x, y, data, _texture_manager);
         adt->async_load();
 
@@ -37,14 +35,14 @@ namespace wow::scene {
         for (auto ty = adt_y - radius; ty <= adt_y + radius; ++ty) {
             for (auto tx = adt_x - radius; tx <= adt_x + radius; ++tx) {
                 const auto tile = fmt::format(R"(World\Maps\{}\{}_{}_{}.adt)", _directory, _directory, tx, ty);
-                const auto file = _mpq_manager->open(tile);
-                if (!file) {
-                    add_load_progress();
-                    SPDLOG_DEBUG("Not loading ADT tile {},{} for map {} - file not found", tx, ty, _directory);
+                const auto adt_file = _mpq_manager->open(tile);
+                if (!adt_file) {
+                    add_load_progress(257);
+                    SPDLOG_WARN("Not loading ADT tile {},{} for map {} - file not found", tx, ty, _directory);
                     continue;
                 }
 
-                auto reader = file->to_binary_reader();
+                auto reader = adt_file->to_binary_reader();
                 futures.push_back(_tile_load_pool.submit([this, tx, ty, reader] { async_load_tile(tx, ty, reader); }));
             }
         }
@@ -110,6 +108,7 @@ namespace wow::scene {
             std::list<io::terrain::adt_tile_ptr> new_tiles{};
             for (const auto &tile: tmp) {
                 const auto dx = tx - static_cast<int32_t>(tile->x());
+                // ReSharper disable once CppTooWideScopeInitStatement
                 const auto dy = ty - static_cast<int32_t>(tile->y());
                 if (dx > _config_manager->map().load_radius || dy > _config_manager->map().load_radius) {
                     tile->async_unload();
@@ -118,7 +117,7 @@ namespace wow::scene {
                     continue;
                 }
 
-                wanted_indices.erase(tile->y() * 64 + tile->x());
+                wanted_indices.erase(static_cast<int32_t>(tile->y() * 64 + tile->x()));
                 std::lock_guard lock(_sync_load_lock);
                 new_tiles.push_back(tile);
             }
@@ -263,9 +262,10 @@ namespace wow::scene {
             _camera_position_uniform = mesh->program()->uniform_location("camera_position");
         }
 
-        mesh->apply_blend_mode();
-        mesh->bind_vertex_attributes();
-        mesh->program()->use();
+        mesh->apply_blend_mode()
+                .bind_vertex_attributes()
+                .program()->use();
+
         mesh->program()->vec4(glm::vec4(_camera->position(), _view_distance), _camera_position_uniform);
 
         if (const auto &ib = io::terrain::adt_chunk::index_buffer()) {
@@ -300,8 +300,13 @@ namespace wow::scene {
         _loaded_tiles.clear();
     }
 
-    void map_manager::add_load_progress() {
-        ++_initial_load_count;
+    void map_manager::add_load_progress(const int32_t progress) {
+        if (progress == 1) {
+            ++_initial_load_count;
+        } else {
+            _initial_load_count += progress;
+        }
+
         auto ev = web::proto::JsEvent{};
         ev.mutable_loading_screen_progress_event()->set_percentage(
             static_cast<float>(_initial_load_count) / static_cast<float>(_initial_total_load));

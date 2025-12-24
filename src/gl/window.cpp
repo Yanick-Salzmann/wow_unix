@@ -169,6 +169,7 @@ namespace wow::gl {
         return glfwWindowShouldClose(_window) == 0;
     }
 
+    // ReSharper disable once CppMemberFunctionMayBeStatic
     void window::begin_frame() {
         glClear(GL_COLOR_BUFFER_BIT);
         glClear(GL_DEPTH_BUFFER_BIT);
@@ -190,18 +191,18 @@ namespace wow::gl {
         return {width, height};
     }
 
-    void window::change_cursor(cef_cursor_type_t cursor) const {
+    void window::change_cursor(const cef_cursor_type_t cursor) const {
         switch (cursor) {
-            case cef_cursor_type_t::CT_POINTER:
+            case CT_POINTER:
                 glfwSetCursor(_window, glfwCreateStandardCursor(GLFW_ARROW_CURSOR));
                 break;
-            case cef_cursor_type_t::CT_CROSS:
+            case CT_CROSS:
                 glfwSetCursor(_window, glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR));
                 break;
-            case cef_cursor_type_t::CT_HAND:
+            case CT_HAND:
                 glfwSetCursor(_window, glfwCreateStandardCursor(GLFW_HAND_CURSOR));
                 break;
-            case cef_cursor_type_t::CT_IBEAM:
+            case CT_IBEAM:
                 glfwSetCursor(_window, glfwCreateStandardCursor(GLFW_IBEAM_CURSOR));
                 break;
             default:
@@ -209,7 +210,7 @@ namespace wow::gl {
         }
     }
 
-    std::pair<int, int> window::screen_coordinates(int x, int y) const {
+    std::pair<int, int> window::screen_coordinates(const int x, const int y) const {
         int win_x, win_y;
         glfwGetWindowPos(_window, &win_x, &win_y);
 
@@ -219,11 +220,11 @@ namespace wow::gl {
         return {x + win_x + frame_x, y + win_y + frame_y};
     }
 
-    bool window::is_key_pressed(int key) const {
+    bool window::is_key_pressed(const int key) const {
         return glfwGetKey(_window, key) == GLFW_PRESS;
     }
 
-    bool window::is_mouse_button_pressed(int button) const {
+    bool window::is_mouse_button_pressed(const int button) const {
         return glfwGetMouseButton(_window, button) == GLFW_PRESS;
     }
 }

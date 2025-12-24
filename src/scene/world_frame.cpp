@@ -4,7 +4,8 @@
 #include "utils/system_stats.h"
 
 namespace wow::scene {
-    void world_frame::handle_metrics() {
+    // ReSharper disable once CppDFAUnreachableFunctionCall
+    void world_frame::handle_metrics() { // another weird glitch of CLion thinking this function can never be called
         if (const auto now = std::chrono::steady_clock::now();
             std::chrono::duration_cast<std::chrono::milliseconds>(now - _last_system_update).count() >= 40) {
             _last_system_update = now;
@@ -31,7 +32,7 @@ namespace wow::scene {
             _frame_count = 0;
             _last_fps_update = now;
             web::proto::JsEvent ev = {};
-            ev.mutable_fps_update_event()->set_fps(fps);
+            ev.mutable_fps_update_event()->set_fps(static_cast<int32_t>(fps));
             ev.mutable_fps_update_event()->set_time_of_day(_map_manager->time_of_day());
             utils::app_module->ui_event_system()->event_manager()->submit(ev);
         }
@@ -59,7 +60,7 @@ namespace wow::scene {
         _metrics_thread.join();
     }
 
-    void world_frame::enter_world(uint32_t map_id, const glm::vec2 &position) const {
+    void world_frame::enter_world(const uint32_t map_id, const glm::vec2 &position) const {
         _map_manager->enter_world(map_id, position);
     }
 

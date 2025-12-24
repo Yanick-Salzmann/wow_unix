@@ -1,5 +1,6 @@
 #ifndef WOW_UNIX_MAP_MANAGER_H
 #define WOW_UNIX_MAP_MANAGER_H
+
 #include <memory>
 
 #include "camera.h"
@@ -55,7 +56,7 @@ namespace wow::scene {
         int32_t _initial_total_load = 0;
         bool _is_initial_load_complete = false;
 
-        void async_load_tile(uint32_t x, uint32_t y, utils::binary_reader_ptr data);
+        void async_load_tile(uint32_t x, uint32_t y, const utils::binary_reader_ptr& data);
 
         void initial_load_thread(int32_t adt_x, int32_t adt_y);
 
@@ -77,7 +78,7 @@ namespace wow::scene {
 
         void update(glm::vec3 position);
 
-        bool is_initial_load_complete() const {
+        [[nodiscard]] bool is_initial_load_complete() const {
             return _is_initial_load_complete;
         }
 
@@ -87,7 +88,7 @@ namespace wow::scene {
 
         void shutdown();
 
-        void add_load_progress();
+        void add_load_progress(int32_t progress = 1);
 
         float height(float x, float y);
 

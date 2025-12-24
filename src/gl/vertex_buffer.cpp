@@ -11,15 +11,16 @@ namespace wow::gl {
         glDeleteBuffers(1, &_buffer);
     }
 
-    void vertex_buffer::bind() {
+    void vertex_buffer::bind() const {
         glBindBuffer(GL_ARRAY_BUFFER, _buffer);
     }
 
+    // ReSharper disable once CppMemberFunctionMayBeStatic
     void vertex_buffer::unbind() {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
-    void vertex_buffer::set_data(const void *data, size_t size) {
+    void vertex_buffer::set_data(const void *data, const size_t size) {
         bind();
         glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(size), data, GL_STATIC_DRAW);
         unbind();

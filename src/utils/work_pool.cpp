@@ -7,7 +7,9 @@ namespace wow::utils {
             {
                 std::unique_lock lock(_work_lock);
                 _work_cv.wait(lock, [this] { return !_work_queue.empty() || !_running; });
-                if (!_running) {
+                // ReSharper disable once CppDFAConstantConditions
+                if (!_running) { // not sure why CLion thinks this is unreachable
+                    // ReSharper disable once CppDFAUnreachableCode
                     return;
                 }
                 work_item = std::move(_work_queue.front());
@@ -23,11 +25,11 @@ namespace wow::utils {
     work_pool::work_pool() {
         const auto num_threads = std::max(1u, std::thread::hardware_concurrency());
         for (auto i = 0; i < num_threads; ++i) {
-            _worker_threads.emplace_back(std::thread{
+            _worker_threads.emplace_back(
                 [this] {
                     worker_function();
                 }
-            });
+            );
         }
     }
 
@@ -40,7 +42,7 @@ namespace wow::utils {
     }
 
     std::shared_future<void> work_pool::submit(const std::function<void()> &task) {
-        auto work_item{std::make_shared<std::packaged_task<void()> >(std::move(task))};
+        auto work_item{std::make_shared<std::packaged_task<void()> >(task)};
         {
             std::lock_guard lock(_work_lock);
             _work_queue.emplace(work_item);

@@ -1,7 +1,6 @@
 #include "program.h"
 
 #include <iostream>
-#include <ostream>
 #include <vector>
 #include <fstream>
 
@@ -110,7 +109,7 @@ namespace wow::gl {
         return mat3(matrix, uniform_location(name));
     }
 
-    program &program::mat3(const glm::mat3 &matrix, int32_t location) {
+    program &program::mat3(const glm::mat3 &matrix, const int32_t location) {
         glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
         return *this;
     }
@@ -119,7 +118,7 @@ namespace wow::gl {
         return mat4(matrix, uniform_location(name));
     }
 
-    program &program::mat4(const glm::mat4 &matrix, int32_t location) {
+    program &program::mat4(const glm::mat4 &matrix, const int32_t location) {
         glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
         return *this;
     }
@@ -128,7 +127,7 @@ namespace wow::gl {
         return vec3(vector, uniform_location(name));
     }
 
-    program &program::vec3(const glm::vec3 &vector, int32_t location) {
+    program &program::vec3(const glm::vec3 &vector, const int32_t location) {
         glUniform3fv(location, 1, glm::value_ptr(vector));
         return *this;
     }
@@ -137,7 +136,7 @@ namespace wow::gl {
         return vec4(vector, uniform_location(name));
     }
 
-    program &program::vec4(const glm::vec4 &vector, int32_t location) {
+    program &program::vec4(const glm::vec4 &vector, const int32_t location) {
         glUniform4fv(location, 1, glm::value_ptr(vector));
         return *this;
     }
@@ -146,7 +145,7 @@ namespace wow::gl {
         return float_(value, uniform_location(name));
     }
 
-    program &program::float_(float value, int32_t location) {
+    program &program::float_(const float value, const int32_t location) {
         glUniform1f(location, value);
         return *this;
     }
@@ -155,7 +154,7 @@ namespace wow::gl {
         return int_(value, uniform_location(name));
     }
 
-    program &program::int_(int value, int32_t location) {
+    program &program::int_(const int value, const int32_t location) {
         glUniform1i(location, value);
         return *this;
     }
@@ -164,7 +163,7 @@ namespace wow::gl {
         return bool_(value, uniform_location(name));
     }
 
-    program &program::bool_(bool value, int32_t location) {
+    program &program::bool_(const bool value, const int32_t location) {
         glUniform1i(location, value);
         return *this;
     }
@@ -175,7 +174,7 @@ namespace wow::gl {
         return *this;
     }
 
-    program &program::sampler2d(int index, int location) {
+    program &program::sampler2d(const int index, const int location) {
         glUniform1i(location, index);
         return *this;
     }

@@ -96,12 +96,12 @@ namespace wow::gl {
         return *this;
     }
 
-    mesh &mesh::set_index_count(size_t count) {
+    mesh &mesh::set_index_count(const size_t count) {
         _index_count = count;
         return *this;
     }
 
-    mesh &mesh::set_primitive_type(GLenum type) {
+    mesh &mesh::set_primitive_type(const GLenum type) {
         _primitive_type = type;
         return *this;
     }
@@ -122,12 +122,14 @@ namespace wow::gl {
     }
 
     const mesh &mesh::bind() const {
+        // ReSharper disable CppExpressionWithoutSideEffects
         bind_vertex_attributes();
         bind_vb();
         bind_ib();
         bind_program();
         bind_textures();
         apply_blend_mode();
+        // ReSharper enable CppExpressionWithoutSideEffects
 
         return *this;
     }
@@ -204,7 +206,7 @@ namespace wow::gl {
         program::unuse();
     }
 
-    void mesh::draw(bool skip_bind, uint32_t offset) const {
+    void mesh::draw(const bool skip_bind, const uint32_t offset) const {
         if (!skip_bind) {
             bind();
         }
@@ -229,42 +231,6 @@ namespace wow::gl {
                                     _index_buffer->type(), nullptr, instance_count);
         } else {
             glDrawArraysInstanced(_primitive_type, 0, static_cast<GLsizei>(_index_count), instance_count);
-        }
-    }
-
-    void mesh::setup_vertex_attributes() {
-        if (!_vertex_buffer || _vertex_attributes.empty()) {
-            return;
-        }
-
-        glBindVertexArray(_vao);
-        _vertex_buffer->bind();
-
-        for (auto &[
-                 location,
-                 name,
-                 index,
-                 size,
-                 type,
-                 normalized,
-                 stride,
-                 offset
-             ]: _vertex_attributes) {
-            if (location < 0) {
-                _program->use();
-                location = _program->attribute_location(fmt::format("{}{}", name, index));
-            }
-            glEnableVertexAttribArray(location);
-            glVertexAttribPointer(location, size, type, normalized, stride, offset);
-        }
-
-        glBindVertexArray(0);
-    }
-
-    void mesh::cleanup() {
-        if (_vao != 0) {
-            glDeleteVertexArrays(1, &_vao);
-            _vao = 0;
         }
     }
 
@@ -407,5 +373,41 @@ namespace wow::gl {
         });
 
         return mesh;
+    }
+
+    void mesh::setup_vertex_attributes() {
+        if (!_vertex_buffer || _vertex_attributes.empty()) {
+            return;
+        }
+
+        glBindVertexArray(_vao);
+        _vertex_buffer->bind();
+
+        for (auto &[
+                 location,
+                 name,
+                 index,
+                 size,
+                 type,
+                 normalized,
+                 stride,
+                 offset
+             ]: _vertex_attributes) {
+            if (location < 0) {
+                _program->use();
+                location = _program->attribute_location(fmt::format("{}{}", name, index));
+            }
+            glEnableVertexAttribArray(location);
+            glVertexAttribPointer(location, size, type, normalized, stride, offset);
+        }
+
+        glBindVertexArray(0);
+    }
+
+    void mesh::cleanup() {
+        if (_vao != 0) {
+            glDeleteVertexArrays(1, &_vao);
+            _vao = 0;
+        }
     }
 }

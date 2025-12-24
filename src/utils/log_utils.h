@@ -7,7 +7,7 @@
 
 template<>
 struct fmt::formatter<glm::vec3> {
-    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin()) {
+    static constexpr auto parse(const format_parse_context &ctx) -> decltype(ctx.begin()) {
         return ctx.end();
     }
 
@@ -21,7 +21,7 @@ struct fmt::formatter<glm::vec3> {
 
 template<>
 struct fmt::formatter<glm::vec2> {
-    constexpr auto parse(format_parse_context &ctx) -> decltype(ctx.begin()) {
+    static constexpr auto parse(const format_parse_context &ctx) -> decltype(ctx.begin()) {
         return ctx.end();
     }
 

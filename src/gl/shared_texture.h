@@ -11,7 +11,7 @@
 #include "bindable_texture.h"
 
 namespace wow::gl {
-    class shared_texture : public bindable_texture {
+    class shared_texture final : public bindable_texture {
         EGLImage _image{};
         GLuint _texture{};
 

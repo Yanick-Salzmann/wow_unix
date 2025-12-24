@@ -113,4 +113,9 @@ namespace wow::gl {
     void shared_texture::bind() {
         glBindTexture(GL_TEXTURE_2D, _texture);
     }
+
+    // ReSharper disable once CppMemberFunctionMayBeStatic
+    void shared_texture::unbind() const {
+        // ignored
+    }
 }

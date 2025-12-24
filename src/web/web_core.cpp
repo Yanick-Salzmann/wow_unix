@@ -298,7 +298,7 @@ namespace wow::web {
             auto cache_path = std::filesystem::absolute(home_dir / ".wow-unix/cache");
 
             if (!exists(cache_path) && !std::filesystem::create_directories(cache_path)) {
-                SPDLOG_ERROR("Could not create CEF cache directory: {}", cache_path.string());
+                SPDLOG_ERROR("Could not create CEF cache directory: {}", cache_path.string()); // NOLINT(*-lambda-function-name)
                 throw std::runtime_error("Could not create CEF cache directory");
             }
 
@@ -478,14 +478,10 @@ namespace wow::web {
         CefPostTask(TID_UI, new ShutdownTask());
         _message_loop.join();
         CefShutdown();
-        spdlog::info("Shutdown complete");
+        SPDLOG_INFO("Shutdown complete");
     }
 
     void web_core::render() {
-        /*if (const auto browser = _client->browser()) {
-            browser->GetHost()->SendExternalBeginFrame();
-        }*/
-
         update_texture();
         if (_has_loaded) {
             _mesh->draw();

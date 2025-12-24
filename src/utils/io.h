@@ -1,5 +1,6 @@
 #ifndef WOW_UNIX_IO_H
 #define WOW_UNIX_IO_H
+
 #include <vector>
 #include <cstdint>
 #include <memory>
@@ -14,12 +15,12 @@ namespace wow::utils {
 
         void read(void *data, size_t size);
 
-        binary_reader &seek_mod(ssize_t diff) {
+        binary_reader &seek_mod(const ssize_t diff) {
             _offset += diff;
             return *this;
         }
 
-        binary_reader &seek(size_t offset) {
+        binary_reader &seek(const size_t offset) {
             _offset = offset;
             return *this;
         }
@@ -59,7 +60,7 @@ namespace wow::utils {
             return _offset >= _data.size();
         }
 
-        std::size_t size() const {
+        [[nodiscard]] std::size_t size() const {
             return _data.size();
         }
     };

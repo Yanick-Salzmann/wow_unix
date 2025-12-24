@@ -1,5 +1,6 @@
 #ifndef WOW_UNIX_WORK_POOL_H
 #define WOW_UNIX_WORK_POOL_H
+
 #include <future>
 #include <memory>
 #include <queue>

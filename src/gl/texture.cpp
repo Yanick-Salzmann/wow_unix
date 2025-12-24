@@ -20,11 +20,12 @@ namespace wow::gl {
         glBindTexture(GL_TEXTURE_2D, _texture);
     }
 
+    // ReSharper disable once CppMemberFunctionMayBeStatic
     void texture::unbind() {
 
     }
 
-    void texture::rgba_image(uint32_t width, uint32_t height, const void *data) {
+    void texture::rgba_image(const uint32_t width, const uint32_t height, const void *data) {
         if (_texture == default_texture) {
             glGenTextures(1, &_texture);
         }
@@ -45,7 +46,7 @@ namespace wow::gl {
         unbind();
     }
 
-    void texture::bgra_image(uint32_t width, uint32_t height, const void *data) {
+    void texture::bgra_image(const uint32_t width, const uint32_t height, const void *data) {
         if (_texture == default_texture) {
             glGenTextures(1, &_texture);
         }
@@ -88,7 +89,7 @@ namespace wow::gl {
         unbind();
     }
 
-    void texture::load_blp(io::blp::blp_file_ptr blp) {
+    void texture::load_blp(const io::blp::blp_file_ptr &blp) {
         if (_texture == default_texture) {
             glGenTextures(1, &_texture);
         }
@@ -101,7 +102,7 @@ namespace wow::gl {
             w = std::max(w, 1u);
             h = std::max(h, 1u);
 
-            auto data_size = ((w + 3) / 4) * ((h + 3) / 4);
+            const auto data_size = ((w + 3) / 4) * ((h + 3) / 4);
 
             auto data = blp->get_layer(i);
 
@@ -152,7 +153,7 @@ namespace wow::gl {
         unbind();
     }
 
-    void texture::filtering(GLint min_filter, GLint mag_filter) {
+    void texture::filtering(const GLint min_filter, const GLint mag_filter) {
         if (_texture == default_texture) {
             return;
         }
@@ -163,7 +164,7 @@ namespace wow::gl {
         unbind();
     }
 
-    void texture::wrap(GLint wrap_s, GLint wrap_t) {
+    void texture::wrap(const GLint wrap_s, const GLint wrap_t) {
         if (_texture == default_texture) {
             return;
         }

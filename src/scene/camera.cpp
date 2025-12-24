@@ -6,7 +6,6 @@
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/gtx/string_cast.hpp"
-#include "spdlog/spdlog.h"
 
 namespace wow::scene {
     camera::camera(gl::window_ptr window) : _window(std::move(window)) {
@@ -72,6 +71,7 @@ namespace wow::scene {
         if (_window->is_mouse_button_pressed(GLFW_MOUSE_BUTTON_2)) {
             const auto mouse_diff = mouse_pos - _last_mouse_pos;
             auto dx = static_cast<float>(mouse_diff.x);
+            // ReSharper disable once CppTooWideScopeInitStatement
             auto dy = static_cast<float>(mouse_diff.y);
 
             if (dx != 0.0f || dy != 0.0f) {

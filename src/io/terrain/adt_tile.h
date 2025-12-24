@@ -106,7 +106,7 @@ namespace wow::io::terrain {
             return _y;
         }
 
-        adt_chunk_ptr chunk(uint32_t index) const {
+        adt_chunk_ptr chunk(const uint32_t index) const {
             if (index >= _chunks.size()) {
                 return nullptr;
             }

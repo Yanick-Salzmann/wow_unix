@@ -29,12 +29,12 @@ namespace wow::web::schemes {
             bool Read(void *data_out, int bytes_to_read, int &bytes_read,
                       CefRefPtr<CefResourceReadCallback> callback) override;
 
-            bool ReadResponse(void *data_out, int bytes_to_read, int &bytes_read,
+            bool ReadResponse(void *data_out, const int bytes_to_read, int &bytes_read,
                               CefRefPtr<CefCallback> callback) override {
                 return Read(data_out, bytes_to_read, bytes_read, nullptr);
             }
 
-            bool ProcessRequest(CefRefPtr<CefRequest> request, CefRefPtr<CefCallback> callback) override {
+            bool ProcessRequest(const CefRefPtr<CefRequest> request, const CefRefPtr<CefCallback> callback) override {
                 bool handle_request = false;
                 return Open(request, handle_request, callback);
             }

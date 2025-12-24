@@ -6,7 +6,7 @@
 #include "spdlog/spdlog.h"
 
 namespace wow::web {
-    class web_application : public CefApp, public CefBrowserProcessHandler {
+    class web_application final : public CefApp, public CefBrowserProcessHandler {
         IMPLEMENT_REFCOUNTING(web_application);
 
     public:
@@ -14,7 +14,7 @@ namespace wow::web {
             return this;
         }
 
-        void OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar) override {
+        void OnRegisterCustomSchemes(const CefRawPtr<CefSchemeRegistrar> registrar) override {
             for (const std::vector<std::string> schemes{"app", "blp", "minimap"};
                  auto &scheme: schemes) {
                 registrar->AddCustomScheme(

@@ -21,8 +21,8 @@ namespace wow::web::event {
     public:
         explicit ui_event_system(
             const event_manager_ptr &event_manager,
-            const io::dbc::dbc_manager_ptr &dbc_manager,
-            const scene::world_frame_ptr &world_frame
+            io::dbc::dbc_manager_ptr dbc_manager,
+            scene::world_frame_ptr world_frame
         );
 
         const event_manager_ptr& event_manager() const {

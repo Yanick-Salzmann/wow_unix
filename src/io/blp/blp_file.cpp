@@ -50,6 +50,7 @@ namespace wow::io::blp {
         output[2] = static_cast<uint8_t>(r);
     }
 
+    // ReSharper disable once CppDFAUnreachableFunctionCall
     void blp_file::read_bc_colors(utils::binary_reader &reader, std::array<rgb_data_array, 4> &colors,
                                   const bool pre_multiplied_alpha,
                                   const bool use_4_colors) {
@@ -265,7 +266,7 @@ namespace wow::io::blp {
     }
 
     void blp_file::unwrap_blp_layer_with_palette(std::vector<uint8_t> &rgba_data,
-                                                 uint32_t w, uint32_t h,
+                                                 const uint32_t w, const uint32_t h,
                                                  const std::vector<uint8_t> &layer_data) const {
         if (_header.alpha_depth == 0) {
             process_palette_fast_path(rgba_data, w, h, layer_data);
@@ -344,7 +345,7 @@ namespace wow::io::blp {
         }
     }
 
-    std::vector<uint8_t> blp_file::palette_layer_to_rgba(uint32_t layer) const {
+    std::vector<uint8_t> blp_file::palette_layer_to_rgba(const uint32_t layer) const {
         if (_format != blp_format::rgb_palette) {
             throw std::runtime_error("Invalid BLP format: Layer is not paletted");
         }

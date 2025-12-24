@@ -1,5 +1,6 @@
 #ifndef WOW_UNIX_MATH_H
 #define WOW_UNIX_MATH_H
+
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
 #include "glm/geometric.hpp"
@@ -50,7 +51,7 @@ namespace wow::utils {
             return take_min(p).take_max(p);
         }
 
-        bool intersects_sphere(const glm::vec3 &center, const float radius) const;
+        [[nodiscard]] bool intersects_sphere(const glm::vec3 &center, const float radius) const;
     };
 
     class plane {

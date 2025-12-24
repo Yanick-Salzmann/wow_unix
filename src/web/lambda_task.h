@@ -5,7 +5,7 @@
 #include "include/cef_task.h"
 
 namespace wow::web {
-    class lambda_task : public CefTask {
+    class lambda_task final : public CefTask {
         IMPLEMENT_REFCOUNTING(lambda_task);
         std::function<void()> _task;
 
@@ -18,8 +18,8 @@ namespace wow::web {
         }
     };
 
-    inline CefRefPtr<CefTask> make_task(std::function<void()> task) {
-        return new lambda_task(std::move(task));
+    inline CefRefPtr<CefTask> make_task(const std::function<void()>& task) {
+        return new lambda_task(task);
     }
 }
 

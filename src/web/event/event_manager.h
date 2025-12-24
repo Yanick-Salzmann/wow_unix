@@ -20,7 +20,7 @@ namespace wow::web::event {
         event_manager();
 
         event_manager &listen(const proto::JsEvent::EventCase &event,
-                              std::function<proto::JsEvent(const proto::JsEvent &)> callback);
+                              const std::function<proto::JsEvent(const proto::JsEvent &)> &callback);
 
         std::unique_ptr<proto::JsEvent> dispatch(const proto::JsEvent &event);
 

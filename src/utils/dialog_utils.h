@@ -1,5 +1,6 @@
 #ifndef WOW_UNIX_DIALOG_UTILS_H
 #define WOW_UNIX_DIALOG_UTILS_H
+
 #include <string>
 
 namespace wow::utils {

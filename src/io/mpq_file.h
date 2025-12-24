@@ -24,12 +24,12 @@ namespace wow::io {
             return _offset;
         }
 
-        mpq_file &seek(size_t offset) {
+        mpq_file &seek(const size_t offset) {
             _offset = offset;
             return *this;
         }
 
-        mpq_file &seek_rel(ptrdiff_t diff) {
+        mpq_file &seek_rel(const ptrdiff_t diff) {
             if (diff < 0 && abs(diff) > _offset) {
                 _offset = 0;
             } else {

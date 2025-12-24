@@ -1,5 +1,5 @@
-#ifndef GLAD_LIGHT_DATA_HPP
-#define GLAD_LIGHT_DATA_HPP
+#ifndef WOW_UNIX_LIGHT_DATA_HPP
+#define WOW_UNIX_LIGHT_DATA_HPP
 
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
@@ -79,4 +79,4 @@ namespace wow::scene::sky {
     };
 }
 
-#endif //GLAD_LIGHT_DATA_HPP
+#endif //WOW_UNIX_LIGHT_DATA_HPP

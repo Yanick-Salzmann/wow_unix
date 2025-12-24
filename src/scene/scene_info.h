@@ -1,5 +1,5 @@
-#ifndef GLAD_SCENE_INFO_H
-#define GLAD_SCENE_INFO_H
+#ifndef WOW_UNIX_SCENE_INFO_H
+#define WOW_UNIX_SCENE_INFO_H
 
 #include <glm/vec3.hpp>
 
@@ -10,4 +10,4 @@ namespace wow::scene {
     };
 }
 
-#endif //GLAD_SCENE_INFO_H
+#endif //WOW_UNIX_SCENE_INFO_H

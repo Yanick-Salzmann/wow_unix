@@ -11,7 +11,7 @@
 #include "include/base/cef_bind.h"
 
 namespace wow::web {
-    bool web_dialog_handler::OnFileDialog(CefRefPtr<CefBrowser> browser, FileDialogMode mode, const CefString &title,
+    bool web_dialog_handler::OnFileDialog(CefRefPtr<CefBrowser> browser, const FileDialogMode mode, const CefString &title,
                                           const CefString &default_file_path,
                                           const std::vector<CefString> &accept_filters,
                                           const std::vector<CefString> &accept_extensions,
@@ -21,7 +21,7 @@ namespace wow::web {
 
         std::thread dialog_thread([=]() {
             if (!gtk_init_check(nullptr, nullptr)) {
-                SPDLOG_ERROR("Failed to initialize GTK");
+                SPDLOG_ERROR("Failed to initialize GTK"); // NOLINT(*-lambda-function-name)
                 callback->Cancel();
                 return;
             }
@@ -43,7 +43,7 @@ namespace wow::web {
                 action = GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER;
                 confirm_button = "_Select";
             } else {
-                SPDLOG_ERROR("Unknown file dialog mode");
+                SPDLOG_ERROR("Unknown file dialog mode"); // NOLINT(*-lambda-function-name)
                 callback->Cancel();
                 return;
             }
@@ -116,13 +116,13 @@ namespace wow::web {
                     GSList *filenames = gtk_file_chooser_get_filenames(chooser);
                     for (const GSList *iter = filenames; iter; iter = iter->next) {
                         const auto filename = static_cast<char *>(iter->data);
-                        selected_files.push_back(CefString(filename));
+                        selected_files.emplace_back(filename);
                         g_free(filename);
                     }
                     g_slist_free(filenames);
                 } else {
                     if (char *filename = gtk_file_chooser_get_filename(chooser)) {
-                        selected_files.push_back(CefString(filename));
+                        selected_files.emplace_back(filename);
                         g_free(filename);
                     }
                 }

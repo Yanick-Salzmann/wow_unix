@@ -11,7 +11,7 @@ namespace wow::scene::sky {
 
     constexpr float SUN_ALPHA = glm::quarter_pi<float>();
 
-    glm::vec3 light_manager::calculate_sun_direction(uint32_t day_half_minutes) {
+    glm::vec3 light_manager::calculate_sun_direction(const uint32_t day_half_minutes) {
         const auto fraction = static_cast<float>(day_half_minutes) / static_cast<float>(DAY_LENGTH_HALF_MIN);
         const auto angle = fraction * glm::two_pi<float>() - glm::half_pi<float>();
         return {glm::cos(angle) * glm::cos(SUN_ALPHA), glm::sin(SUN_ALPHA), glm::sin(angle) * glm::cos(SUN_ALPHA)};
@@ -174,7 +174,7 @@ namespace wow::scene::sky {
         const auto hours = (_time_of_day_ms / (1000 * 60 * 60)) % 24;
         const auto minutes = (_time_of_day_ms / (1000 * 60)) % 60;
 
-        auto now = std::time(nullptr);
+        const auto now = std::time(nullptr);
         auto today = *std::localtime(&now);
         today.tm_hour = static_cast<int>(hours);
         today.tm_min = static_cast<int>(minutes);

@@ -388,6 +388,7 @@ namespace wow::io::terrain {
         }
 
         mesh->texture(_alpha_uniform, _shadow_texture);
+        // ReSharper disable once CppExpressionWithoutSideEffects
         mesh->bind_textures();
 
         mesh->draw(true, (_header.index_y * 16 + _header.index_x) * 145);

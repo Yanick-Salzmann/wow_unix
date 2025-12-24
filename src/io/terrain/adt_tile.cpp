@@ -113,6 +113,7 @@ namespace wow::io::terrain {
 
         sync_load();
         const auto mesh = gl::mesh::terrain_mesh().mesh;
+        // ReSharper disable once CppExpressionWithoutSideEffects
         mesh->vertex_buffer(_vertex_buffer)
                 .bind_vb()
                 .bind_ib()

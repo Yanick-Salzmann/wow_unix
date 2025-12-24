@@ -77,7 +77,7 @@ namespace wow::web::schemes {
     bool app_scheme_handler_factory::resource_handler::Read(void *data_out, int bytes_to_read, int &bytes_read,
                                                             CefRefPtr<CefResourceReadCallback> callback) {
         const auto available = _full_size - _file.tellg();
-        bytes_to_read = std::min(available, static_cast<int64_t>(bytes_to_read));
+        bytes_to_read = static_cast<int>(std::min(available, static_cast<int64_t>(bytes_to_read)));
 
         _file.read(static_cast<char *>(data_out), bytes_to_read);
         bytes_read = bytes_to_read;

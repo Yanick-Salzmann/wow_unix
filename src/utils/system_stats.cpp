@@ -56,10 +56,10 @@ namespace wow::utils {
             if (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
                 // Format: "400, 8192"
                 std::string result = buffer.data();
-                auto comma_pos = result.find(',');
-                if (comma_pos != std::string::npos) {
-                    int64_t used = std::stoll(result.substr(0, comma_pos));
-                    int64_t total = std::stoll(result.substr(comma_pos + 1));
+                if (const auto comma_pos = result.find(',');
+                    comma_pos != std::string::npos) {
+                    const auto used = std::stoll(result.substr(0, comma_pos));
+                    const auto total = std::stoll(result.substr(comma_pos + 1));
                     return {used * 1024 * 1024, total * 1024 * 1024}; // MB to Bytes
                 }
             }
@@ -72,7 +72,7 @@ namespace wow::utils {
             return cached_gpu_type;
         }
 
-        std::array<char, 128> buffer;
+        std::array<char, 128> buffer{};
 
         const std::unique_ptr<FILE, std::function<void(FILE*)>> pipe(
             popen("lspci | grep -i vga", "r"), pclose);
@@ -133,7 +133,7 @@ namespace wow::utils {
             pclose);
 
         if (pipe) {
-            std::array<char, 128> buffer;
+            std::array<char, 128> buffer{};
             std::string result;
 
             while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
@@ -153,7 +153,7 @@ namespace wow::utils {
             pclose);
 
         if (pipe) {
-            std::array<char, 128> buffer;
+            std::array<char, 128> buffer{};
             std::string result;
             while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
                 result += buffer.data();
@@ -216,17 +216,17 @@ namespace wow::utils {
                 }
             }
 
-            stats.memory_usage = total_mem - available_mem;
-            stats.total_memory = total_mem;
+            stats.memory_usage = static_cast<int64_t>(total_mem - available_mem);
+            stats.total_memory = static_cast<int64_t>(total_mem);
         }
 
         switch (detect_gpu_type()) {
             case gpu_type::NVIDIA:
                 stats.gpu_usage = get_nvidia_gpu_usage();
                 {
-                    auto mem = get_nvidia_gpu_memory();
-                    stats.gpu_memory_used = mem.used;
-                    stats.gpu_memory_total = mem.total;
+                    const auto [used, total] = get_nvidia_gpu_memory();
+                    stats.gpu_memory_used = used;
+                    stats.gpu_memory_total = total;
                 }
                 break;
             case gpu_type::AMD:

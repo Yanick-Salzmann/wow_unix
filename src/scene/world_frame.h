@@ -1,5 +1,6 @@
 #ifndef WOW_UNIX_WORLD_FRAME_H
 #define WOW_UNIX_WORLD_FRAME_H
+
 #include <memory>
 #include <chrono>
 
@@ -49,7 +50,7 @@ namespace wow::scene {
 
         void on_frame();
 
-        map_manager_ptr map_manager() const {
+        [[nodiscard]] map_manager_ptr map_manager() const {
             return _map_manager;
         }
     };

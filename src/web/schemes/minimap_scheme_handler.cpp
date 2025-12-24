@@ -34,7 +34,7 @@ namespace wow::web::schemes {
         return true;
     }
 
-    void minimap_scheme_handler_factory::resource_handler::GetResponseHeaders(CefRefPtr<CefResponse> response,
+    void minimap_scheme_handler_factory::resource_handler::GetResponseHeaders(const CefRefPtr<CefResponse> response,
                                                                               int64_t &response_length,
                                                                               CefString &redirectUrl) {
         if (_data.empty()) {
@@ -44,7 +44,7 @@ namespace wow::web::schemes {
 
         response->SetStatus(200);
         response->SetMimeType("image/png");
-        response_length = _data.size();
+        response_length = static_cast<int64_t>(_data.size());
     }
 
     bool minimap_scheme_handler_factory::resource_handler::Skip(int64_t bytes_to_skip, int64_t &bytes_skipped,
@@ -57,7 +57,7 @@ namespace wow::web::schemes {
         auto total = _data.size();
         total -= _offset;
         if (bytes_to_skip > total) {
-            bytes_to_skip = total;
+            bytes_to_skip = static_cast<int64_t>(total);
         }
 
         _offset += bytes_to_skip;
@@ -75,7 +75,7 @@ namespace wow::web::schemes {
         auto total = _data.size();
         total -= _offset;
         if (bytes_to_read > total) {
-            bytes_to_read = total;
+            bytes_to_read = static_cast<int>(total);
         }
 
         memcpy(data_out, _data.data() + _offset, bytes_to_read);

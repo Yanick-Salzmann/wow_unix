@@ -1,7 +1,7 @@
 #include "uniform_buffer.hpp"
 
 namespace wow::gl {
-    void uniform_buffer::update_data(const void *data, const size_t size, const size_t offset) {
+    void uniform_buffer::update_data(const void *data, const size_t size, const size_t offset) const {
         bind();
         glBindBuffer(GL_UNIFORM_BUFFER, _buffer);
         if (offset > 0) {
@@ -16,7 +16,7 @@ namespace wow::gl {
         glBindBuffer(GL_UNIFORM_BUFFER, _buffer);
     }
 
-    void uniform_buffer::bind() {
+    void uniform_buffer::bind() const {
         glBindBuffer(GL_UNIFORM_BUFFER, _buffer);
     }
 }

@@ -13,7 +13,7 @@ namespace wow::scene::sky {
     };
 #pragma pack(pop)
 
-    void sky_sphere::calculate_buffer() {
+    void sky_sphere::calculate_buffer() const {
         std::vector<sky_vertex> vertices;
         vertices.reserve((horizontal_resolution + 1) * (vertical_resolution + 1));
 
@@ -127,7 +127,7 @@ namespace wow::scene::sky {
                 .blend(gl::blend_mode::alpha);
     }
 
-    void sky_sphere::on_frame() {
+    void sky_sphere::on_frame() const {
         _mesh->draw();
     }
 
@@ -136,12 +136,12 @@ namespace wow::scene::sky {
         calculate_buffer();
     }
 
-    void sky_sphere::update_radius(float radius) {
+    void sky_sphere::update_radius(const float radius) {
         _radius = radius;
         calculate_buffer();
     }
 
-    void sky_sphere::update_matrix(const glm::mat4 &view, const glm::mat4 &projection) {
+    void sky_sphere::update_matrix(const glm::mat4 &view, const glm::mat4 &projection) const {
         _mesh->program()->use();
         _mesh->program()->mat4(projection, "projection")
                 .mat4(view, "view");

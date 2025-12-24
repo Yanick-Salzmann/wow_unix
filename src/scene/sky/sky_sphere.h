@@ -1,5 +1,5 @@
-#ifndef GLAD_SKY_SPHERE_H
-#define GLAD_SKY_SPHERE_H
+#ifndef WOW_UNIX_SKY_SPHERE_H
+#define WOW_UNIX_SKY_SPHERE_H
 
 #include "gl/mesh.h"
 #include "glm/vec3.hpp"
@@ -17,16 +17,16 @@ namespace wow::scene::sky {
         glm::vec3 _position{};
         float _radius = 1.0f;
 
-        void calculate_buffer();
+        void calculate_buffer() const;
 
     public:
         void initialize();
 
-        void on_frame();
+        void on_frame() const;
         void update_position(const glm::vec3& position);
         void update_radius(float radius);
 
-        void update_matrix(const glm::mat4& view, const glm::mat4& projection);
+        void update_matrix(const glm::mat4& view, const glm::mat4& projection) const;
 
         void update_gradient(
             const glm::vec4& top_color,
@@ -43,4 +43,4 @@ namespace wow::scene::sky {
     SHARED_PTR_FUNC_NAME(sky_sphere);
 }
 
-#endif //GLAD_SKY_SPHERE_H
+#endif //WOW_UNIX_SKY_SPHERE_H

@@ -87,7 +87,7 @@ namespace wow::gl {
 
         mesh &program(program_ptr program);
 
-        mesh &blend(blend_mode mode) {
+        mesh &blend(const blend_mode mode) {
             _blend_mode = mode;
             return *this;
         }

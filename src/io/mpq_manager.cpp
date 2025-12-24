@@ -9,7 +9,6 @@
 #include "spdlog/spdlog.h"
 #include "utils/string_utils.h"
 
-#include "dbc/dbc_file.h"
 #include "dbc/dbc_manager.h"
 
 namespace fs = std::filesystem;

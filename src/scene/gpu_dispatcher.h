@@ -1,5 +1,6 @@
 #ifndef WOW_UNIX_GPU_DISPATCHER_H
 #define WOW_UNIX_GPU_DISPATCHER_H
+
 #include <atomic>
 #include <functional>
 #include <memory>

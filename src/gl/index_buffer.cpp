@@ -20,7 +20,7 @@ namespace wow::gl {
         return *this;
     }
 
-    index_buffer &index_buffer::set_data(const void *data, size_t size) {
+    index_buffer &index_buffer::set_data(const void *data, const size_t size) {
         bind();
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(size), data, GL_STATIC_DRAW);
         unbind();

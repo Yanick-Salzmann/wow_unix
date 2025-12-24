@@ -5,6 +5,7 @@
 #include <string>
 #include <functional>
 #include <vector>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 #include "glm/vec2.hpp"

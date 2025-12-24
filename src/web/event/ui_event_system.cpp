@@ -1,5 +1,7 @@
 #include "ui_event_system.h"
 
+#include <utility>
+
 #include "utils/string_utils.h"
 
 namespace wow::web::event {
@@ -24,7 +26,7 @@ namespace wow::web::event {
         return response;
     }
 
-    proto::ListMapPoisResponse ui_event_system::handle_list_map_pois(int32_t map_id) const {
+    proto::ListMapPoisResponse ui_event_system::handle_list_map_pois(const int32_t map_id) const {
         proto::ListMapPoisResponse response{};
         response.set_map_id(map_id);
 
@@ -60,10 +62,10 @@ namespace wow::web::event {
 
     ui_event_system::ui_event_system(
         const event_manager_ptr &event_manager,
-        const io::dbc::dbc_manager_ptr &dbc_manager,
-        const scene::world_frame_ptr &world_frame
-    ) : _dbc_manager(dbc_manager),
-        _world_frame(world_frame),
+        io::dbc::dbc_manager_ptr dbc_manager,
+        scene::world_frame_ptr world_frame
+    ) : _dbc_manager(std::move(dbc_manager)),
+        _world_frame(std::move(world_frame)),
         _event_manager(event_manager) {
         event_manager->listen(proto::JsEvent::kListMapsRequest, [this](const auto &) {
             const auto lmr = handle_list_maps();
@@ -89,7 +91,7 @@ namespace wow::web::event {
             return event_manager->empty_response();
         });
 
-        event_manager->listen(proto::JsEvent::kFetchGameTimeRequest, [this, event_manager, world_frame](const auto &) {
+        event_manager->listen(proto::JsEvent::kFetchGameTimeRequest, [this](const auto &) {
             const auto time = _world_frame->map_manager()->light_manager()->time_of_day();
 
             auto response = proto::JsEvent{};

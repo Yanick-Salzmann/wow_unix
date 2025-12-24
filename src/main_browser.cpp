@@ -3,13 +3,13 @@
 #include "include/wrapper/cef_message_router.h"
 #include "spdlog/spdlog.h"
 
-class app : public CefApp, public CefRenderProcessHandler {
+class app final : public CefApp, public CefRenderProcessHandler {
     IMPLEMENT_REFCOUNTING(app);
 
     CefRefPtr<CefMessageRouterRendererSide> _router = CefMessageRouterRendererSide::Create({});
 
 public:
-    void OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar) override {
+    void OnRegisterCustomSchemes(const CefRawPtr<CefSchemeRegistrar> registrar) override {
         for (const std::vector<std::string> schemes{"app", "blp", "minimap"};
                 auto &scheme: schemes) {
             registrar->AddCustomScheme(
@@ -23,26 +23,26 @@ public:
         return this;
     }
 
-    void OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                          CefRefPtr<CefV8Context> context) override {
+    void OnContextCreated(const CefRefPtr<CefBrowser> browser, const CefRefPtr<CefFrame> frame,
+                          const CefRefPtr<CefV8Context> context) override {
         _router->OnContextCreated(browser, frame, context);
     }
 
-    void OnContextReleased(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                           CefRefPtr<CefV8Context> context) override {
+    void OnContextReleased(const CefRefPtr<CefBrowser> browser, const CefRefPtr<CefFrame> frame,
+                           const CefRefPtr<CefV8Context> context) override {
         _router->OnContextReleased(browser, frame, context);
     }
 
-    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefProcessId source_process,
-                                  CefRefPtr<CefProcessMessage> message) override {
+    bool OnProcessMessageReceived(const CefRefPtr<CefBrowser> browser, const CefRefPtr<CefFrame> frame, const CefProcessId source_process,
+                                  const CefRefPtr<CefProcessMessage> message) override {
         return _router->OnProcessMessageReceived(browser, frame, source_process, message);
     }
 };
 
 int main(int argc, char *argv[]) {
-    CefMainArgs main_args(argc, argv);
+    const CefMainArgs main_args(argc, argv);
 
-    CefRefPtr<CefApp> app = new ::app();
+    const CefRefPtr<CefApp> app = new ::app();
 
     return CefExecuteProcess(main_args, app, nullptr);
 }

@@ -15,7 +15,7 @@ namespace wow::gl {
 
         ~vertex_buffer();
 
-        void bind();
+        void bind() const;
 
         void unbind();
 

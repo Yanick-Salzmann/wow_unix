@@ -20,15 +20,15 @@ namespace wow::web {
         }
 
         auto [w, h] = _window->size();
-        auto scale = _window->dpi_scaling();
+        const auto scale = _window->dpi_scaling();
 
         rect.x = 0;
         rect.y = 0;
-        rect.width = static_cast<int>(w / scale);
-        rect.height = static_cast<int>(h / scale);
+        rect.width = static_cast<int>(static_cast<float>(w) / scale);
+        rect.height = static_cast<int>(static_cast<float>(h) / scale);
     }
 
-    bool web_client::GetScreenPoint(CefRefPtr<CefBrowser> browser, int viewX, int viewY, int &screenX, int &screenY) {
+    bool web_client::GetScreenPoint(CefRefPtr<CefBrowser> browser, const int viewX, const int viewY, int &screenX, int &screenY) {
         auto [x, y] = _window->screen_coordinates(viewX, viewY);
         screenX = x;
         screenY = y;
@@ -50,7 +50,7 @@ namespace wow::web {
     }
 
     void web_client::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList &dirtyRects,
-                             const void *buffer, int width, int height) {
+                             const void *buffer, const int width, const int height) {
         _core.lock()->on_paint(width, height, buffer);
     }
 
@@ -72,29 +72,29 @@ namespace wow::web {
         return true;
     }
 
-    bool web_client::OnCursorChange(CefRefPtr<CefBrowser> browser, cef_cursor_handle_t cursor, cef_cursor_type_t type,
+    bool web_client::OnCursorChange(CefRefPtr<CefBrowser> browser, cef_cursor_handle_t cursor, const cef_cursor_type_t type,
                                     const CefCursorInfo &custom_cursor_info) {
         _window->change_cursor(type);
         return true;
     }
 
-    bool web_client::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                                              CefProcessId source_process, CefRefPtr<CefProcessMessage> message) {
+    bool web_client::OnProcessMessageReceived(const CefRefPtr<CefBrowser> browser, const CefRefPtr<CefFrame> frame,
+                                              const CefProcessId source_process, const CefRefPtr<CefProcessMessage> message) {
         return _router->OnProcessMessageReceived(browser, frame, source_process, message);
     }
 
-    void web_client::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser, TerminationStatus status, int error_code,
+    void web_client::OnRenderProcessTerminated(const CefRefPtr<CefBrowser> browser, TerminationStatus status, int error_code,
                                                const CefString &error_string) {
         _router->OnRenderProcessTerminated(browser);
     }
 
-    bool web_client::OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+    bool web_client::OnBeforeBrowse(const CefRefPtr<CefBrowser> browser, const CefRefPtr<CefFrame> frame,
                                     CefRefPtr<CefRequest> request, bool user_gesture, bool is_redirect) {
         _router->OnBeforeBrowse(browser, frame);
         return false;
     }
 
-    void web_client::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
+    void web_client::OnBeforeClose(const CefRefPtr<CefBrowser> browser) {
         _router->OnBeforeClose(browser);
     }
 }

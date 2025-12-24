@@ -1,4 +1,4 @@
-#include "math.h"
+#include "./math.h" // avoid linter warning that it should be cmath if #include "math.h" is used
 
 namespace wow::utils {
     bool bounding_box::intersects_sphere(const glm::vec3 &center, const float radius) const {

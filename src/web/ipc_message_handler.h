@@ -9,7 +9,7 @@
 #include "include/wrapper/cef_message_router.h"
 
 namespace wow::web {
-    class ipc_message_handler : public CefMessageRouterBrowserSide::Handler {
+    class ipc_message_handler final : public CefMessageRouterBrowserSide::Handler {
         CefRefPtr<Callback> _callback{};
 
         event::event_manager_ptr _event_manager{};
