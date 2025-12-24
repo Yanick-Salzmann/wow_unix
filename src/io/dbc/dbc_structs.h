@@ -156,6 +156,17 @@ namespace wow::io::dbc {
         int32_t sound_entries_advanced_id;
     };
 
+    struct zone_music_record {
+        int32_t id;
+        std::string name;
+        int32_t silence_min_day;
+        int32_t silence_min_night;
+        int32_t silence_max_day;
+        int32_t silence_max_night;
+        int32_t day_music;
+        int32_t night_music;
+    };
+
 #pragma pack(pop)
 }
 

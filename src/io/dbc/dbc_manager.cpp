@@ -23,5 +23,7 @@ namespace wow::io::dbc {
         _light_float_band_dbc = make_dbc<light_float_band_record>(mpq_manager->open("DBFilesClient\\LightFloatBand.dbc"));
         callback(95, "Loading SoundEntries.dbc");
         _sound_entries_dbc = make_dbc<sound_entries_record>(mpq_manager->open("DBFilesClient\\SoundEntries.dbc"));
+        callback(95, "Loading ZoneMusic.dbc");
+        _zone_music_dbc = make_dbc<zone_music_record>(mpq_manager->open("DBFilesClient\\ZoneMusic.dbc"));
     }
 }
