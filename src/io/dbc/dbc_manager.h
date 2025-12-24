@@ -16,6 +16,7 @@ namespace wow::io::dbc {
         dbc_file_ptr<light_skybox_record> _light_skybox_dbc{};
         dbc_file_ptr<light_int_band_record> _light_int_band_dbc{};
         dbc_file_ptr<light_float_band_record> _light_float_band_dbc{};
+        dbc_file_ptr<sound_entries_record> _sound_entries_dbc{};
 
     public:
         void initialize(const mpq_manager_ptr &mpq_manager,
@@ -55,6 +56,10 @@ namespace wow::io::dbc {
 
         [[nodiscard]] const dbc_file_ptr<light_float_band_record> &light_float_band_dbc() const {
             return _light_float_band_dbc;
+        }
+
+        [[nodiscard]] const dbc_file_ptr<sound_entries_record> &sound_entries_dbc() const {
+            return _sound_entries_dbc;
         }
     };
 

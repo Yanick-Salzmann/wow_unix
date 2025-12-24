@@ -141,6 +141,21 @@ namespace wow::io::dbc {
         std::array<float, 16> values;
     };
 
+    struct sound_entries_record {
+        int32_t id;
+        int32_t sound_type;
+        std::string name;
+        std::array<std::string, 10> file_names;
+        std::array<int32_t, 10> frequencies;
+        std::string file_path;
+        float volume;
+        int32_t flags;
+        float min_distance;
+        float max_distance;
+        int32_t eax_def;
+        int32_t sound_entries_advanced_id;
+    };
+
 #pragma pack(pop)
 }
 

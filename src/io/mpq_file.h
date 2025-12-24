@@ -65,6 +65,12 @@ namespace wow::io {
             return *this;
         }
 
+        template<typename T, size_t Size>
+        mpq_file& read(std::array<T, Size>& data) {
+            read(Size * sizeof(T), data.data());
+            return *this;
+        }
+
         std::string read_text();
 
         utils::binary_reader_ptr to_binary_reader();

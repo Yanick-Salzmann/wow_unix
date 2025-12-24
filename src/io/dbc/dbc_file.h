@@ -3,6 +3,8 @@
 
 #include <map>
 #include <cstdint>
+#include <boost/di.hpp>
+
 #include "io/mpq_file.h"
 #include "spdlog/spdlog.h"
 #include "dbc_structs.h"
@@ -22,6 +24,27 @@ struct dbc_header {
 #pragma pack(pop)
 
 namespace wow::io::dbc {
+    // ReSharper disable once CppTemplateParameterNeverUsed
+    template<typename T>
+    struct is_std_array : std::false_type {
+    };
+
+    template<typename T, std::size_t N>
+    struct is_std_array<std::array<T, N> > : std::true_type {
+        typedef T type;
+
+        constexpr static std::size_t size = N;
+    };
+
+    template<typename T>
+    inline constexpr bool is_std_array_v = is_std_array<T>::value;
+
+    template<typename T>
+    using std_array_t = is_std_array<T>::type;
+
+    template<typename T>
+    inline constexpr size_t std_array_size_v = is_std_array<T>::size;
+
     template<typename T>
     class dbc_file {
         std::map<int32_t, T> _record_map{};
@@ -71,6 +94,11 @@ namespace wow::io::dbc {
                         }
                     } else if constexpr (std::is_same_v<field_type, bool>) {
                         field = file->read<uint8_t>() != 0;
+                    } else if constexpr (is_std_array_v<field_type> && std::is_same_v<std_array_t<field_type>, std::string>) {
+                        constexpr auto array_size = std_array_size_v<field_type>;
+                        for (int idx = 0; idx < array_size; ++idx) {
+                            field[idx] = _string_table[file->read<int32_t>()];
+                        }
                     } else {
                         field = file->read<field_type>();
                     }
