@@ -147,6 +147,12 @@ export interface JsEvent {
          */
         fetchGameTimeResponse: FetchGameTimeResponse;
     } | {
+        oneofKind: "soundUpdateEvent";
+        /**
+         * @generated from protobuf field: wow.web.proto.SoundUpdateEvent sound_update_event = 21
+         */
+        soundUpdateEvent: SoundUpdateEvent;
+    } | {
         oneofKind: undefined;
     };
 }
@@ -432,6 +438,15 @@ export interface FetchGameTimeResponse {
      */
     timeOfDay: bigint;
 }
+/**
+ * @generated from protobuf message wow.web.proto.SoundUpdateEvent
+ */
+export interface SoundUpdateEvent {
+    /**
+     * @generated from protobuf field: string sound_name = 5
+     */
+    soundName: string;
+}
 // @generated message type with reflection information, may provide speed optimized methods
 class Wrapper$Type extends MessageType<Wrapper> {
     constructor() {
@@ -501,7 +516,8 @@ class JsEvent$Type extends MessageType<JsEvent> {
             { no: 17, name: "fps_update_event", kind: "message", oneof: "event", T: () => FpsUpdateEvent },
             { no: 18, name: "system_update_event", kind: "message", oneof: "event", T: () => SystemUpdateEvent },
             { no: 19, name: "fetch_game_time_request", kind: "message", oneof: "event", T: () => FetchGameTimeRequest },
-            { no: 20, name: "fetch_game_time_response", kind: "message", oneof: "event", T: () => FetchGameTimeResponse }
+            { no: 20, name: "fetch_game_time_response", kind: "message", oneof: "event", T: () => FetchGameTimeResponse },
+            { no: 21, name: "sound_update_event", kind: "message", oneof: "event", T: () => SoundUpdateEvent }
         ]);
     }
     create(value?: PartialMessage<JsEvent>): JsEvent {
@@ -636,6 +652,12 @@ class JsEvent$Type extends MessageType<JsEvent> {
                         fetchGameTimeResponse: FetchGameTimeResponse.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).fetchGameTimeResponse)
                     };
                     break;
+                case /* wow.web.proto.SoundUpdateEvent sound_update_event */ 21:
+                    message.event = {
+                        oneofKind: "soundUpdateEvent",
+                        soundUpdateEvent: SoundUpdateEvent.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).soundUpdateEvent)
+                    };
+                    break;
                 default:
                     let u = options.readUnknownField;
                     if (u === "throw")
@@ -708,6 +730,9 @@ class JsEvent$Type extends MessageType<JsEvent> {
         /* wow.web.proto.FetchGameTimeResponse fetch_game_time_response = 20; */
         if (message.event.oneofKind === "fetchGameTimeResponse")
             FetchGameTimeResponse.internalBinaryWrite(message.event.fetchGameTimeResponse, writer.tag(20, WireType.LengthDelimited).fork(), options).join();
+        /* wow.web.proto.SoundUpdateEvent sound_update_event = 21; */
+        if (message.event.oneofKind === "soundUpdateEvent")
+            SoundUpdateEvent.internalBinaryWrite(message.event.soundUpdateEvent, writer.tag(21, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1915,3 +1940,50 @@ class FetchGameTimeResponse$Type extends MessageType<FetchGameTimeResponse> {
  * @generated MessageType for protobuf message wow.web.proto.FetchGameTimeResponse
  */
 export const FetchGameTimeResponse = new FetchGameTimeResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class SoundUpdateEvent$Type extends MessageType<SoundUpdateEvent> {
+    constructor() {
+        super("wow.web.proto.SoundUpdateEvent", [
+            { no: 5, name: "sound_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<SoundUpdateEvent>): SoundUpdateEvent {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.soundName = "";
+        if (value !== undefined)
+            reflectionMergePartial<SoundUpdateEvent>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SoundUpdateEvent): SoundUpdateEvent {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string sound_name */ 5:
+                    message.soundName = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: SoundUpdateEvent, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string sound_name = 5; */
+        if (message.soundName !== "")
+            writer.tag(5, WireType.LengthDelimited).string(message.soundName);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message wow.web.proto.SoundUpdateEvent
+ */
+export const SoundUpdateEvent = new SoundUpdateEvent$Type();

@@ -1,9 +1,10 @@
 #include "zone_music_manager.hpp"
 
 #include <random>
-
-#include "glm/gtc/quaternion.hpp"
 #include "io/dbc/dbc_manager.h"
+#include "utils/di.h"
+
+#include "web/event/ui_event_system.h"
 
 namespace wow::audio {
     void zone_music_manager::music_loop_thread_func() {
@@ -13,6 +14,8 @@ namespace wow::audio {
                 SPDLOG_INFO("Sound Emitter: {}", file_name);
                 if (!file_name.empty()) {
                     _cur_sound = _audio_manager->play_file(file_name);
+
+                    _ui_event_system->event_manager()->submit(web::proto::JsEvent{});
                 }
             }
 
@@ -55,7 +58,9 @@ namespace wow::audio {
             cumulative += weight;
             if (roll < cumulative) {
                 _last_index = index;
-                return fmt::format("{}\\{}", base_path, files[index]);
+                const auto sound_file_name = fmt::format("{}\\{}", base_path, files[index]);
+                publish_sound_event(sound_file_name);
+                return sound_file_name;
             }
         }
 
@@ -63,11 +68,18 @@ namespace wow::audio {
         return fmt::format("{}\\{}", base_path, files[_last_index]);
     }
 
+    void zone_music_manager::publish_sound_event(const std::string &sound_name) {
+        auto ev = web::proto::JsEvent{};
+        ev.mutable_sound_update_event()->set_sound_name(sound_name);
+        _ui_event_system->event_manager()->submit(ev);
+    }
+
     zone_music_manager::zone_music_manager(
         audio_manager_ptr audio_manager,
         io::dbc::dbc_manager_ptr dbc_manager
     ) : _audio_manager(std::move(audio_manager)),
         _dbc_manager(std::move(dbc_manager)) {
+        _ui_event_system = utils::app_module->ui_event_system();
         _music_loop_thread = std::thread{&zone_music_manager::music_loop_thread_func, this};
     }
 
@@ -120,6 +132,7 @@ namespace wow::audio {
         if (const auto file_name = select_next_sound();
             !file_name.empty()) {
             SPDLOG_INFO("Zone Music: {} ({} entries), Sound Emitter: {}", zone_music.name, _num_sounds, file_name);
+            publish_sound_event(file_name);
             _cur_sound = _audio_manager->play_file(file_name);
         }
     }

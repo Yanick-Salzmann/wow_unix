@@ -28,6 +28,7 @@ message JsEvent {
     SystemUpdateEvent system_update_event = 18;
     FetchGameTimeRequest fetch_game_time_request = 19;
     FetchGameTimeResponse fetch_game_time_response = 20;
+    SoundUpdateEvent sound_update_event = 21;
   }
 }
 
@@ -142,4 +143,8 @@ message FetchGameTimeRequest {
 
 message FetchGameTimeResponse {
   int64 time_of_day = 1;
+}
+
+message SoundUpdateEvent {
+  string sound_name = 5;
 }

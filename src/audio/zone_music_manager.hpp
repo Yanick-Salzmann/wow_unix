@@ -5,10 +5,16 @@
 #include "audio_manager.hpp"
 #include "io/dbc/dbc_structs.h"
 
+namespace wow::web::event {
+    class ui_event_system;
+    typedef std::shared_ptr<ui_event_system> ui_event_system_ptr;
+}
+
 namespace wow::audio {
     class zone_music_manager {
         audio_manager_ptr _audio_manager{};
         io::dbc::dbc_manager_ptr _dbc_manager{};
+        web::event::ui_event_system_ptr _ui_event_system{};
 
         sound_ptr _cur_sound{};
         io::dbc::sound_entries_record  _cur_sound_entry{};
@@ -23,6 +29,8 @@ namespace wow::audio {
         void music_loop_thread_func();
 
         std::string select_next_sound();
+
+        void publish_sound_event(const std::string& sound_name);
 
     public:
         explicit zone_music_manager(
