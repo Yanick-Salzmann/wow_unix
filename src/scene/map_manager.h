@@ -20,7 +20,9 @@ namespace wow::scene {
         io::dbc::dbc_manager_ptr _dbc_manager{};
         io::mpq_manager_ptr _mpq_manager{};
         texture_manager_ptr _texture_manager;
+
         camera_ptr _camera;
+        int32_t _camera_position_uniform = -1;
 
         io::terrain::wdt_file_ptr _active_wdt{};
 
@@ -39,7 +41,7 @@ namespace wow::scene {
 
         utils::work_pool _tile_load_pool{};
 
-        sky::sky_sphere _sky_sphere{};
+        sky::sky_sphere_ptr _sky_sphere = sky::make_sky_sphere();
         sky::light_manager_ptr _light_manager{};
 
         std::thread _load_thread{};
@@ -91,7 +93,7 @@ namespace wow::scene {
 
         io::terrain::adt_chunk_ptr chunk_at(float x, float y);
 
-        void initialize();
+        void initialize() const;
 
         [[nodiscard]] time_t time_of_day() const {
             return _light_manager->time_of_day();

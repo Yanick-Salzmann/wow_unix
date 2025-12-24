@@ -4,8 +4,8 @@ in vec2 frag_tex_coord;
 
 out vec4 fragColor;
 
-uniform vec3 sky_color;
+uniform sampler2D sky_texture;
 
 void main() {
-    fragColor = vec4(frag_tex_coord, 1.0, 1.0);
+    fragColor = vec4(texture(sky_texture, vec2(0.0, frag_tex_coord.y)).bgr, 1.0);
 }

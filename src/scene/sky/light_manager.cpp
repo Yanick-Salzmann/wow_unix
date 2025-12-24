@@ -90,7 +90,7 @@ namespace wow::scene::sky {
         _time_of_day_ms = 0;
     }
 
-    void light_manager::on_update() {
+    void light_manager::on_update(const sky_sphere_ptr& sky_sphere) {
         if (_current_map < 0 || _map_lights.empty()) {
             return;
         }
@@ -115,6 +115,11 @@ namespace wow::scene::sky {
         auto diffuse_color = glm::vec4(1.0f);
         auto ambient_color = glm::vec4(0.0f);
         auto sky_color = glm::vec4(0.0f);
+        auto smog_color = glm::vec4(0.0f);
+        auto band2_color = glm::vec4(0.0f);
+        auto band1_color = glm::vec4(0.0f);
+        auto middle_color = glm::vec4(0.0f);
+        auto top_color = glm::vec4(0.0f);
 
         float fog_distance = 0.0f;
 
@@ -129,6 +134,11 @@ namespace wow::scene::sky {
                 ambient_color += light.color(light_colors::ambient, day_half_minutes) * _weights[i];
                 fog_distance += light.float_value(light_float::fog_distance, day_half_minutes) / 36.0f * 2 * _weights[i];
                 sky_color += light.color(light_colors::sky_band1, day_half_minutes) * _weights[i];
+                smog_color += light.color(light_colors::sky_smog, day_half_minutes) * _weights[i];
+                band2_color += light.color(light_colors::sky_band2, day_half_minutes) * _weights[i];
+                band1_color += light.color(light_colors::sky_band1, day_half_minutes) * _weights[i];
+                middle_color += light.color(light_colors::sky_middle, day_half_minutes) * _weights[i];
+                top_color += light.color(light_colors::sky_top, day_half_minutes) * _weights[i];
             }
         }
 
@@ -136,7 +146,16 @@ namespace wow::scene::sky {
             fog_distance = 2.0 * utils::TILE_SIZE;
         }
 
-        glClearColor(sky_color.r, sky_color.g, sky_color.b, 1.0);
+        sky_sphere->update_gradient(
+            top_color,
+            middle_color,
+            band1_color,
+            band2_color,
+            smog_color,
+            fog_color
+        );
+
+        gl::mesh::terrain_mesh().mesh->program()->use();
 
         gl::mesh::terrain_mesh()
                 .apply_fog_color(fog_color)

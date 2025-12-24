@@ -80,7 +80,7 @@ namespace wow::scene {
             _light_manager->enter_world(_map_id);
         }
 
-        _light_manager->on_update();
+        _light_manager->on_update(_sky_sphere);
     }
 
     void map_manager::position_update_thread() {
@@ -201,6 +201,7 @@ namespace wow::scene {
     void map_manager::update(const glm::vec3 position) {
         _position = position;
         _position_changed = true;
+        _sky_sphere->update_matrix(_camera->view(), _camera->projection());
     }
 
     void map_manager::enter_world(uint32_t map_id, const glm::vec2 &position) {
@@ -242,16 +243,34 @@ namespace wow::scene {
 
     void map_manager::on_frame(const scene_info &scene_info) {
         if (_position_changed) {
-            _sky_sphere.update_position(_position);
+            _sky_sphere->update_position(_position);
             _light_manager->update_position(_position);
         }
 
         if (_view_distance_changed) {
             _view_distance_changed = false;
-            _sky_sphere.update_radius(_view_distance);
+            _sky_sphere->update_radius(_view_distance);
         }
 
         handle_load_tick();
+
+        glDisable(GL_CULL_FACE);
+        _sky_sphere->on_frame();
+
+        const auto mesh = gl::mesh::terrain_mesh().mesh;
+
+        if (_camera_position_uniform < 0) {
+            _camera_position_uniform = mesh->program()->uniform_location("camera_position");
+        }
+
+        mesh->apply_blend_mode();
+        mesh->bind_vertex_attributes();
+        mesh->program()->use();
+        mesh->program()->vec4(glm::vec4(_camera->position(), _view_distance), _camera_position_uniform);
+
+        if (const auto &ib = io::terrain::adt_chunk::index_buffer()) {
+            ib->bind();
+        }
 
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LESS);
@@ -271,9 +290,6 @@ namespace wow::scene {
         }
 
         glDisable(GL_CULL_FACE);
-        glDisable(GL_DEPTH_TEST);
-
-        _sky_sphere.on_frame();
     }
 
     void map_manager::shutdown() {
@@ -348,7 +364,7 @@ namespace wow::scene {
         return nullptr;
     }
 
-    void map_manager::initialize() {
-        _sky_sphere.initialize();
+    void map_manager::initialize() const {
+        _sky_sphere->initialize();
     }
 }

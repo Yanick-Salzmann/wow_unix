@@ -1,12 +1,11 @@
 #ifndef GLAD_LIGHT_MANAGER_HPP
 #define GLAD_LIGHT_MANAGER_HPP
 
-#include <cstdint>
 #include <utility>
 #include <vector>
 
 #include "light_data.hpp"
-#include "glm/common.hpp"
+#include "sky_sphere.h"
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
 
@@ -38,7 +37,7 @@ namespace wow::scene::sky {
 
         void enter_world(int32_t map_id);
 
-        void on_update();
+        void on_update(const sky::sky_sphere_ptr& sky_sphere);
 
         void update_position(glm::vec3 position);
 

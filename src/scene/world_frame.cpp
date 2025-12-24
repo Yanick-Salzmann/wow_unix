@@ -73,22 +73,6 @@ namespace wow::scene {
         _scene_info.camera_position = _camera->position();
         _scene_info.view_distance = 2.0f * utils::TILE_SIZE;
 
-        const auto mesh = gl::mesh::terrain_mesh().mesh;
-
-        if (_camera_position_uniform < 0) {
-            _camera_position_uniform = mesh->program()->uniform_location("camera_position");
-        }
-
-        mesh->apply_blend_mode();
-        mesh->bind_vertex_attributes();
-        mesh->program()->use();
-        mesh->program()->vec4(glm::vec4(_scene_info.camera_position, _scene_info.view_distance),
-                              _camera_position_uniform);
-
-        if (const auto &ib = io::terrain::adt_chunk::index_buffer()) {
-            ib->bind();
-        }
-
         _map_manager->on_frame(_scene_info);
 
         handle_fps_update();

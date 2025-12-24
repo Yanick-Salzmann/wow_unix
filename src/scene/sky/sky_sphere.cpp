@@ -26,12 +26,12 @@ namespace wow::scene::sky {
                 const auto theta = u * glm::two_pi<float>();
 
                 const auto x = std::sin(phi) * std::cos(theta);
-                const auto y = std::cos(phi);
-                const auto z = std::sin(phi) * std::sin(theta);
+                const auto z = std::cos(phi);
+                const auto y = std::sin(phi) * std::sin(theta);
 
                 vertices.push_back({
                     _position + glm::vec3(x, y, z) * _radius,
-                    glm::vec2(u, v)
+                    glm::vec2(u, 1.0f - v)
                 });
             }
         }
@@ -39,10 +39,52 @@ namespace wow::scene::sky {
         _vertex_buffer->set_data(vertices);
     }
 
+    void sky_sphere::update_gradient(
+        const glm::vec4 &top_color,
+        const glm::vec4 &middle_color,
+        const glm::vec4 &band1_color,
+        const glm::vec4 &band2_color,
+        const glm::vec4 &smog_color,
+        const glm::vec4 &fog_color
+    ) {
+        for (auto i = 0; i < 80; ++i) {
+            _sky_gradient[i] = glm::packUnorm4x8(fog_color);
+        }
+
+        for (auto i = 80; i < 90; ++i) {
+            const auto sat = (static_cast<float>(i) - 80.0f) / 10.0f;
+            _sky_gradient[i] = glm::packUnorm4x8(glm::mix(fog_color, smog_color, sat));
+        }
+
+        for (auto i = 90; i < 95; ++i) {
+            const auto sat = (static_cast<float>(i) - 90.0f) / 5.0f;
+            _sky_gradient[i] = glm::packUnorm4x8(glm::mix(smog_color, band2_color, sat));
+        }
+
+        for (auto i = 95; i < 105; ++i) {
+            const auto sat = (static_cast<float>(i) - 95.0f) / 10.0f;
+            _sky_gradient[i] = glm::packUnorm4x8(glm::mix(band2_color, band1_color, sat));
+        }
+
+        for (auto i = 105; i < 120; ++i) {
+            const auto sat = (static_cast<float>(i) - 105.0f) / 15.0f;
+            _sky_gradient[i] = glm::packUnorm4x8(glm::mix(band1_color, middle_color, sat));
+        }
+
+        for (auto i = 120; i < 180; ++i) {
+            const auto sat = (static_cast<float>(i) - 120.0f) / 60.0f;
+            _sky_gradient[i] = glm::packUnorm4x8(glm::mix(middle_color, top_color, sat));
+        }
+
+        _sky_texture->rgba_image(1, 180, _sky_gradient.data());
+    }
+
     void sky_sphere::initialize() {
         _mesh = gl::make_mesh();
         _vertex_buffer = gl::make_vertex_buffer();
         _index_buffer = gl::make_index_buffer(gl::index_type::uint16);
+        _sky_texture = gl::make_texture();
+        _sky_texture->rgba_image(1, 180, _sky_gradient.data());
 
         calculate_buffer();
 
@@ -80,7 +122,9 @@ namespace wow::scene::sky {
                                       reinterpret_cast<void *>(offsetof(sky_vertex, tex_coord)))
                 .vertex_buffer(_vertex_buffer)
                 .index_buffer(_index_buffer)
-                .blend(gl::blend_mode::none);
+                .texture("sky_texture", _sky_texture)
+                .set_index_count(indices.size())
+                .blend(gl::blend_mode::alpha);
     }
 
     void sky_sphere::on_frame() {
@@ -95,5 +139,11 @@ namespace wow::scene::sky {
     void sky_sphere::update_radius(float radius) {
         _radius = radius;
         calculate_buffer();
+    }
+
+    void sky_sphere::update_matrix(const glm::mat4 &view, const glm::mat4 &projection) {
+        _mesh->program()->use();
+        _mesh->program()->mat4(projection, "projection")
+                .mat4(view, "view");
     }
 }
