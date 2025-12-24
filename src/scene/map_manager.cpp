@@ -165,6 +165,7 @@ namespace wow::scene {
             }
 
             if (do_update) {
+                _zone_music_manager->area_id_changed(area_id);
                 web::proto::JsEvent ev{};
                 ev.mutable_area_update_event()->set_area_name(area_name);
                 ev.mutable_area_update_event()->set_area_id(area_id);
@@ -188,12 +189,14 @@ namespace wow::scene {
                              io::mpq_manager_ptr mpq_manager,
                              texture_manager_ptr texture_manager,
                              camera_ptr camera,
-                             sky::light_manager_ptr light_manager) : _config_manager(std::move(config_manager)),
-                                                                     _dbc_manager(std::move(dbc_manager)),
-                                                                     _mpq_manager(std::move(mpq_manager)),
-                                                                     _texture_manager(std::move(texture_manager)),
-                                                                     _camera(std::move(camera)),
-                                                                     _light_manager(std::move(light_manager)) {
+                             sky::light_manager_ptr light_manager,
+                             audio::zone_music_manager_ptr zone_music_manager) : _config_manager(std::move(config_manager)),
+                                                                       _dbc_manager(std::move(dbc_manager)),
+                                                                       _mpq_manager(std::move(mpq_manager)),
+                                                                       _texture_manager(std::move(texture_manager)),
+                                                                       _camera(std::move(camera)),
+                                                                       _light_manager(std::move(light_manager)),
+                                                                       _zone_music_manager(std::move(zone_music_manager)) {
         _load_thread = std::thread{&map_manager::position_update_thread, this};
     }
 

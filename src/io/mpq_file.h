@@ -16,6 +16,8 @@ namespace wow::io {
     public:
         explicit mpq_file(HANDLE file);
 
+        std::vector<uint8_t> full_data();
+
         [[nodiscard]] size_t size() const {
             return _buffer.size();
         }

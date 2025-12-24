@@ -16,6 +16,10 @@ namespace wow::io {
         SFileCloseFile(_file);
     }
 
+    std::vector<uint8_t> mpq_file::full_data() {
+        return _buffer;
+    }
+
     void mpq_file::read(size_t size, void *buffer) {
         if (_offset + size > _buffer.size()) {
             throw std::runtime_error(fmt::format("mpq file read out of bounds: {} + {} > {}", _offset, size,

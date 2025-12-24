@@ -6,6 +6,7 @@
 
 #include "gl/window.h"
 #undef Status
+#include "audio/audio_manager.hpp"
 #include "web/web_core.h"
 #include "io/mpq_manager.h"
 #include "io/minimap/minimap_provider.h"
@@ -26,6 +27,7 @@ namespace wow::utils {
         scene::gpu_dispatcher_ptr _gpu_dispatcher{};
         scene::camera_ptr _camera{};
         scene::map_manager_ptr _map_manager{};
+        audio::audio_manager_ptr _audio_manager{};
 
     public:
         explicit application_module(
@@ -38,7 +40,8 @@ namespace wow::utils {
             config::config_manager_ptr config_manager,
             scene::gpu_dispatcher_ptr gpu_dispatcher,
             scene::camera_ptr camera,
-            scene::map_manager_ptr map_manager
+            scene::map_manager_ptr map_manager,
+            audio::audio_manager_ptr audio_manager
         ) : _window(std::move(window)),
             _web_core(std::move(web_core)),
             _mpq_manager(std::move(mpq_manager)),

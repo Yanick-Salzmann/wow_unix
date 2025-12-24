@@ -4,10 +4,13 @@ project(wow_unix)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
+
 find_package(OpenGL REQUIRED COMPONENTS OpenGL EGL)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
 find_package(Protobuf REQUIRED)
+find_package(FMOD REQUIRED)
 
 find_package(absl REQUIRED)
 
@@ -205,9 +208,15 @@ add_executable(wow_unix src/main.cpp
         src/gl/uniform_buffer.cpp
         src/scene/sky/light_data.hpp
         src/scene/sky/light_data.cpp
-        src/utils/common_utils.hpp)
+        src/utils/common_utils.hpp
+        src/audio/audio_manager.hpp
+        src/audio/audio_manager.cpp
+        src/audio/zone_music_manager.hpp
+        src/audio/zone_music_manager.cpp
+        src/audio/fmod_utils.hpp
+        src/audio/fmod_utils.cpp)
 
-target_compile_options(wow_unix PRIVATE -Wno-multichar -DGLM_ENABLE_EXPERIMENTAL -rdynamic)
+target_compile_options(wow_unix PRIVATE -Wno-multichar -DGLM_ENABLE_EXPERIMENTAL -rdynamic -DBOOST_DI_CFG_CTOR_LIMIT_SIZE=25)
 
 add_dependencies(wow_unix fetch_mime_types proto_typescript glad_s3tc)
 
@@ -226,6 +235,7 @@ target_include_directories(wow_unix PRIVATE
         ${Boost_INCLUDE_DIRS}
         ${tomlplusplus_SOURCE_DIR}/include
         ${CMAKE_BINARY_DIR}/gladsources/glad_s3tc/include
+        ${FMOD_INCLUDE_DIRS}
 )
 
 target_include_directories(wow_unix_browser PRIVATE src cef)
@@ -263,5 +273,6 @@ target_link_libraries(wow_unix PRIVATE
         absl::node_hash_set
         absl::inlined_vector
         StormLib::storm
+        ${FMOD_LIBRARIES}
 )
 target_link_libraries(wow_unix_browser PRIVATE spdlog::spdlog ${CMAKE_BINARY_DIR}/libcef_dll_wrapper.a ${CMAKE_BINARY_DIR}/libcef.so)

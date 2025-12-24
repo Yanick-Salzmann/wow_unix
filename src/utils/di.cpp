@@ -8,6 +8,10 @@
 #include "web/event/event_manager.h"
 #include "web/event/ui_event_system.h"
 
+namespace wow::audio {
+    class zone_music_manager;
+}
+
 namespace wow::utils {
     std::shared_ptr<application_module> app_module{};
 
@@ -25,7 +29,9 @@ namespace wow::utils {
             bind<scene::world_frame>().in(singleton),
             bind<config::config_manager>().in(singleton),
             bind<scene::gpu_dispatcher>().in(singleton),
-            bind<scene::camera>().in(singleton)
+            bind<scene::camera>().in(singleton),
+            bind<audio::audio_manager>().in(singleton),
+            bind<audio::zone_music_manager>().in(singleton)
         ).create<std::shared_ptr<application_module> >();
     }
 }

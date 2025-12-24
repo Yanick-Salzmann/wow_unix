@@ -12,6 +12,8 @@
 #include "utils/constants.h"
 #include "utils/work_pool.h"
 #include "scene_info.h"
+#include "audio/audio_manager.hpp"
+#include "audio/zone_music_manager.hpp"
 #include "sky/light_manager.hpp"
 #include "sky/sky_sphere.h"
 
@@ -45,6 +47,8 @@ namespace wow::scene {
         sky::sky_sphere_ptr _sky_sphere = sky::make_sky_sphere();
         sky::light_manager_ptr _light_manager{};
 
+        audio::zone_music_manager_ptr _zone_music_manager;
+
         std::thread _load_thread{};
         std::mutex _async_load_lock{};
         std::mutex _sync_load_lock{};
@@ -73,7 +77,8 @@ namespace wow::scene {
             io::mpq_manager_ptr mpq_manager,
             texture_manager_ptr texture_manager,
             camera_ptr camera,
-            sky::light_manager_ptr light_manager
+            sky::light_manager_ptr light_manager,
+            audio::zone_music_manager_ptr zone_music_manager
         );
 
         void update(glm::vec3 position);
