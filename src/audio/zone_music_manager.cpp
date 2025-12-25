@@ -15,7 +15,7 @@ namespace wow::audio {
                 if (!file_name.empty()) {
                     _cur_sound = _audio_manager->play_file(file_name);
 
-                    _ui_event_system->event_manager()->submit(web::proto::JsEvent{});
+                    utils::app_module->ui_event_system()->event_manager()->submit(web::proto::JsEvent{});
                 }
             }
 
@@ -71,7 +71,7 @@ namespace wow::audio {
     void zone_music_manager::publish_sound_event(const std::string &sound_name) {
         auto ev = web::proto::JsEvent{};
         ev.mutable_sound_update_event()->set_sound_name(sound_name);
-        _ui_event_system->event_manager()->submit(ev);
+        utils::app_module->ui_event_system()->event_manager()->submit(ev);
     }
 
     zone_music_manager::zone_music_manager(
@@ -79,7 +79,6 @@ namespace wow::audio {
         io::dbc::dbc_manager_ptr dbc_manager
     ) : _audio_manager(std::move(audio_manager)),
         _dbc_manager(std::move(dbc_manager)) {
-        _ui_event_system = utils::app_module->ui_event_system();
         _music_loop_thread = std::thread{&zone_music_manager::music_loop_thread_func, this};
     }
 

@@ -14,7 +14,6 @@ namespace wow::audio {
     class zone_music_manager {
         audio_manager_ptr _audio_manager{};
         io::dbc::dbc_manager_ptr _dbc_manager{};
-        web::event::ui_event_system_ptr _ui_event_system{};
 
         sound_ptr _cur_sound{};
         io::dbc::sound_entries_record  _cur_sound_entry{};

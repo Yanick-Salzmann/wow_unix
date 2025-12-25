@@ -80,6 +80,12 @@
         <span>{{ areaInfo.name }} ({{ areaInfo.id }})</span>
         }
       </div>
+      <div class="sound-info">
+        @if (currentSound$ | async; as soundName) {
+        <span class="sound-icon">🔊</span>
+        <span class="sound-name">{{ soundName }}</span>
+        }
+      </div>
       <div class="position-info">
         @if (worldPosition$ | async; as pos) {
         <span class="map-name">{{ pos.mapName }} ({{pos.mapId}})</span>

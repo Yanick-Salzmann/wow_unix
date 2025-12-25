@@ -257,9 +257,32 @@
 }
 
 .area-info,
-.position-info {
+.position-info,
+.sound-info {
   display: flex;
   align-items: center;
+}
+
+.sound-info {
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  background-color: rgba(0, 136, 255, 0.2);
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 136, 255, 0.3);
+
+  .sound-icon {
+    font-size: 14px;
+  }
+
+  .sound-name {
+    color: #99ccff;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 .position-info {

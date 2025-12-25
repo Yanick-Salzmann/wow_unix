@@ -42,6 +42,7 @@ export class WorldFrame implements OnInit, AfterViewInit, OnDestroy {
     protected fps$ = new BehaviorSubject<number>(0);
     protected timeOfDay$ = new BehaviorSubject<string>('00:00');
     protected currentStats$ = new BehaviorSubject<SystemStats | null>(null);
+    protected currentSound$ = new BehaviorSubject<string | null>(null);
 
     @ViewChild('canvas', {static: true}) canvas!: ElementRef<HTMLCanvasElement>;
 
@@ -105,6 +106,12 @@ export class WorldFrame implements OnInit, AfterViewInit, OnDestroy {
                     this.systemStatsHistory.shift();
                 }
                 requestAnimationFrame(() => this.drawGraph());
+            }
+        });
+
+        this.eventService.listenForEvent('soundUpdateEvent', (event: JsEvent) => {
+            if (event.event.oneofKind === 'soundUpdateEvent') {
+                this.currentSound$.next(event.event.soundUpdateEvent.soundName || null);
             }
         });
     }
