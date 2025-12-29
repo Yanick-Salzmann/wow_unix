@@ -16,6 +16,8 @@ namespace wow::audio {
         io::dbc::dbc_manager_ptr _dbc_manager{};
 
         sound_ptr _cur_sound{};
+        sound_ptr _next_sound{};
+        
         io::dbc::sound_entries_record  _cur_sound_entry{};
         int32_t _last_index = 0;
         int32_t _num_sounds = 0;

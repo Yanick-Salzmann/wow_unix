@@ -9,7 +9,7 @@
 namespace wow::audio {
     void zone_music_manager::music_loop_thread_func() {
         while (_is_running) {
-            if (auto cur_snd = _cur_sound; cur_snd && !_audio_manager->is_playing(cur_snd)) {
+            if (auto cur_snd = _cur_sound; cur_snd && !cur_snd->is_playing()) {
                 const auto file_name = select_next_sound();
                 SPDLOG_INFO("Sound Emitter: {}", file_name);
                 if (!file_name.empty()) {

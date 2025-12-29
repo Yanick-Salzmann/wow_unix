@@ -10,6 +10,7 @@ namespace wow::audio {
         FMOD::Channel* channel{};
 
         void stop() const;
+        [[nodiscard]] bool is_playing() const;
     };
 
     typedef std::shared_ptr<playing_sound> sound_ptr;

@@ -15,8 +15,6 @@ namespace wow::audio {
         explicit audio_manager(io::mpq_manager_ptr mpq_manager);
 
         sound_ptr play_file(const std::string &filename) const;
-
-        bool is_playing(const sound_ptr &sound);
     };
 
     typedef std::shared_ptr<audio_manager> audio_manager_ptr;

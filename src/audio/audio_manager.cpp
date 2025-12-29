@@ -31,11 +31,11 @@ namespace wow::audio {
         }
 
         FMOD::Sound *sound;
-        FMOD_CREATESOUNDEXINFO exinfo{};
-        exinfo.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
-        exinfo.length = file->full_data().size();
+        FMOD_CREATESOUNDEXINFO sound_info{};
+        sound_info.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
+        sound_info.length = file->full_data().size();
 
-        _system->createSound(reinterpret_cast<const char *>(file->full_data().data()), FMOD_OPENMEMORY | FMOD_CREATESAMPLE, &exinfo, &sound);
+        _system->createSound(reinterpret_cast<const char *>(file->full_data().data()), FMOD_OPENMEMORY | FMOD_CREATESAMPLE, &sound_info, &sound);
         FMOD::Channel *channel{};
         _system->playSound(sound, nullptr, false, &channel);
 
@@ -46,13 +46,5 @@ namespace wow::audio {
         });
 
         return ptr;
-    }
-
-    bool audio_manager::is_playing(const sound_ptr& sound) {
-        FMOD::Sound* playing{};
-        sound->channel->getCurrentSound(&playing);
-        auto cnl_playing = false;
-        sound->channel->isPlaying(&cnl_playing);
-        return playing == sound->sound && cnl_playing;
     }
 }
