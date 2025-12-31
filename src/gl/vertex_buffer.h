@@ -3,8 +3,11 @@
 
 #include <memory>
 #include <vector>
+
+extern "C" {
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
+}
 
 namespace wow::gl {
     class vertex_buffer {

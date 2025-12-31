@@ -3,7 +3,20 @@
 #include "utils/di.h"
 #include "web/web_core.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 int main(const int argc, char *argv[]) {
+#ifdef _WIN32
+    if (FAILED(CoInitialize(nullptr))) {
+        spdlog::error("Failed to initialize COM library");
+        return -1;
+    }
+
+    SetProcessDPIAware();
+#endif
+
     spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%P:%t] [%^%l%$] [%s:%#] %v");
     spdlog::set_level(spdlog::level::debug);
 

@@ -1,6 +1,7 @@
 #ifndef WOW_UNIX_SHARED_TEXTURE_H
 #define WOW_UNIX_SHARED_TEXTURE_H
 
+#ifndef _WIN32
 #include <vector>
 #include <EGL/egl.h>
 
@@ -29,5 +30,7 @@ namespace wow::gl {
 
     };
 }
+
+#endif
 
 #endif //WOW_UNIX_SHARED_TEXTURE_H

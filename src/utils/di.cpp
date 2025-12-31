@@ -16,22 +16,22 @@ namespace wow::utils {
     std::shared_ptr<application_module> app_module{};
 
     void initialize_di() {
-        using namespace boost::di;
+        using namespace boost;
 
-        app_module = make_injector(
-            bind<gl::window>().in(singleton),
-            bind<web::web_core>().in(singleton),
-            bind<web::event::event_manager>().in(singleton),
-            bind<io::mpq_manager>().in(singleton),
-            bind<io::dbc::dbc_manager>().in(singleton),
-            bind<web::event::ui_event_system>().in(singleton),
-            bind<io::minimap::minimap_provider>().in(singleton),
-            bind<scene::world_frame>().in(singleton),
-            bind<config::config_manager>().in(singleton),
-            bind<scene::gpu_dispatcher>().in(singleton),
-            bind<scene::camera>().in(singleton),
-            bind<audio::audio_manager>().in(singleton),
-            bind<audio::zone_music_manager>().in(singleton)
+        app_module = di::make_injector(
+            di::bind<gl::window>().in(di::singleton),
+            di::bind<web::web_core>().in(di::singleton),
+            di::bind<web::event::event_manager>().in(di::singleton),
+            di::bind<io::mpq_manager>().in(di::singleton),
+            di::bind<io::dbc::dbc_manager>().in(di::singleton),
+            di::bind<web::event::ui_event_system>().in(di::singleton),
+            di::bind<io::minimap::minimap_provider>().in(di::singleton),
+            di::bind<scene::world_frame>().in(di::singleton),
+            di::bind<config::config_manager>().in(di::singleton),
+            di::bind<scene::gpu_dispatcher>().in(di::singleton),
+            di::bind<scene::camera>().in(di::singleton),
+            di::bind<audio::audio_manager>().in(di::singleton),
+            di::bind<audio::zone_music_manager>().in(di::singleton)
         ).create<std::shared_ptr<application_module> >();
     }
 }

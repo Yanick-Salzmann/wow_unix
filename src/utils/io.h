@@ -4,6 +4,7 @@
 #include <vector>
 #include <cstdint>
 #include <memory>
+#include <string>
 
 namespace wow::utils {
     class binary_reader {

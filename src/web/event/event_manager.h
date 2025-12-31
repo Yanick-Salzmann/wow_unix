@@ -2,31 +2,34 @@
 #define WOW_UNIX_EVENT_MANAGER_H
 
 #include <list>
-#include "js_event.pb.h"
+#include <mutex>
+#include <functional>
+#include <map>
+#include "js_event.h"
 
 namespace wow::web::event {
-    typedef std::function<void(const proto::JsEvent &)> event_callback;
+    typedef std::function<void(const js_event &)> event_callback;
 
     class event_manager {
-        proto::JsEvent EMPTY_RESPONSE{};
+        js_event EMPTY_RESPONSE{};
 
         event_callback _event_callback{};
 
         std::mutex _callback_lock{};
-        std::map<proto::JsEvent::EventCase, std::list<std::function<proto::JsEvent(const proto::JsEvent &)> > >
+        std::map<js_event_type, std::list<std::function<js_event (const js_event &)> > >
         _callbacks{};
 
     public:
         event_manager();
 
-        event_manager &listen(const proto::JsEvent::EventCase &event,
-                              const std::function<proto::JsEvent(const proto::JsEvent &)> &callback);
+        event_manager &listen(const js_event_type &event,
+                              const std::function<js_event (const js_event &)> &callback);
 
-        std::unique_ptr<proto::JsEvent> dispatch(const proto::JsEvent &event);
+        std::unique_ptr<js_event> dispatch(const js_event &event);
 
-        void submit(const proto::JsEvent &event) const;
+        void submit(const js_event &event) const;
 
-        const proto::JsEvent &empty_response() const {
+        const js_event &empty_response() const {
             return EMPTY_RESPONSE;
         }
 

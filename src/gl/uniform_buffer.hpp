@@ -2,7 +2,10 @@
 #define WOW_UNIX_UNIFORM_BUFFER_HPP
 
 #include <array>
+
+extern "C" {
 #include <glad/gl.h>
+}
 
 #include <memory>
 #include <vector>

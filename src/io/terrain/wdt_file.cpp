@@ -2,7 +2,7 @@
 
 #include <unordered_map>
 
-#include "../../../cmake-build-release/_deps/spdlog-src/include/spdlog/spdlog.h"
+#include "spdlog/spdlog.h"
 
 namespace wow::io::terrain {
     wdt_file::wdt_file(const utils::binary_reader_ptr &reader) {

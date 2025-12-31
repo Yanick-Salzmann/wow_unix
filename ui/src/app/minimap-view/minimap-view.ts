@@ -4,7 +4,7 @@ import {ActivatedRoute, Router, RouterModule} from '@angular/router';
 import {BehaviorSubject} from 'rxjs';
 import * as L from 'leaflet';
 import {EventService} from '../service/event.service';
-import {MapPoi} from '../proto/js_event';
+import {JsEventType, MapPoi} from '../service/js-event';
 import {MapStateService} from '../service/map-state.service';
 
 const mapSize = 64 * (533.0 + 1.0 / 3.0);
@@ -95,16 +95,14 @@ export class MinimapViewComponent implements OnInit, AfterViewInit, OnDestroy {
     private async loadMapPois(): Promise<void> {
         try {
             const response = await this.eventService.sendMessageWithResponse({
-                event: {
-                    oneofKind: 'listMapPoisRequest',
-                    listMapPoisRequest: {
-                        mapId: parseInt(this.mapId)
-                    }
+                type: JsEventType.ListMapPoisRequest,
+                list_map_pois_request_data: {
+                    map_id: parseInt(this.mapId)
                 }
             });
 
-            if (response?.event?.oneofKind === 'listMapPoisResponse') {
-                this.addPoisAsMarkers(response.event.listMapPoisResponse.pois);
+            if (response.type === JsEventType.ListMapPoisResponse) {
+                this.addPoisAsMarkers(response.list_map_pois_response_data.pois);
             }
         } catch (error) {
             console.error('Failed to load map POIs:', error);
@@ -191,14 +189,12 @@ export class MinimapViewComponent implements OnInit, AfterViewInit, OnDestroy {
         const transformedY = halfMapSize - x;
 
         await this.eventService.sendMessage({
-            event: {
-                oneofKind: "enterWorldRequest",
-                enterWorldRequest: {
-                    mapId: parseInt(this.mapId),
+                type: JsEventType.EnterWorldRequest,
+                enter_world_request_data: {
+                    map_id: parseInt(this.mapId),
                     x: transformedX,
                     y: transformedY
                 }
-            }
         })
 
         await this.router.navigate(['/map-loading']);

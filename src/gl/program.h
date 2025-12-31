@@ -2,7 +2,12 @@
 #define WOW_UNIX_PROGRAM_H
 
 #include <memory>
+#include <string>
+
+extern "C" {
 #include <glad/gl.h>
+}
+
 #include <glm/glm.hpp>
 
 namespace wow::gl {

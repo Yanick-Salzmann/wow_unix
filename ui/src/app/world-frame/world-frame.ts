@@ -1,7 +1,7 @@
-import {Component, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {EventService} from '../service/event.service';
 import {CommonModule} from '@angular/common';
-import {JsEvent} from '../proto/js_event';
+import {JsEvent, JsEventType} from '../service/js-event';
 import {BehaviorSubject} from 'rxjs';
 import {LocaleNumberPipe} from '../pipes/locale-number.pipe';
 
@@ -57,46 +57,46 @@ export class WorldFrame implements OnInit, AfterViewInit, OnDestroy {
     }
 
     async ngOnInit(): Promise<void> {
-        this.eventService.listenForEvent('areaUpdateEvent', (event: JsEvent) => {
-            if (event.event.oneofKind === 'areaUpdateEvent') {
+        this.eventService.listenForEvent(JsEventType.AreaUpdateEvent, (event: JsEvent) => {
+            if (event.type === JsEventType.AreaUpdateEvent) {
                 this.areaInfo$.next({
-                    name: event.event.areaUpdateEvent.areaName,
-                    id: event.event.areaUpdateEvent.areaId
+                    name: event.area_update_event_data.area_name,
+                    id: event.area_update_event_data.area_id
                 });
             }
         });
 
-        this.eventService.listenForEvent('worldPositionUpdateEvent', (event: JsEvent) => {
-            if (event.event.oneofKind === 'worldPositionUpdateEvent') {
+        this.eventService.listenForEvent(JsEventType.WorldPositionUpdateEvent, (event: JsEvent) => {
+            if (event.type === JsEventType.WorldPositionUpdateEvent) {
                 this.worldPosition$.next({
-                    mapName: event.event.worldPositionUpdateEvent.mapName,
-                    mapId: event.event.worldPositionUpdateEvent.mapId,
-                    x: event.event.worldPositionUpdateEvent.x,
-                    y: event.event.worldPositionUpdateEvent.y,
-                    z: event.event.worldPositionUpdateEvent.z
+                    mapName: event.world_position_update_event_data.map_name,
+                    mapId: event.world_position_update_event_data.map_id,
+                    x: event.world_position_update_event_data.x,
+                    y: event.world_position_update_event_data.y,
+                    z: event.world_position_update_event_data.z
                 });
             }
         });
 
-        this.eventService.listenForEvent('fpsUpdateEvent', async (event: JsEvent) => {
-            if (event.event.oneofKind === 'fpsUpdateEvent') {
-                this.fps$.next(event.event.fpsUpdateEvent.fps);
+        this.eventService.listenForEvent(JsEventType.FpsUpdateEvent, async (event: JsEvent) => {
+            if (event.type === JsEventType.FpsUpdateEvent) {
+                this.fps$.next(event.fps_update_event_data.fps);
             }
         });
 
         await this.updateTime();
 
-        this.eventService.listenForEvent('systemUpdateEvent', (event: JsEvent) => {
-            if (event.event.oneofKind === 'systemUpdateEvent') {
+        this.eventService.listenForEvent(JsEventType.SystemUpdateEvent, (event: JsEvent) => {
+            if (event.type === JsEventType.SystemUpdateEvent) {
                 const stats: SystemStats = {
-                    cpu: Number(event.event.systemUpdateEvent.cpuUsage) || 0,
-                    memory: Number(event.event.systemUpdateEvent.memoryUsage) || 0,
-                    totalMemory: Number(event.event.systemUpdateEvent.totalMemory) || 0,
-                    gpu: Number(event.event.systemUpdateEvent.gpuUsage) || 0,
+                    cpu: Number(event.system_update_event_data.cpu_usage) || 0,
+                    memory: Number(event.system_update_event_data.memory_usage) || 0,
+                    totalMemory: Number(event.system_update_event_data.total_memory) || 0,
+                    gpu: Number(event.system_update_event_data.gpu_usage) || 0,
                     time: Date.now(),
-                    cpuFreq: Number(event.event.systemUpdateEvent.cpuFrequencyMhz) || 0,
-                    gpuMemUsed: Number(event.event.systemUpdateEvent.gpuMemoryUsed) || 0,
-                    gpuMemTotal: Number(event.event.systemUpdateEvent.gpuMemoryTotal) || 0
+                    cpuFreq: Number(event.system_update_event_data.cpu_frequency_mhz) || 0,
+                    gpuMemUsed: Number(event.system_update_event_data.gpu_memory_used) || 0,
+                    gpuMemTotal: Number(event.system_update_event_data.gpu_memory_total) || 0
                 };
 
                 this.currentStats$.next(stats);
@@ -109,9 +109,9 @@ export class WorldFrame implements OnInit, AfterViewInit, OnDestroy {
             }
         });
 
-        this.eventService.listenForEvent('soundUpdateEvent', (event: JsEvent) => {
-            if (event.event.oneofKind === 'soundUpdateEvent') {
-                this.currentSound$.next(event.event.soundUpdateEvent.soundName || null);
+        this.eventService.listenForEvent(JsEventType.SoundUpdateEvent, (event: JsEvent) => {
+            if (event.type === JsEventType.SoundUpdateEvent) {
+                this.currentSound$.next(event.sound_update_event_data.sound_name || null);
             }
         });
     }
@@ -125,17 +125,16 @@ export class WorldFrame implements OnInit, AfterViewInit, OnDestroy {
 
     private async updateTime() {
         const resp = await this.eventService.sendMessageWithResponse({
-            event: {
-                oneofKind: "fetchGameTimeRequest",
-                fetchGameTimeRequest: {}
+                type: JsEventType.FetchGameTimeRequest,
+                fetch_game_time_request_data: {}
             }
-        })
+        );
 
-        if (resp.event.oneofKind !== "fetchGameTimeResponse") {
+        if (resp.type !== JsEventType.FetchGameTimeResponse) {
             return;
         }
 
-        const timeOfDay = resp.event.fetchGameTimeResponse.timeOfDay
+        const timeOfDay = resp.fetch_game_time_response_data.time_of_day
 
         const dt = new Date(Number(timeOfDay) * 1000);
         this.timeOfDay$.next(dt.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}));

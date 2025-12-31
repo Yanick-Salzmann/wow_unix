@@ -1,5 +1,7 @@
 #include "shared_texture.h"
 
+#ifndef _WIN32
+
 #include <vector>
 #include <drm/drm_fourcc.h>
 #define GLFW_EXPOSE_NATIVE_WAYLAND
@@ -119,3 +121,5 @@ namespace wow::gl {
         // ignored
     }
 }
+
+#endif

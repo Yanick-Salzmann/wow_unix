@@ -2,7 +2,10 @@
 #define WOW_UNIX_TEXTURE_H
 
 #include <memory>
+
+extern "C" {
 #include <glad/gl.h>
+}
 
 #include "bindable_texture.h"
 #include "io/blp/blp_file.h"
@@ -29,6 +32,7 @@ namespace wow::gl {
         void load_blp(const io::blp::blp_file_ptr &blp);
 
         void filtering(GLint min_filter, GLint mag_filter);
+
         void wrap(GLint wrap_s, GLint wrap_t);
 
         void png_image(const std::string &path);

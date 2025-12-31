@@ -3,6 +3,7 @@ import {CommonModule} from '@angular/common';
 import {Router, ActivatedRoute} from '@angular/router';
 import {EventService} from '../service/event.service';
 import {BehaviorSubject} from "rxjs";
+import {JsEventType} from "../service/js-event";
 
 @Component({
     selector: 'app-loading',
@@ -34,13 +35,13 @@ export class LoadingComponent implements OnInit {
         }
 
         console.log('Loading data from path:', this.wowClientPath);
-        this.eventService.listenForEvent("loadUpdateEvent", (event) => {
-            if (event.event.oneofKind !== "loadUpdateEvent") {
+        this.eventService.listenForEvent(JsEventType.LoadUpdateEvent, (event) => {
+            if (event.type !== JsEventType.LoadUpdateEvent) {
                 return;
             }
 
-            this.$loadingProgress.next(event.event.loadUpdateEvent.percentage);
-            this.$loadingText.next(event.event.loadUpdateEvent.message);
+            this.$loadingProgress.next(event.load_update_event_data.percentage);
+            this.$loadingText.next(event.load_update_event_data.message);
 
             if (this.$loadingProgress.value >= 100) {
                 setTimeout(() => {
@@ -50,12 +51,10 @@ export class LoadingComponent implements OnInit {
         })
 
         await this.eventService.sendMessage({
-            event: {
-                oneofKind: "loadDataEvent",
-                loadDataEvent: {
+                type: JsEventType.LoadDataEvent,
+                load_data_event_data: {
                     folder: this.wowClientPath
                 }
-            }
         })
     }
 }

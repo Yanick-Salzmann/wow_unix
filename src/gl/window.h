@@ -5,12 +5,19 @@
 #include <string>
 #include <functional>
 #include <vector>
+#include <mutex>
 // ReSharper disable once CppUnusedIncludeDirective
+extern "C" {
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
+}
 #include "glm/vec2.hpp"
 
+#ifndef _WIN32
 #define GLFW_EXPOSE_NATIVE_X11
+#else
+#define GLFW_EXPOSE_NATIVE_WIN32
+#endif
 #include "GLFW/glfw3native.h"
 #include "include/internal/cef_types.h"
 
@@ -23,6 +30,7 @@ namespace wow::gl {
         using key_callback = std::function<void(int key, int scancode, int action, int mods)>;
         using char_callback = std::function<void(unsigned int codepoint)>;
         using resize_callback = std::function<void(int width, int height)>;
+        using focus_callback = std::function<void(bool focused)>;
 
     private:
         GLFWwindow *_window{};
@@ -34,6 +42,7 @@ namespace wow::gl {
         std::vector<key_callback> _key_callbacks{};
         std::vector<char_callback> _char_callbacks{};
         std::vector<resize_callback> _resize_callbacks{};
+        std::vector<focus_callback> _focus_callbacks{};
 
         static void report_glfw_error(const std::string &msg);
 
@@ -72,6 +81,11 @@ namespace wow::gl {
             _resize_callbacks.push_back(std::move(cb));
         }
 
+        void add_focus_callback(focus_callback cb) {
+            std::lock_guard lock(_callback_lock);
+            _focus_callbacks.push_back(std::move(cb));
+        }
+
         ~window();
 
         [[nodiscard]] bool process_events() const;
@@ -92,9 +106,15 @@ namespace wow::gl {
             return x_scale;
         }
 
+#ifndef _WIN32
         [[nodiscard]] XID handle() const {
             return glfwGetX11Window(_window);
         }
+#else
+        [[nodiscard]] HWND handle() const {
+            return glfwGetWin32Window(_window);
+        }
+#endif
 
         [[nodiscard]] GLFWwindow *native_handle() const {
             return _window;

@@ -2,34 +2,34 @@
 
 namespace wow::web::event {
     event_manager::event_manager() {
-        EMPTY_RESPONSE.mutable_empty_response();
+        EMPTY_RESPONSE.type = js_event_type::empty_response;
     }
 
-    event_manager &event_manager::listen(const proto::JsEvent::EventCase &event,
-                                         const std::function<proto::JsEvent(const proto::JsEvent &)> &callback) {
+    event_manager &event_manager::listen(const js_event_type &event,
+                                         const std::function<js_event (const js_event &)> &callback) {
         std::lock_guard lock(_callback_lock);
         _callbacks[event].push_back(callback);
         return *this;
     }
 
-    std::unique_ptr<proto::JsEvent> event_manager::dispatch(const proto::JsEvent &event) {
-        std::list<std::function<proto::JsEvent(const proto::JsEvent &)> > callbacks;
+    std::unique_ptr<js_event> event_manager::dispatch(const js_event &event) {
+        std::list<std::function<js_event (const js_event &)> > callbacks;
         {
             std::lock_guard lock(_callback_lock);
-            if (const auto itr = _callbacks.find(event.event_case()); itr != _callbacks.end()) {
+            if (const auto itr = _callbacks.find(event.type); itr != _callbacks.end()) {
                 callbacks = itr->second;
             }
         }
 
-        proto::JsEvent result{};
+        js_event result{};
         for (const auto &callback: callbacks) {
             result = callback(event);
         }
 
-        return callbacks.empty() ? nullptr : std::make_unique<proto::JsEvent>(result);
+        return callbacks.empty() ? nullptr : std::make_unique<js_event>(result);
     }
 
-    void event_manager::submit(const proto::JsEvent &event) const {
+    void event_manager::submit(const js_event &event) const {
         if (!_event_callback) {
             return;
         }

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 import {EventService} from './event.service';
-import {JsEvent} from '../proto/js_event';
+import {JsEvent, JsEventType} from './js-event';
 import {Router} from '@angular/router';
 
 @Injectable({providedIn: 'root'})
@@ -15,28 +15,29 @@ export class LoadingScreenService {
   public initialize() {
     console.log("Loading screen service initialized");
 
-    this.eventService.listenForEvent("loadingScreenShowEvent", (event: JsEvent) => {
-      if (event.event.oneofKind !== "loadingScreenShowEvent") {
+    this.eventService.listenForEvent(JsEventType.LoadingScreenShowEvent, (event: JsEvent) => {
+      if (event.type !== JsEventType.LoadingScreenShowEvent) {
         console.warn("Received wrong event type for loading screen: ", event);
         return;
       }
-      this.setLoadingScreenImage(event.event.loadingScreenShowEvent.imagePath);
+      this.setLoadingScreenImage(event.loading_screen_show_event_data.image_path);
     });
 
-    this.eventService.listenForEvent("loadingScreenProgressEvent", (event: JsEvent) => {
-      if (event.event.oneofKind !== "loadingScreenProgressEvent") {
+    this.eventService.listenForEvent(JsEventType.LoadingScreenProgressEvent, (event: JsEvent) => {
+      if (event.type !== JsEventType.LoadingScreenProgressEvent) {
         console.warn("Received wrong event type for loading screen progress: ", event);
         return;
       }
-      this.loadingProgress$.next(event.event.loadingScreenProgressEvent.percentage);
+      this.loadingProgress$.next(event.loading_screen_progress_event_data.percentage);
     });
 
-    this.eventService.listenForEvent("loadingScreenCompleteEvent", (event: JsEvent) => {
-      if (event.event.oneofKind !== "loadingScreenCompleteEvent") {
+    this.eventService.listenForEvent(JsEventType.LoadingScreenCompleteEvent, async (event: JsEvent) => {
+      if (event.type !== JsEventType.LoadingScreenCompleteEvent) {
         console.warn("Received wrong event type for loading screen complete: ", event);
         return;
       }
-      this.router.navigate(['/world-frame']);
+
+      await this.router.navigate(['/world-frame']);
     });
   }
 

@@ -14,11 +14,13 @@ find_library(FMOD_LIBRARY
         NAMES fmod fmodL
         HINTS
         ${FMOD_ROOT}/api/core/lib/x86_64
+        ${FMOD_ROOT}/api/core/lib/x64
         /usr/local/lib
         /usr/lib
         /usr/lib/x86_64-linux-gnu
         /opt/fmod/api/core/lib/x86_64
         $ENV{FMOD_ROOT}/api/core/lib/x86_64
+        $ENV{FMOD_ROOT}/api/core/lib/x64
 )
 
 find_path(FMOD_STUDIO_INCLUDE_DIR
@@ -35,11 +37,13 @@ find_library(FMOD_STUDIO_LIBRARY
         NAMES fmodstudio fmodstudioL
         HINTS
         ${FMOD_ROOT}/api/studio/lib/x86_64
+        ${FMOD_ROOT}/api/studio/lib/x64
         /usr/local/lib
         /usr/lib
         /usr/lib/x86_64-linux-gnu
         /opt/fmod/api/studio/lib/x86_64
         $ENV{FMOD_ROOT}/api/studio/lib/x86_64
+        $ENV{FMOD_ROOT}/api/studio/lib/x64
 )
 
 include(FindPackageHandleStandardArgs)

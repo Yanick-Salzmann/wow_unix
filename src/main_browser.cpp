@@ -40,7 +40,11 @@ public:
 };
 
 int main(int argc, char *argv[]) {
+#ifndef _WIN32
     const CefMainArgs main_args(argc, argv);
+#else
+    const CefMainArgs main_args(GetModuleHandle(nullptr));
+#endif
 
     const CefRefPtr<CefApp> app = new ::app();
 

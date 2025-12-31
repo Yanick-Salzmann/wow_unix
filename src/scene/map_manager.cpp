@@ -5,6 +5,7 @@
 #include "gl/mesh.h"
 #include <chrono>
 #include <cmath>
+#include <unordered_set>
 
 namespace wow::scene {
     void map_manager::async_load_tile(uint32_t x, uint32_t y, const utils::binary_reader_ptr &data) {
@@ -59,8 +60,8 @@ namespace wow::scene {
         }
 
         if (_initial_total_load > 0 && _initial_load_count >= _initial_total_load) {
-            web::proto::JsEvent ev = {};
-            ev.mutable_loading_screen_complete_event();
+            web::event::js_event ev = {};
+            ev.type = web::event::js_event_type::loading_screen_complete_event;
             utils::app_module->ui_event_system()->event_manager()->submit(ev);
             _initial_total_load = 0;
             _is_initial_load_complete = true;
@@ -166,21 +167,25 @@ namespace wow::scene {
 
             if (do_update) {
                 _zone_music_manager->area_id_changed(area_id);
-                web::proto::JsEvent ev{};
-                ev.mutable_area_update_event()->set_area_name(area_name);
-                ev.mutable_area_update_event()->set_area_id(area_id);
+                web::event::js_event ev{};
+                ev.type = web::event::js_event_type::area_update_event;
+                ev.area_update_event_data.area_name = area_name;
+                ev.area_update_event_data.area_id = area_id;
                 utils::app_module->ui_event_system()->event_manager()->submit(ev);
                 _last_area_id = area_id;
             }
         }
 
-        web::proto::JsEvent ev{};
-        const auto pos_ev = ev.mutable_world_position_update_event();
-        pos_ev->set_map_id(_map_id);
-        pos_ev->set_map_name(_map_name);
-        pos_ev->set_x(_position.x);
-        pos_ev->set_y(_position.y);
-        pos_ev->set_z(_position.z);
+        web::event::js_event ev{};
+        ev.type = web::event::js_event_type::world_position_update_event;
+        auto &[map_id, map_name, x, y, z] = ev.world_position_update_event_data;
+
+        map_id = _map_id;
+        map_name = _map_name;
+        x = _position.x;
+        y = _position.y;
+        z = _position.z;
+
         utils::app_module->ui_event_system()->event_manager()->submit(ev);
     }
 
@@ -190,13 +195,14 @@ namespace wow::scene {
                              texture_manager_ptr texture_manager,
                              camera_ptr camera,
                              sky::light_manager_ptr light_manager,
-                             audio::zone_music_manager_ptr zone_music_manager) : _config_manager(std::move(config_manager)),
-                                                                       _dbc_manager(std::move(dbc_manager)),
-                                                                       _mpq_manager(std::move(mpq_manager)),
-                                                                       _texture_manager(std::move(texture_manager)),
-                                                                       _camera(std::move(camera)),
-                                                                       _light_manager(std::move(light_manager)),
-                                                                       _zone_music_manager(std::move(zone_music_manager)) {
+                             audio::zone_music_manager_ptr zone_music_manager) : _config_manager(
+            std::move(config_manager)),
+        _dbc_manager(std::move(dbc_manager)),
+        _mpq_manager(std::move(mpq_manager)),
+        _texture_manager(std::move(texture_manager)),
+        _camera(std::move(camera)),
+        _light_manager(std::move(light_manager)),
+        _zone_music_manager(std::move(zone_music_manager)) {
         _load_thread = std::thread{&map_manager::position_update_thread, this};
     }
 
@@ -236,8 +242,9 @@ namespace wow::scene {
                              utils::replace_all(dbc_ls->record(rec.loading_screen).path, "\\", "/");
         }
 
-        web::proto::JsEvent enter_event{};
-        enter_event.mutable_loading_screen_show_event()->set_image_path(loading_screen);
+        web::event::js_event enter_event{};
+        enter_event.type = web::event::js_event_type::loading_screen_show_event;
+        enter_event.loading_screen_show_event_data.image_path = loading_screen;
         utils::app_module->ui_event_system()->event_manager()->submit(enter_event);
 
         std::thread{&map_manager::initial_load_thread, this, start_adt, end_adt}.detach();
@@ -310,9 +317,10 @@ namespace wow::scene {
             _initial_load_count += progress;
         }
 
-        auto ev = web::proto::JsEvent{};
-        ev.mutable_loading_screen_progress_event()->set_percentage(
-            static_cast<float>(_initial_load_count) / static_cast<float>(_initial_total_load));
+        auto ev = web::event::js_event{};
+        ev.type = web::event::js_event_type::loading_screen_progress_event;
+        ev.loading_screen_progress_event_data.percentage =
+                static_cast<float>(_initial_load_count) / static_cast<float>(_initial_total_load);
         utils::app_module->ui_event_system()->event_manager()->submit(ev);
     }
 

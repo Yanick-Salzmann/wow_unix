@@ -3,7 +3,10 @@
 
 #include <memory>
 #include <vector>
+
+extern "C" {
 #include <glad/gl.h>
+}
 
 namespace wow::gl {
     enum class index_type {

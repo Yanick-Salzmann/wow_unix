@@ -25,15 +25,15 @@
                 </div>
             }
 
-            @for (map of ($filteredMaps | async); track map.mapId) {
+            @for (map of ($filteredMaps | async); track map.map_id) {
                 <div
                         class="map-tile"
                         (click)="selectMap(map)"
-                        [style.background-image]="'url(' + map.loadingScreen + ')'"
+                        [style.background-image]="'url(' + map.loading_screen + ')'"
                 >
                     <div class="map-info">
                         <div class="map-name">{{ map.name }}</div>
-                        <div class="map-id">ID: {{ map.mapId }}</div>
+                        <div class="map-id">ID: {{ map.map_id }}</div>
                     </div>
                 </div>
             }

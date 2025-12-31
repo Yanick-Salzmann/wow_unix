@@ -1,24 +1,22 @@
-import {JsEvent} from "../proto/js_event";
+import {JsEvent, JsEventType} from "./js-event";
 import {Injectable} from "@angular/core";
 
 @Injectable({providedIn: 'root'})
 export class EventService {
-    private eventMap = new Map<string, (event: JsEvent) => void>();
+    private eventMap = new Map<JsEventType, (event: JsEvent) => void>();
 
     initialize() {
         const event: JsEvent = {
-            event: {
-                oneofKind: "initializeRequest",
-                initializeRequest: {}
-            }
+            type: JsEventType.InitializeRequest,
+            initialize_request_data: {}
         };
 
         window.cefQuery({
             persistent: true,
-            request: JSON.stringify(JsEvent.toJson(event)),
+            request: JSON.stringify(event),
             onSuccess: (response) => {
-                const ev = JsEvent.fromJson(JSON.parse(response), {});
-                const listener = this.eventMap.get(ev.event.oneofKind as string);
+                const ev = JSON.parse(response) as JsEvent;
+                const listener = this.eventMap.get(ev.type);
                 if (listener) {
                     listener(ev);
                 }
@@ -29,7 +27,7 @@ export class EventService {
         });
     }
 
-    listenForEvent(type: string, callback: (event: JsEvent) => void) {
+    listenForEvent(type: JsEventType, callback: (event: JsEvent) => void) {
         this.eventMap.set(type, callback);
     }
 
@@ -37,9 +35,9 @@ export class EventService {
         return new Promise((resolve, reject) => {
             window.cefQuery({
                 persistent: false,
-                request: JSON.stringify(JsEvent.toJson(event)),
+                request: JSON.stringify(event),
                 onSuccess: (response) => {
-                    if (JsEvent.fromJson(JSON.parse(response), {}).event.oneofKind !== "emptyResponse") {
+                    if (JSON.parse(response).type !== JsEventType.EmptyResponse) {
                         console.warn("Ignoring response from CEF: ", response);
                     }
                     resolve();
@@ -56,9 +54,9 @@ export class EventService {
         return new Promise((resolve, reject) => {
             window.cefQuery({
                 persistent: false,
-                request: JSON.stringify(JsEvent.toJson(event)),
+                request: JSON.stringify(event),
                 onSuccess: (response) => {
-                    const resp = JsEvent.fromJson(JSON.parse(response), {});
+                    const resp = JSON.parse(response) as JsEvent;
                     resolve(resp);
                 },
                 onFailure: (error_code, error_message) => {
@@ -71,29 +69,28 @@ export class EventService {
 
     browseFolder(title: string, defaultPath: string, filters: string[], allowCreate: boolean): Promise<string> {
         const event: JsEvent = {
-            event: {
-                oneofKind: "browseFolderRequest",
-                browseFolderRequest: {
-                    title: title,
-                    defaultPath: defaultPath,
-                    filters: filters,
-                    allowCreate: allowCreate
-                }
+            type: JsEventType.BrowseFolderRequest,
+            browse_folder_request_data: {
+                title: title,
+                default_path: defaultPath,
+                filters: filters,
+                allow_create: allowCreate
             }
         };
 
         return new Promise((resolve, reject) => {
             window.cefQuery({
                 persistent: false,
-                request: JSON.stringify(JsEvent.toJson(event)),
+                request: JSON.stringify(event),
                 onSuccess: (response) => {
-                    const ev = JsEvent.fromJson(JSON.parse(response), {}).event;
-                    if (ev.oneofKind !== "browseFolderResponse") {
+                    console.log(response);
+                    const ev = JSON.parse(response) as JsEvent;
+                    if (ev.type !== JsEventType.BrowseFolderResponse) {
                         reject("Invalid response from CEF");
                         return;
                     }
 
-                    resolve(ev.browseFolderResponse.path);
+                    resolve(ev.browse_folder_response_data.path);
                 },
                 onFailure: (error_code, error_message) => {
                     reject(error_code + ": " + error_message);

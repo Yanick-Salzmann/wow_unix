@@ -1,7 +1,14 @@
 #include "web_dialog_handler.h"
 #include "spdlog/spdlog.h"
 
+#ifndef _WIN32
 #include <gtk/gtk.h>
+#else
+#include <shobjidl.h>
+#include <shlobj_core.h>
+#include <atlbase.h>
+#include "utils/di.h"
+#endif
 #include <thread>
 #include <vector>
 #include <sstream>
@@ -11,14 +18,15 @@
 #include "include/base/cef_bind.h"
 
 namespace wow::web {
-    bool web_dialog_handler::OnFileDialog(CefRefPtr<CefBrowser> browser, const FileDialogMode mode, const CefString &title,
+    bool web_dialog_handler::OnFileDialog(CefRefPtr<CefBrowser> browser, const FileDialogMode mode,
+                                          const CefString &title,
                                           const CefString &default_file_path,
                                           const std::vector<CefString> &accept_filters,
                                           const std::vector<CefString> &accept_extensions,
                                           const std::vector<CefString> &accept_descriptions,
                                           const CefRefPtr<CefFileDialogCallback> callback) {
         SPDLOG_DEBUG("OnFileDialog called with mode: {}", static_cast<int>(mode));
-
+#ifndef _WIN32
         std::thread dialog_thread([=]() {
             if (!gtk_init_check(nullptr, nullptr)) {
                 SPDLOG_ERROR("Failed to initialize GTK"); // NOLINT(*-lambda-function-name)
@@ -139,5 +147,20 @@ namespace wow::web {
 
         dialog_thread.detach();
         return true;
+#else
+        CComPtr<IFileOpenDialog> open_dialog{};
+        if (FAILED(CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_ALL,
+            IID_PPV_ARGS(&open_dialog)))) {
+            SPDLOG_ERROR("Failed to create IFileOpenDialog instance");
+            return false;
+        }
+
+        open_dialog->SetTitle(title.ToWString().c_str());
+        LPITEMIDLIST pidl{};
+        SHParseDisplayName(default_file_path.ToWString().c_str(), nullptr, &pidl, 0, nullptr);
+
+        open_dialog->Show(utils::app_module->window()->handle());
+        return false;
+#endif
     }
 }

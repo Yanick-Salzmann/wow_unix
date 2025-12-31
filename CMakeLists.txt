@@ -4,17 +4,29 @@ project(wow_unix)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 
+if (WIN32)
+    cmake_policy(SET CMP0091 NEW)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif ()
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
-find_package(OpenGL REQUIRED COMPONENTS OpenGL EGL)
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
-find_package(Protobuf REQUIRED)
+list(APPEND OPENGL_LIBRARIES OpenGL)
+list(APPEND OPENGL_LINKED_LIBRARIES OpenGL::GL)
+if (UNIX)
+    list(APPEND OPENGL_LIBRARIES EGL)
+    list(APPEND OPENGL_LINKED_LIBRARIES OpenGL::EGL)
+endif ()
+
+find_package(OpenGL REQUIRED COMPONENTS ${OPENGL_LIBRARIES})
+
+if (UNIX)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
+endif ()
 find_package(FMOD REQUIRED)
 
-find_package(absl REQUIRED)
-
-find_package(Boost CONFIG REQUIRED)
+find_package(CEF REQUIRED)
 
 include(FetchContent)
 
@@ -56,49 +68,38 @@ FetchContent_Declare(
 )
 
 FetchContent_Declare(
+        boost_pfr
+        GIT_REPOSITORY https://github.com/boostorg/pfr.git
+        GIT_TAG 2.2.0
+)
+
+FetchContent_Declare(
         tomlplusplus
         GIT_REPOSITORY https://github.com/marzer/tomlplusplus.git
         GIT_TAG v3.4.0
+)
+
+FetchContent_Declare(
+        nlohmann_json
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG v3.11.3
 )
 
 set(STORMLIB_BUILD_TYPE_BACKUP ${CMAKE_BUILD_TYPE})
 set(CMAKE_BUILD_TYPE Release)
 FetchContent_MakeAvailable(StormLib)
 set(CMAKE_BUILD_TYPE ${STORMLIB_BUILD_TYPE_BACKUP})
+target_compile_definitions(storm PUBLIC __STORMLIB_NO_STATIC_LINK__)
 
-FetchContent_MakeAvailable(spdlog glfw glm stb boost_di tomlplusplus)
+FetchContent_MakeAvailable(spdlog glfw glm stb boost_di boost_pfr tomlplusplus nlohmann_json)
 
 execute_process(COMMAND python3 -m venv .venv COMMAND .venv/bin/pip3 install -r requirements.txt WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/glad)
 include(glad/cmake/CMakeLists.txt)
 glad_add_library(glad_s3tc SHARED API gl:core=4.6 EXTENSIONS GL_EXT_texture_compression_s3tc)
 
-set(PROTO_FILES
-        ${CMAKE_SOURCE_DIR}/src/proto/js_event.proto
-)
-
-protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
-
-set(TS_PROTO_OUT_DIR "${CMAKE_SOURCE_DIR}/ui/src/app/proto")
-add_custom_command(
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/ui
-        OUTPUT ${TS_PROTO_OUT_DIR}/js_event.ts
-        COMMAND mkdir -p ${TS_PROTO_OUT_DIR}
-        COMMAND npx protoc
-        --ts_out=${CMAKE_SOURCE_DIR}/ui/src/app/proto
-        --proto_path=${CMAKE_SOURCE_DIR}/src/proto
-        ${PROTO_FILES}
-        DEPENDS ${PROTO_FILES}
-        COMMENT "Generating TypeScript protobuf files"
-        VERBATIM
-)
-
-add_custom_target(proto_typescript ALL
-        DEPENDS ${TS_PROTO_OUT_DIR}/js_event.ts
-)
-
 add_custom_command(
         OUTPUT ${CMAKE_BINARY_DIR}/mime_types.txt
-        COMMAND bash ${CMAKE_SOURCE_DIR}/fetch_mime_types.sh ${CMAKE_BINARY_DIR}/mime_types.txt
+        COMMAND ${CMAKE_COMMAND} -DOUTPUT_FILE=${CMAKE_BINARY_DIR}/mime_types.txt -P ${CMAKE_SOURCE_DIR}/cmake/fetch_mime_types.cmake
         COMMENT "Fetching MIME types..."
         VERBATIM
 )
@@ -140,8 +141,6 @@ add_executable(wow_unix src/main.cpp
         src/web/lambda_task.h
         src/web/ipc_message_handler.h
         src/web/ipc_message_handler.cpp
-        ${PROTO_SRCS}
-        ${PROTO_HDRS}
         src/utils/dialog_utils.h
         src/utils/dialog_utils.cpp
         src/utils/di.h
@@ -214,65 +213,63 @@ add_executable(wow_unix src/main.cpp
         src/audio/zone_music_manager.hpp
         src/audio/zone_music_manager.cpp
         src/audio/fmod_utils.hpp
-        src/audio/fmod_utils.cpp)
+        src/audio/fmod_utils.cpp
+        src/web/event/js_event.h)
 
-target_compile_options(wow_unix PRIVATE -Wno-multichar -DGLM_ENABLE_EXPERIMENTAL -rdynamic -DBOOST_DI_CFG_CTOR_LIMIT_SIZE=25)
+list(APPEND DEFINITIONS -DGLM_ENABLE_EXPERIMENTAL)
+if (UNIX)
+    list(APPEND DEFINITIONS -rdynamic -Wno-multichar)
+endif ()
 
-add_dependencies(wow_unix fetch_mime_types proto_typescript glad_s3tc)
+target_compile_options(wow_unix PRIVATE ${DEFINITIONS})
+
+if (WIN32)
+    target_compile_definitions(wow_unix PRIVATE
+            ssize_t=int64_t
+            NOMINMAX
+    )
+endif ()
+
+add_dependencies(wow_unix fetch_mime_types glad_s3tc)
 
 add_executable(wow_unix_browser src/main_browser.cpp)
 
+target_compile_options(wow_unix_browser PRIVATE ${DEFINITIONS})
+
+if (WIN32)
+    target_compile_definitions(wow_unix_browser PRIVATE
+            ssize_t=int64_t
+            NOMINMAX
+    )
+endif ()
+
 target_include_directories(wow_unix PRIVATE
         src
-        cef
         ${CMAKE_BINARY_DIR}
         ${OPENGL_INCLUDE_DIRS}
         ${stb_SOURCE_DIR}
         ${GTK3_INCLUDE_DIRS}
-        ${Protobuf_INCLUDE_DIRS}
-        ${CMAKE_CURRENT_BINARY_DIR}  # For generated protobuf headers
+        ${CMAKE_CURRENT_BINARY_DIR}
         ${boost_di_SOURCE_DIR}/include
-        ${Boost_INCLUDE_DIRS}
+        ${boost_pfr_SOURCE_DIR}/include
         ${tomlplusplus_SOURCE_DIR}/include
         ${CMAKE_BINARY_DIR}/gladsources/glad_s3tc/include
         ${FMOD_INCLUDE_DIRS}
 )
 
-target_include_directories(wow_unix_browser PRIVATE src cef)
+target_include_directories(wow_unix_browser PRIVATE src)
 
 target_link_libraries(wow_unix PRIVATE
-        ${CMAKE_BINARY_DIR}/libglad_s3tc.so
+        glad_s3tc
         glm
         spdlog::spdlog
         glfw
-        OpenGL::GL
-        OpenGL::EGL
-        ${CMAKE_BINARY_DIR}/libcef_dll_wrapper.a
-        ${CMAKE_BINARY_DIR}/libcef.so
+        ${OPENGL_LINKED_LIBRARIES}
+        CEF::CEF
+        CEF::Wrapper
         ${GTK3_LIBRARIES}
-        ${Protobuf_LIBRARIES}
-        utf8_range
-        absl::base
-        absl::strings
-        absl::str_format
-        absl::log
-        absl::log_severity
-        absl::log_internal_message
-        absl::log_internal_check_op
-        absl::log_internal_conditions
-        absl::log_internal_format
-        absl::log_internal_globals
-        absl::log_internal_log_sink_set
-        absl::log_internal_proto
-        absl::cord
-        absl::status
-        absl::statusor
-        absl::flat_hash_map
-        absl::flat_hash_set
-        absl::node_hash_map
-        absl::node_hash_set
-        absl::inlined_vector
         StormLib::storm
         ${FMOD_LIBRARIES}
+        nlohmann_json::nlohmann_json
 )
-target_link_libraries(wow_unix_browser PRIVATE spdlog::spdlog ${CMAKE_BINARY_DIR}/libcef_dll_wrapper.a ${CMAKE_BINARY_DIR}/libcef.so)
+target_link_libraries(wow_unix_browser PRIVATE spdlog::spdlog CEF::CEF CEF::Wrapper)

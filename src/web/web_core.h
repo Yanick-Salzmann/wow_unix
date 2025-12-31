@@ -50,6 +50,8 @@ namespace wow::web {
 
         int calculate_modifiers() const;
 
+        std::pair<int, int> scale_mouse_coordinates(double x, double y) const;
+
     public:
         explicit web_core(gl::window_ptr window, event::event_manager_ptr event_manager);
 

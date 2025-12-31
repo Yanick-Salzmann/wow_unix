@@ -3,7 +3,6 @@
 #include "include/cef_browser.h"
 #include <filesystem>
 #include <utility>
-#include <gtk/gtk.h>
 
 #include "schemes/app_scheme_handler.h"
 #include "spdlog/spdlog.h"
@@ -284,16 +283,25 @@ namespace wow::web {
         _task = std::packaged_task<bool()>([argc, argv, this] {
             SPDLOG_INFO("Initializing CEF"); // NOLINT(bugprone-lambda-function-name)
             CefMainArgs args{};
+#ifndef _WIN32
             args.argc = argc;
             args.argv = argv;
+#else
+            args.instance = GetModuleHandle(nullptr);
+#endif
 
             CefSettings settings{};
-            CefString(&settings.browser_subprocess_path) = canonical(std::filesystem::absolute("./wow_unix_browser"));
+            CefString(&settings.browser_subprocess_path) = canonical(std::filesystem::absolute("./wow_unix_browser.exe"));
             CefString(&settings.locales_dir_path) = canonical(std::filesystem::absolute("./locales"));
             CefString(&settings.resources_dir_path) = canonical(std::filesystem::absolute("./"));
 
+#ifndef _WIN32
             const auto home_env = std::getenv("HOME");
             std::filesystem::path home_dir{home_env ? home_env : "."};
+#else
+            const auto user_profile = std::getenv("USERPROFILE");
+            std::filesystem::path home_dir{user_profile ? user_profile : "."};
+#endif
 
             auto cache_path = std::filesystem::absolute(home_dir / ".wow-unix/cache");
 
@@ -342,6 +350,9 @@ namespace wow::web {
         _message_loop = std::thread([this]() {
             _task();
             CefRunMessageLoop();
+            _application.reset();
+            _client.reset();
+            CefShutdown();
         });
 
         if (!_task.get_future().get()) {
@@ -367,8 +378,9 @@ namespace wow::web {
 
             if (const auto browser = _client->browser()) {
                 CefMouseEvent event{};
-                event.x = static_cast<int>(_mouse_x);
-                event.y = static_cast<int>(_mouse_y);
+                auto [scaled_x, scaled_y] = scale_mouse_coordinates(_mouse_x, _mouse_y);
+                event.x = scaled_x;
+                event.y = scaled_y;
                 event.modifiers = calculate_modifiers();
 
                 if (action == GLFW_PRESS) {
@@ -411,8 +423,9 @@ namespace wow::web {
 
             if (const auto browser = _client->browser()) {
                 CefMouseEvent event{};
-                event.x = static_cast<int>(x);
-                event.y = static_cast<int>(y);
+                auto [scaled_x, scaled_y] = scale_mouse_coordinates(x, y);
+                event.x = scaled_x;
+                event.y = scaled_y;
                 event.modifiers = calculate_modifiers();
                 browser->GetHost()->SendMouseMoveEvent(event, false);
             }
@@ -443,8 +456,9 @@ namespace wow::web {
         _window->add_scroll_callback([this](const double x, const double y) {
             if (const auto browser = _client->browser()) {
                 CefMouseEvent event{};
-                event.x = static_cast<int>(_mouse_x);
-                event.y = static_cast<int>(_mouse_y);
+                auto [scaled_x, scaled_y] = scale_mouse_coordinates(_mouse_x, _mouse_y);
+                event.x = scaled_x;
+                event.y = scaled_y;
                 event.modifiers = calculate_modifiers();
                 browser->GetHost()->SendMouseWheelEvent(event, static_cast<int>(x * 120), static_cast<int>(y * 120));
             }
@@ -455,6 +469,10 @@ namespace wow::web {
                 browser->GetHost()->WasResized();
                 browser->GetHost()->NotifyMoveOrResizeStarted();
             }
+        });
+
+        _window->add_focus_callback([this](const bool focused) {
+            _client->notify_focus(focused);
         });
     }
 
@@ -477,7 +495,7 @@ namespace wow::web {
 
         CefPostTask(TID_UI, new ShutdownTask());
         _message_loop.join();
-        CefShutdown();
+        //CefShutdown();
         SPDLOG_INFO("Shutdown complete");
     }
 
@@ -538,5 +556,17 @@ namespace wow::web {
         }
 
         return modifiers;
+    }
+
+    std::pair<int, int> web_core::scale_mouse_coordinates(const double x, const double y) const {
+#ifdef _WIN32
+        const auto scale = _window->dpi_scaling();
+        return {
+            static_cast<int>(x / scale),
+            static_cast<int>(y / scale)
+        };
+#else
+        return {static_cast<int>(x), static_cast<int>(y)};
+#endif
     }
 }

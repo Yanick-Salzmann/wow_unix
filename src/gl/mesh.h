@@ -7,7 +7,11 @@
 #include "program.h"
 #include "vertex_buffer.h"
 #include "texture.h"
+
+extern "C" {
 #include <glad/gl.h>
+}
+
 #include <vector>
 
 namespace wow::gl {
@@ -39,11 +43,15 @@ namespace wow::gl {
         mesh_ptr mesh;
         terrain_state state;
 
-        terrain_mesh& apply_fog_color(const glm::vec4 &fog_color);
-        terrain_mesh& apply_diffuse_color(const glm::vec4 &diffuse_color);
-        terrain_mesh& apply_ambient_color(const glm::vec4 &ambient_color);
-        terrain_mesh& apply_sun_direction(const glm::vec3 &sun_direction);
-        terrain_mesh& apply_fog_distance(const float& fog_distance);
+        terrain_mesh &apply_fog_color(const glm::vec4 &fog_color);
+
+        terrain_mesh &apply_diffuse_color(const glm::vec4 &diffuse_color);
+
+        terrain_mesh &apply_ambient_color(const glm::vec4 &ambient_color);
+
+        terrain_mesh &apply_sun_direction(const glm::vec3 &sun_direction);
+
+        terrain_mesh &apply_fog_distance(const float &fog_distance);
     };
 
     enum class blend_mode {
@@ -105,15 +113,19 @@ namespace wow::gl {
 
         mesh &texture(int32_t location, const bindable_texture_ptr &texture);
 
-        const mesh& bind() const;
-        const mesh& bind_textures() const;
-        const mesh& bind_vb() const;
-        const mesh& bind_ib() const;
-        const mesh& bind_program() const;
+        const mesh &bind() const;
 
-        const mesh& bind_vertex_attributes() const;
+        const mesh &bind_textures() const;
 
-        const mesh& apply_blend_mode() const;
+        const mesh &bind_vb() const;
+
+        const mesh &bind_ib() const;
+
+        const mesh &bind_program() const;
+
+        const mesh &bind_vertex_attributes() const;
+
+        const mesh &apply_blend_mode() const;
 
         void unbind() const;
 

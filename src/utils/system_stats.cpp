@@ -22,6 +22,9 @@ namespace wow::utils {
     static bool gpu_type_detected = false;
 
     static int32_t get_cpu_frequency() {
+#ifdef _WIN32
+        return 0;
+#else
         std::array<char, 128> buffer{};
         std::stringstream result;
         const std::unique_ptr<FILE, std::function<void(FILE *)> > pipe(
@@ -37,6 +40,7 @@ namespace wow::utils {
         }
 
         return 0;
+#endif
     }
 
     struct gpu_memory_info {
@@ -45,6 +49,7 @@ namespace wow::utils {
     };
 
     static gpu_memory_info get_nvidia_gpu_memory() {
+#ifndef _WIN32
         const std::unique_ptr<FILE, std::function<void(FILE*)>> pipe(
             popen("nvidia-smi --query-gpu=memory.used,memory.total "
                   "--format=csv,noheader,nounits",
@@ -65,9 +70,13 @@ namespace wow::utils {
             }
         }
         return {0, 0};
+#else
+        return {0, 0};
+#endif
     }
 
     gpu_type detect_gpu_type() {
+#ifndef _WIN32
         if (gpu_type_detected) {
             return cached_gpu_type;
         }
@@ -97,8 +106,13 @@ namespace wow::utils {
 
         gpu_type_detected = true;
         return cached_gpu_type;
+#else
+        gpu_type_detected = false;
+        return gpu_type::UNKNOWN;
+#endif
     }
 
+#ifndef _WIN32
     static int32_t get_nvidia_gpu_usage() {
         const std::unique_ptr<FILE, std::function<void(FILE*)>> pipe(
             popen("nvidia-smi --query-gpu=utilization.gpu "
@@ -165,6 +179,8 @@ namespace wow::utils {
         return 0;
     }
 
+#endif
+
     system_stats get_system_stats() {
         system_stats stats{};
 
@@ -221,6 +237,7 @@ namespace wow::utils {
         }
 
         switch (detect_gpu_type()) {
+#ifndef _WIN32
             case gpu_type::NVIDIA:
                 stats.gpu_usage = get_nvidia_gpu_usage();
                 {
@@ -235,6 +252,7 @@ namespace wow::utils {
             case gpu_type::INTEL:
                 stats.gpu_usage = get_intel_gpu_usage();
                 break;
+#endif
             default:
                 stats.gpu_usage = 0;
                 break;

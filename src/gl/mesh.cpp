@@ -5,6 +5,7 @@
 #include <vector>
 #include <cmath>
 
+#include "glm/ext/scalar_constants.hpp"
 #include "spdlog/spdlog.h"
 
 namespace wow::gl {
@@ -319,12 +320,12 @@ namespace wow::gl {
 
             for (int i = 0; i <= stacks; ++i) {
                 const float v = static_cast<float>(i) / static_cast<float>(stacks);
-                const float phi = v * static_cast<float>(M_PI);
+                const float phi = v * glm::pi<float>();
                 const float z = std::cos(phi);
                 const float r = std::sin(phi);
                 for (int j = 0; j <= slices; ++j) {
                     const float u = static_cast<float>(j) / static_cast<float>(slices);
-                    const float theta = u * static_cast<float>(M_PI) * 2.0f;
+                    const float theta = u * glm::pi<float>() * 2.0f;
                     const float x = r * std::cos(theta);
                     const float y = r * std::sin(theta);
                     vertices.push_back(x);

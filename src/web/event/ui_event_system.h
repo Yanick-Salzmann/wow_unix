@@ -14,9 +14,8 @@ namespace wow::web::event {
         scene::world_frame_ptr _world_frame{};
         event_manager_ptr _event_manager{};
 
-        proto::ListMapsResponse handle_list_maps() const;
-
-        proto::ListMapPoisResponse handle_list_map_pois(int32_t map_id) const;
+        list_maps_response handle_list_maps() const;
+        list_map_pois_response handle_list_map_pois(int32_t map_id) const;
 
     public:
         explicit ui_event_system(

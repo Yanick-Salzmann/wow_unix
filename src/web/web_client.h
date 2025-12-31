@@ -5,6 +5,7 @@
 #undef Success
 #include "include/cef_client.h"
 #undef Success
+#include "ipc_message_handler.h"
 #include "include/wrapper/cef_message_router.h"
 
 
@@ -16,7 +17,8 @@ namespace wow::web {
             public CefRenderHandler,
             public CefLifeSpanHandler,
             public CefDisplayHandler,
-            public CefRequestHandler {
+            public CefRequestHandler,
+            public CefFocusHandler {
         IMPLEMENT_REFCOUNTING(web_client);
 
         gl::window_ptr _window{};
@@ -45,6 +47,14 @@ namespace wow::web {
             return this;
         }
 
+        CefRefPtr<CefFocusHandler> GetFocusHandler() override {
+            return this;
+        }
+
+        void OnGotFocus(CefRefPtr<CefBrowser> browser) override;
+
+        bool OnSetFocus(CefRefPtr<CefBrowser> browser, FocusSource source) override;
+
         void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect) override;
 
         bool GetScreenPoint(CefRefPtr<CefBrowser> browser, int viewX, int viewY, int &screenX, int &screenY) override;
@@ -57,10 +67,7 @@ namespace wow::web {
         void OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList &dirtyRects,
                                 const CefAcceleratedPaintInfo &info) override;
 
-        void OnAfterCreated(const CefRefPtr<CefBrowser> browser) override {
-            _browser = browser;
-            _browser->GetHost()->SetFocus(true);
-        }
+        void OnAfterCreated(const CefRefPtr<CefBrowser> browser) override;
 
         bool OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_severity_t level, const CefString &message,
                               const CefString &source, int line) override;
@@ -83,6 +90,8 @@ namespace wow::web {
         CefRefPtr<CefBrowser> browser() const {
             return _browser;
         }
+
+        void notify_focus(bool focus) const;
     };
 }
 

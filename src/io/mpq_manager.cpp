@@ -122,15 +122,15 @@ namespace wow::io {
 
     mpq_manager::mpq_manager(web::event::event_manager_ptr event_manager,
                              const dbc::dbc_manager_ptr &dbc_manager) : _dbc_manager(dbc_manager) {
-        event_manager->listen(web::proto::JsEvent::kLoadDataEvent,
-                              [this, event_manager](const web::proto::JsEvent &event) {
-                                  load_from_folder(event.load_data_event().folder(),
+        event_manager->listen(web::event::js_event_type::load_data_event,
+                              [this, event_manager](const web::event::js_event &event) {
+                                  load_from_folder(event.load_data_event_data.folder,
                                                    [event_manager](const int progress, const std::string &msg) {
-                                                       auto ev = web::proto::JsEvent{};
-                                                       const auto update = ev.mutable_load_update_event();
-                                                       update->set_message(msg);
-                                                       update->set_percentage(progress);
-                                                       update->set_completed(progress >= 100);
+                                                       auto ev = web::event::js_event{};
+                                                       ev.type = web::event::js_event_type::load_update_event;
+                                                       ev.load_update_event_data.message = msg;
+                                                       ev.load_update_event_data.percentage = progress;
+                                                       ev.load_update_event_data.completed = progress >= 100;
 
                                                        event_manager->submit(ev);
                                                    });

@@ -6,6 +6,7 @@
 #include <vector>
 #include <functional>
 #include <memory>
+#include <array>
 
 namespace wow::io::blp {
     enum class blp_format {

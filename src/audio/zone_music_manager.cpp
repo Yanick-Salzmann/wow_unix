@@ -14,8 +14,10 @@ namespace wow::audio {
                 SPDLOG_INFO("Sound Emitter: {}", file_name);
                 if (!file_name.empty()) {
                     _cur_sound = _audio_manager->play_file(file_name);
-
-                    utils::app_module->ui_event_system()->event_manager()->submit(web::proto::JsEvent{});
+                    web::event::js_event ev{};
+                    ev.type = web::event::js_event_type::sound_update_event;
+                    ev.sound_update_event_data.sound_name = file_name;
+                    utils::app_module->ui_event_system()->event_manager()->submit(ev);
                 }
             }
 
@@ -69,8 +71,9 @@ namespace wow::audio {
     }
 
     void zone_music_manager::publish_sound_event(const std::string &sound_name) {
-        auto ev = web::proto::JsEvent{};
-        ev.mutable_sound_update_event()->set_sound_name(sound_name);
+        auto ev = web::event::js_event{};
+        ev.type = web::event::js_event_type::sound_update_event;
+        ev.sound_update_event_data.sound_name = sound_name;
         utils::app_module->ui_event_system()->event_manager()->submit(ev);
     }
 

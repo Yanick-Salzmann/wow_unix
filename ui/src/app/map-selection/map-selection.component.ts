@@ -1,8 +1,8 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {EventService} from '../service/event.service';
-import {ListMapsResponseMap} from '../proto/js_event';
+import {JsEventType, ListMapsResponseMap} from '../service/js-event';
 import {Router} from '@angular/router';
 import {BehaviorSubject} from "rxjs";
 
@@ -38,14 +38,12 @@ export class MapSelectionComponent implements OnInit {
 
         try {
             const response = await this.eventService.sendMessageWithResponse({
-                event: {
-                    oneofKind: 'listMapsRequest',
-                    listMapsRequest: {}
-                }
+                type: JsEventType.ListMapsRequest,
+                list_maps_request_data: {}
             });
 
-            if (response?.event?.oneofKind === 'listMapsResponse') {
-                this.maps = response.event.listMapsResponse.maps;
+            if (response.type === JsEventType.ListMapsResponse) {
+                this.maps = response.list_maps_response_data.maps;
                 this.$filteredMaps.next([...this.maps]);
                 this.$isLoading.next(false);
             }
@@ -67,9 +65,9 @@ export class MapSelectionComponent implements OnInit {
         ));
     }
 
-    selectMap(map: ListMapsResponseMap) {
+    async selectMap(map: ListMapsResponseMap) {
         console.log('Selected map:', map);
-        this.router.navigate(['/minimap', map.mapId]);
+        await this.router.navigate(['/minimap', map.map_id]);
     }
 
     hasFilteredMaps(): boolean {

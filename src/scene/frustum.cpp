@@ -20,12 +20,12 @@ namespace wow::scene {
     void frustum::extract_planes(const glm::mat4 &view_projection) {
         const auto m = glm::transpose(view_projection);
 
-        _planes[LEFT] = utils::plane(m[3] + m[0]);
-        _planes[RIGHT] = utils::plane(m[3] - m[0]);
-        _planes[BOTTOM] = utils::plane(m[3] + m[1]);
-        _planes[TOP] = utils::plane(m[3] - m[1]);
-        _planes[NEAR] = utils::plane(m[3] + m[2]);
-        _planes[FAR] = utils::plane(m[3] - m[2]);
+        _planes[0] = utils::plane(m[3] + m[0]);
+        _planes[1] = utils::plane(m[3] - m[0]);
+        _planes[2] = utils::plane(m[3] + m[1]);
+        _planes[3] = utils::plane(m[3] - m[1]);
+        _planes[4] = utils::plane(m[3] + m[2]);
+        _planes[5] = utils::plane(m[3] - m[2]);
     }
 
     bool intersects(const utils::plane &plane, const glm::vec3 &min_point, const glm::vec3 &max_point) {

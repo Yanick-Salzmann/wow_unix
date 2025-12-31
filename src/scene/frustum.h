@@ -13,15 +13,6 @@ namespace wow::scene {
         void extract_planes(const glm::mat4 &view_projection);
 
     public:
-        enum plane_index {
-            LEFT = 0,
-            RIGHT = 1,
-            TOP = 2,
-            BOTTOM = 3,
-            NEAR = 4,
-            FAR = 5
-        };
-
         frustum() = default;
 
         frustum(const glm::mat4 &view, const glm::mat4 &projection);
@@ -37,8 +28,6 @@ namespace wow::scene {
         }
 
         [[nodiscard]] bool contains_point(const glm::vec3 &point) const;
-
-        [[nodiscard]] const utils::plane &get_plane(const plane_index index) const { return _planes[index]; }
     };
 }
 

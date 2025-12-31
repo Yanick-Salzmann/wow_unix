@@ -1,5 +1,7 @@
 #include <glad/gl.h>
+#ifndef _WIN32
 #include <execinfo.h>
+#endif
 #include "window.h"
 
 #include "mesh.h"
@@ -130,6 +132,14 @@ namespace wow::gl {
             std::lock_guard lock{wnd->_callback_lock};
             for (const auto &cb: wnd->_char_callbacks) {
                 cb(codepoint);
+            }
+        });
+
+        glfwSetWindowFocusCallback(_window, [](GLFWwindow *window, const int focused) {
+            const auto wnd = static_cast<gl::window *>(glfwGetWindowUserPointer(window));
+            std::lock_guard lock{wnd->_callback_lock};
+            for (const auto &cb: wnd->_focus_callbacks) {
+                cb(focused == GLFW_TRUE);
             }
         });
 

@@ -11,7 +11,6 @@ namespace wow::web {
     web_client::web_client(gl::window_ptr window, const std::shared_ptr<web_core> &core) : _window(std::move(window)),
         _core(core) {
         _router = CefMessageRouterBrowserSide::Create(CefMessageRouterConfig());
-        _router->AddHandler(new ipc_message_handler(core->event_manager()), true);
     }
 
     void web_client::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect) {
@@ -59,6 +58,12 @@ namespace wow::web {
         SPDLOG_INFO("OnAcceleratedPaint");
     }
 
+    void web_client::OnAfterCreated(const CefRefPtr<CefBrowser> browser) {
+        _browser = browser;
+        _browser->GetHost()->SetFocus(true);
+        _router->AddHandler(new ipc_message_handler(_core.lock()->event_manager()), true);
+    }
+
     bool web_client::OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_severity_t level, const CefString &message,
                                       const CefString &source, int line) {
         std::string sourceStr = source.ToString();
@@ -96,5 +101,18 @@ namespace wow::web {
 
     void web_client::OnBeforeClose(const CefRefPtr<CefBrowser> browser) {
         _router->OnBeforeClose(browser);
+    }
+
+    void web_client::OnGotFocus(CefRefPtr<CefBrowser> browser) {
+    }
+
+    bool web_client::OnSetFocus(CefRefPtr<CefBrowser> browser, FocusSource source) {
+        return false;
+    }
+
+    void web_client::notify_focus(const bool focus) const {
+        if (_browser) {
+            _browser->GetHost()->SetFocus(focus);
+        }
     }
 }
